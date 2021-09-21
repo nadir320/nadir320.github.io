@@ -1,0 +1,50 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Add to Read Later</title>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-database.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<script type="text/javascript" src="js/add.min.js"></script>
+		<script type="text/javascript">
+			"use strict";
+
+			var closeWindow = !!window.location.get("new"),
+				done = function() {
+					if (closeWindow) {
+						window.close();
+					}
+				},
+				href,
+				title,
+				uid;
+
+			if (!((uid = window.location.get("uid")) && uid.length)) {
+				uid = window.prompt("UID:");
+			}
+			if (uid && uid.length) {
+				if ((href = window.prompt("URL:", window.location.get("url"))) && href.length) {
+					title = window.location.get("title");
+					
+					var newTitle = window.prompt("Title:", title);
+					
+					if (newTitle !== null) {
+						if (newTitle && newTitle.length) {
+							title = newTitle;
+						}
+						window.nadir.addToReadLater(uid, href, title, closeWindow);
+					} else {
+						done();
+					}
+				} else {
+					done();
+				}
+			} else {
+				done();
+			}
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

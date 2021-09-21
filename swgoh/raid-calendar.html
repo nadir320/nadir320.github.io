@@ -1,0 +1,441 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="images/raid-192.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="images/raid-192.png" type="image/png"/>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<title>Calendario Raid</title>
+		<style type="text/css">
+			body {
+				font-family: Helvetica, Roboto, sans-serif;
+			}
+
+			button {
+				cursor: pointer;
+				user-select: none;
+			}
+
+			.title {
+				padding: 0.1em 0;
+				text-align: center;
+			}
+
+			.background-image {
+				background-image: url("images/heroes.jpg");
+				background-position: top center;
+				background-size: auto 40em;
+				bottom: 0;
+				left: 0;
+				opacity: 0.15;
+				position: fixed;
+				right: 0;
+				top: 0;
+				z-index: -1;
+			}
+
+			@media (min-height: 40em) {
+				.background-image {
+					background-size: auto 60em;
+				}
+			}
+
+			@media (min-width: 48em) {
+				.calendar {
+					margin: 2em auto 0;
+					width: 80vw;
+				}
+			}
+
+			.calendar {
+				text-align: center;
+			}
+
+			.calendar canvas {
+				/* border: 2px solid black; */
+				box-sizing: content-box;
+				height: auto;
+				max-width: 100%;
+			}
+		</style>
+		<style type="text/css">
+			.prompt {
+				display: none;
+				z-index: 100;
+			}
+
+			.prompt, .prompt .backdrop {
+				bottom: 0;
+				left: 0;
+				position: fixed;
+				right: 0;
+				top: 0;
+			}
+
+			.prompt .backdrop {
+				background-color: aliceBlue;
+				opacity: 0.5;
+			}
+
+			.prompt .dialog {
+				background-color: white;
+				border: 1px solid silver;
+				border-radius: 1em;
+				box-shadow: 0 0 1em;
+				margin: 5em auto 0;
+				padding: 0 0.5em;
+				position: relative;
+				width: 80vw;
+			}
+
+			@media (min-width: 48em) {
+				.prompt .dialog {
+					width: 40vw;
+				}
+			}
+
+			@media (min-height: 48em) {
+				.prompt .dialog {
+					margin: 12em auto 0;
+				}
+			}
+
+			.prompt .dialog .dialog-title {
+				overflow: hidden;
+				padding: 0.5em;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.prompt .dialog .dialog-body {
+				border-bottom: 1px solid silver;
+				border-top: 1px solid silver;
+				display: flex;
+				padding: 0.5em;
+			}
+
+			.prompt .dialog .dialog-body button.number {
+				flex-grow: 0.1;
+				height: 2em;
+			}
+
+			.prompt .dialog .dialog-body button.number.pre {
+				margin-right: 0.5em;
+			}
+
+			.prompt .dialog .dialog-body button.number.post {
+				margin-left: 0.5em;
+			}
+
+			.prompt .dialog .dialog-body input.number {
+				flex-grow: 1;
+			}
+
+			.prompt .dialog .dialog-body input.text {
+				flex-grow: 1;
+			}
+
+			.prompt .dialog .dialog-body input.number::-webkit-inner-spin-button {
+				opacity: 1;
+			}
+
+			.prompt .dialog .dialog-buttons {
+				text-align: right;
+			}
+
+			.prompt .dialog .dialog-buttons button {
+				border: 1px solid silver;
+				border-radius: 0.25em;
+				height: 1.5em;
+				margin-right: 0.5em;
+				margin-top: 0.5em;
+				width: 6em;
+			}
+
+			.prompt .dialog .dialog-buttons button:last-of-type {
+				margin-bottom: 0.5em;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="background-image"></div>
+		<div class="title"><h2>Calendario Raid</h2></div>
+		<div class="calendar">
+			<canvas></canvas>
+		</div>
+		<div class="prompt">
+			<div class="backdrop"></div>
+			<div class="dialog">
+				<div class="dialog-title"></div>
+				<div class="dialog-body"></div>
+				<div class="dialog-buttons">
+					<button class="button-ok">OK</button>
+					<button class="button-cancel">Cancel</button>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			"use strict";
+
+			const ask = function(text, defaultValue, callback, min, max, anchor, noMinMax) {
+				const n = typeof(min) !== "undefined" || typeof(max) !== "undefined";
+
+				const f = (t, x) => t.getElementsByClassName(x)[0];
+
+				const p = f(document, "prompt"),
+					d = f(p, "dialog"),
+					b = f(d, "dialog-body");
+
+				f(d, "dialog-title").innerText = text;
+
+				const c = (x) => {
+					p.removeEventListener("keydown", k);
+					f(d, "button-ok").removeEventListener("click", b1);
+					f(d, "button-cancel").removeEventListener("click", b2);
+					f(p, "backdrop").removeEventListener("click", b2);
+
+					if (x) {
+						let value = b.querySelector("input").value;
+
+						if (n) {
+							if (isNaN(value = parseInt(value))) {
+								return;
+							}
+							if (typeof min !== "undefined") {
+								value = Math.max(value, min);
+							}
+							if (typeof max !== "undefined") {
+								value = Math.min(value, max);
+							}
+						}
+						callback(value);
+					}
+					p.style.display = "";
+				};
+
+				const add = (x, step) => {
+					const oldValue = parseInt(b.querySelector("input.number").value);
+
+					let newValue = oldValue;
+
+					if (typeof x === "undefined") {
+						newValue--;
+					} else if (typeof x === "number") {
+						if (step) {
+							newValue += x;
+						} else {
+							newValue = x;
+						}
+					} else {
+						newValue++;
+					}
+
+					if (typeof min !== "undefined") {
+						newValue = Math.max(newValue, min);
+					}
+					if (typeof max !== "undefined") {
+						newValue = Math.min(newValue, max);
+					}
+					if (newValue !== oldValue) {
+						b.querySelector("input.number").value = newValue;
+					}
+				};
+
+				const smartAdd = (button, increase) => {
+					(() => {
+						let m,
+							started,
+							x;
+
+						const fn = () => add(x, true);
+
+						const start = () => {
+							x = (increase) ? 1 : -1;
+							fn();
+							started = new Date().getTime();
+							m = window.setInterval(() => {
+								const now = new Date().getTime();
+
+								if (now - started > 15e2) {
+									x *= 2;
+									started = now;
+								}
+								fn();
+							}, 2e2);
+						}, end = () => window.clearInterval(m);
+
+						button.addEventListener("mousedown", (e) => {
+							if (e.which === 1) {
+								start();
+							}
+						});
+						button.addEventListener("mouseup", end);
+
+						button.addEventListener("touchstart", (e) => {
+							e.cancelBubble = true;
+							if (e.cancelable) {
+								e.preventDefault();
+							}
+							start();
+						});
+						button.addEventListener("touchend", end);
+					})();
+				};
+
+				const b1 = () => c(true),
+					b2 = () => c(),
+					k = (e) => {
+						if (e.which === 27) {
+							c();
+						} else if (e.which === 13) {
+							b1();
+						}
+					};
+
+				p.addEventListener("keydown", k);
+				f(d, "button-ok").addEventListener("click", b1);
+				f(d, "button-cancel").addEventListener("click", b2);
+				f(p, "backdrop").addEventListener("click", b2);
+
+				b.innerHTML = "";
+
+				const t = document.createElement("input");
+
+				if (n) {
+					let i;
+
+					if (typeof min !== "undefined" && !noMinMax) {
+						i = document.createElement("button");
+
+						i.classList.add("number");
+						i.classList.add("pre");
+						i.innerText = min.toLocaleString();
+						i.addEventListener("click", () => add(min));
+						b.appendChild(i);
+					}
+					i = document.createElement("button");
+
+					i.classList.add("number");
+					i.classList.add("pre");
+					i.innerText = "-";
+					//i.addEventListener("click", () => add());
+					smartAdd(i);
+					b.appendChild(i);
+
+					t.classList.add("number");
+					t.setAttribute("type", "number");
+					t.setAttribute("min", min);
+					t.setAttribute("max", max);
+				} else {
+					t.classList.add("text");
+				}
+				t.value = defaultValue;
+				b.appendChild(t)
+				if (n) {
+					let i = document.createElement("button");
+
+					i.classList.add("number");
+					i.classList.add("post");
+					i.innerText = "+";
+					//i.addEventListener("click", () => add(true));
+					smartAdd(i, true);
+					b.appendChild(i);
+
+					if (typeof max !== "undefined" && !noMinMax) {
+						i = document.createElement("button");
+
+						i.classList.add("number");
+						i.classList.add("post");
+						i.innerText = max.toLocaleString();
+						i.addEventListener("click", () => add(max));
+						b.appendChild(i);
+					}
+
+				}
+				p.style.display = "block";
+				if (!n) {
+					t.focus();
+				}
+				return;
+
+				let r = window.prompt(text, defaultValue);
+
+				if (r !== null && typeof(callback) !== "undefined") {
+					if (n) {
+						r = parseInt(r);
+						if (isNaN(r)) {
+							return;
+						} else {
+							r = Math.min(Math.max(r, min), max);
+						}
+					}
+					callback(r);
+				}
+			};
+
+			const format = function() {
+				var s = arguments[0],
+					q, u;
+
+				for (var i = 1; i < arguments.length; i++) {
+					q = "{" + (i - 1).toString() + "}";
+					u = arguments[i].toLocaleString();
+					while (s.indexOf(q) >= 0) {
+						s = s.replace(q, u);
+					}
+				}
+				return s;
+			};
+
+			window.addEventListener("resize", () => { });
+
+			const c = document.getElementsByTagName("canvas")[0];
+
+			(() => {
+				const W = 800,
+					H = 200,
+					HH = H / 12;
+
+				c.width = W;
+				c.height = H;
+
+				const x = c.getContext("2d");
+
+				x.translate(0.5, 0.5);
+
+				x.rect(0, 0, W - 1, H - 1);
+				
+				/* x.moveTo(1, 1);
+				x.lineTo(W - 1, 1);
+				
+				x.moveTo(1, 1);
+				x.lineTo(1, HH);
+				
+				x.moveTo(W - 2, 1);
+				x.lineTo(W - 2, HH);
+				
+				x.moveTo(1, HH);
+				x.lineTo(W - 2, HH); */
+				
+				x.fillStyle = "white";
+				x.fill();
+				x.stroke();
+				
+				x.beginPath();
+				x.rect(1, 1, W - 3, HH);
+				x.fillStyle = "cyan";
+				x.fill();
+				x.stroke();
+
+				/* x.beginPath();
+				x.moveTo(0, 0);
+				x.lineTo(W - 1, H - 1);
+				x.stroke(); */
+			})();
+		</script>
+	</body>
+</html>

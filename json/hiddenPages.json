@@ -1,0 +1,16 @@
+[
+	  { "text": "My tumblr.", "url": "myTumblr", "icon": "./myTumblr/images/tumblr.png" }
+	, { "text": "Read Later", "url": "readLater", "icon": "./readLater/images/readLater.png" }
+	, { "text": "SWGOH", "url": "./swgoh", "pages": [
+		  { "text": "Avatar", "url": "avatar.html", "icon": "./swgoh/images/192-round-2017.png" }
+		, { "text": "Personaggi", "url": "characterBoard.html", "icon": "./swgoh/images/192-round-2016.png" }
+		, { "text": "Energia", "url": "energy.html", "icon": "./swgoh/images/192-round-2016.png" }
+		, { "text": "TW", "url": "tw-map.html", "icon": "./swgoh/images/tw-192.png" }
+		, { "text": "Raid", "url": "raid-calendar.html", "icon": "./swgoh/images/raid-192.png" }
+	] }
+	, { "text": "Test", "url": "./test", "pages": [
+		  { "text": "Caff\u00e8", "url": "coffee.html", "icon": "./images/coffee.png" }
+		, { "text": "Soldi (\u03B1)", "url": "../money/", "icon": "./money/images/euro.png" }
+		, { "text": "Targhe", "url": "targhe.html", "icon": "./images/aa.png" }
+	] }
+]

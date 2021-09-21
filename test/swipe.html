@@ -1,0 +1,1169 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<link id="favicon" rel="icon" href="../images/swipe.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/swipe.png" type="image/png"/>
+		<title></title>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+		<script type="text/javascript">
+			"use strict";
+
+			window.NREUM = { };
+
+			var
+				THEME_ID = "pageTheme",
+				THEMES = [
+					  { "name": "Black tie" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/black-tie/jquery-ui.min.css" }
+					, { "name": "Blitzer"			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.min.css" }
+					, { "name": "Cupertino" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/cupertino/jquery-ui.min.css" }
+					, { "name": "Dark Hive" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/dark-hive/jquery-ui.min.css" }
+					, { "name": "Dot LUV" 			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/dot-luv/jquery-ui.min.css" }
+					, { "name": "Eggplant"	 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/eggplant/jquery-ui.min.css" }
+					, { "name": "Excite Bike" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/excite-bike/jquery-ui.min.css" }
+					, { "name": "Flick" 			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/flick/jquery-ui.min.css" }
+					, { "name": "Hot Sneaks" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/hot-sneaks/jquery-ui.min.css" }
+					, { "name": "Humanity" 			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/humanity/jquery-ui.min.css" }
+					, { "name": "Le Frog" 			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/le-frog/jquery-ui.min.css" }
+					, { "name": "Mint Choc" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/mint-choc/jquery-ui.min.css" }
+					, { "name": "Overcast" 			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/overcast/jquery-ui.min.css" }
+					, { "name": "Pepper Grinder" 	, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/pepper-grinder/jquery-ui.min.css" }
+					, { "name": "Redmond"			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.min.css" }
+					, { "name": "Smoothness" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css" }
+					, { "name": "South Street" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/south-street/jquery-ui.min.css" }
+					, { "name": "Start" 			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/start/jquery-ui.min.css" }
+					, { "name": "Sunny" 			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/sunny/jquery-ui.min.css" }
+					, { "name": "Swanky Purse" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/swanky-purse/jquery-ui.min.css" }
+					, { "name": "Trontastic"		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/trontastic/jquery-ui.min.css" }
+					, { "name": "UI Darkness" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/ui-darkness/jquery-ui.min.css" }
+					, { "name": "UI Lightness" 		, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/ui-lightness/jquery-ui.min.css" }
+					, { "name": "Vader" 			, "group": "Official"	, "url": "https://code.jquery.com/ui/1.11.4/themes/vader/jquery-ui.min.css" }
+
+					 , { "name": "Aristo" 			, "group": "Custom"	, "url": "http://taitems.github.com/Aristo-jQuery-UI-Theme/css/Aristo/Aristo.css" }
+					 , { "name": "Bootstrap" 		, "group": "Custom"	, "url": "http://addyosmani.github.io/jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.10.3.custom.css" }
+					 , { "name": "Selene" 			, "group": "Custom"	, "url": "http://gravityonmars.github.com/Selene/css/ui-selene/jquery-ui-1.8.17.custom.css" }
+					 , { "name": "Delta" 			, "group": "Custom"	, "url": "http://kiandra.github.com/Delta-jQuery-UI-Theme/theme/jquery-ui.css" }
+
+					 , { "name": "WIJMO - Arctic" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/arctic/jquery-wijmo.css" }
+					 , { "name": "WIJMO - Midnight" 	, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/midnight/jquery-wijmo.css" }
+					 , { "name": "WIJMO - Rocket" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/rocket/jquery-wijmo.css" }
+					 , { "name": "WIJMO - Cobalt" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/cobalt/jquery-wijmo.css" }
+					 , { "name": "WIJMO - Sterling" 	, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/sterling/jquery-wijmo.css" }
+					 , { "name": "WIJMO - Metro" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/metro/jquery-wijmo.css" }
+					 , { "name": "WIJMO - Metro (dark)" , "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/metro-dark/jquery-wijmo.css" }
+					 , { "name": "WIJMO - Bootstrap" 	, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/bootstrap/jquery-ui.css" }
+					 , { "name": "WIJMO - Aristo" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css" }
+				];
+
+			var PAGE_TITLE = "Swipe test";
+
+			var sidebar = function(options) {
+				var animateTo,
+					backdrop,
+					createTouchPoint,
+					cssPosition = { },
+					element,
+					instance,
+					isRightSide,
+					lastPercentage,
+					prevent,
+					status = "closed",
+					value,
+					touchStart,
+					zIndex;
+
+				options = $.extend({ }, options || { });
+
+				options.appendTo = options.appendTo || document.body;
+				options.changeThreshold = options.changeThreshold || 0.2;
+				options.backdropOpacity = options.backdropOpacity || 0.3;
+				options.easing = options.easing || "easeOutCubic";
+				options.intentFactor = options.intentFactor || 0.5;
+				if (options.side !== "right") {
+					options.side = "left";
+				}
+				options.swipeStartAreaFactor = options.swipeStartAreaFactor || 1;
+				isRightSide = options.side === "right";
+
+				animateTo = function(percentage) {
+					percentage = Math.min(Math.max(percentage, 0), 1);
+
+					var width = -element.width() * (1 - percentage);
+
+					if (percentage > 0) {
+						element.add(backdrop).css({
+							"visibility": "visible"
+						});
+					}
+					if (backdrop) {
+						backdrop.stop(true).animate({
+							"opacity": options.backdropOpacity * percentage,
+							"step": function (now, fx) {
+								$(this).css({
+									"transform": "translate3d(" + now + "px, 0px, 0px)"
+								});
+							}
+						}, {
+							"complete": function() {
+								if (percentage <= 0) {
+									backdrop.css({
+										"visibility": "hidden"
+									});
+								}
+							},
+							"easing": options.easing,
+							"queue": false
+						});
+					}
+					element.stop(true).animate({
+						"left": (isRightSide) ? undefined : width,
+						"right": (isRightSide) ? width : undefined
+					}, {
+						"complete": function() {
+							if (percentage <= 0) {
+								element.css({
+									"visibility": "hidden"
+								});
+							}
+						},
+						"easing": options.easing,
+						"queue": false
+					});
+					if (!!options.dontHover) {
+						$(options.appendTo).stop(true).animate({
+							"margin-left": (isRightSide) ? undefined : element.width() * percentage,
+							"margin-right": (isRightSide) ? element.width() * percentage : undefined
+						}, {
+							"easing": options.easing,
+							"queue": false
+						});
+					}
+					if (percentage <= 0) {
+						status = "closed";
+					} else if (percentage >= 1) {
+						status = "open";
+					} else if (percentage >= lastPercentage) {
+						status = "opening";
+					} else {
+						status = "closing";
+					}
+					lastPercentage = percentage;
+				};
+
+				createTouchPoint = function(e) {
+					return {
+						x: e.originalEvent.changedTouches[0].pageX,
+						y: e.originalEvent.changedTouches[0].pageY
+					};
+				};
+
+				prevent = function(e) {
+					e.stopPropagation();
+					e.preventDefault();
+					e.returnValue = false;
+					return false;
+				};
+
+				zIndex = options.zIndex || 1000;
+
+				if (options.width) {
+					value = options.width.toString();
+
+					if (typeof options.width === "number") {
+						value = "-" + value + "px";
+					}
+					if (isRightSide) {
+						cssPosition["right"] = value;
+					} else {
+						cssPosition["left"] = value;
+					}
+				}
+
+				if (!options.dontHover) {
+					backdrop = $(document.createElement("div"))
+						.addClass("noSwipe")
+						.addClass("ui-widget-overlay")
+						.css({
+							"opacity": 0,
+							"visibility": "hidden"
+						})
+						.appendTo(options.appendTo);
+				}
+				element = $(document.createElement("div"))
+					.addClass("ui-widget-content")
+					.addClass("noSwipe")
+					.addClass("sidebar")
+					.css($.extend({
+						"bottom": 0,
+						"margin": 0,
+						"overflow-x": "visible",
+						"overflow-y": "auto",
+						"position": "fixed",
+						"top": 0,
+						"visibility": "hidden",
+						"width": options.width || "auto",
+						"z-index": zIndex
+					}, cssPosition))
+					.appendTo(options.appendTo);
+
+				if (options["class"]) {
+					element.addClass(options["class"]);
+				}
+				if (options.fill) {
+					options.fill(element);
+				}
+				options.width = element.width();
+				element.css({
+					"left": (isRightSide) ? undefined : -options.width,
+					"right": (isRightSide) ? -options.width : undefined
+				});
+
+				$(options.appendTo).on({
+					"touchend": function(e) {
+						var width = element.width();
+
+						if (touchStart) {
+							var shouldPrevent = false,
+								touchPoint = createTouchPoint(e);
+
+							if (Math.abs(touchPoint.x - touchStart.x) < ((options.changeThreshold > 1) ?
+								options.changeThreshold : width * options.changeThreshold)) {
+
+								switch (status) {
+									case "closing":
+										instance.open();
+										shouldPrevent = true;
+										break;
+									case "opening":
+										instance.close();
+										shouldPrevent = true;
+										break;
+								}
+							} else {
+								switch (status) {
+									case "closing":
+										instance.close();
+										shouldPrevent = true;
+										break;
+									case "opening":
+										instance.open();
+										shouldPrevent = true;
+										break;
+								}
+							}
+							touchStart = undefined;
+							if (shouldPrevent) {
+								return prevent(e);
+							}
+						}
+					},
+					"touchmove": function(e) {
+						var isOnBar = $(e.target).closest(".sidebar").length > 0,
+							touchPoint = createTouchPoint(e),
+							value,
+							width = element.width();
+
+						if (touchStart) {
+							if (Math.abs((touchPoint.y - touchStart.y) /
+								(touchPoint.x - touchStart.x)) <= options.intentFactor) {
+
+								value = Math.abs(touchPoint.x - touchStart.x) / width;
+								if (isRightSide ^ (touchPoint.x < touchStart.x)) {
+									value = 1 - value;
+									if (isOnBar) {
+										animateTo(value);
+									}
+								} else if (!isOnBar) {
+									animateTo(value);
+								}
+								return prevent(e);
+							} else {
+								touchStart = undefined;
+								if (!isOnBar) {
+									instance.close();
+								}
+							}
+						}
+					},
+					"click touchstart": function(e) {
+						var containerWidth = $(options.appendTo).width(),
+							isOnBar = $(e.target).closest(".sidebar").length > 0,
+							width = element.width(),
+							thresholdWidth = (options.swipeStartAreaFactor > 1) ?
+								options.swipeStartAreaFactor :
+								width * options.swipeStartAreaFactor;
+
+						touchStart = undefined;
+						if (!isOnBar && instance.isOpen()) {
+							if (!options.dontCloseOnClick) {
+								instance.close();
+							}
+						} else if (e.type === "touchstart") {
+							if ((isOnBar || !$(e.target).hasClass("noSwipe")) &&
+								!$(".ui-widget-overlay").not(".noSwipe").length) {
+
+								touchStart = createTouchPoint(e);
+								if (!isOnBar) {
+									if (isRightSide) {
+										if (touchStart.x <= containerWidth - thresholdWidth) {
+											/* _showMessage(_format("Sidebar ({0}) swipe ({1}) canceled because {2} (touchStart.x)" +
+												" is less than {3} (= {4} (container width) - " +
+												"{5} (threshold width) (sidebar width: {6})).",
+												options.side, e.type,
+												Math.round(touchStart.x), Math.round(containerWidth - thresholdWidth),
+												Math.round(containerWidth), Math.round(thresholdWidth),
+												Math.round(width))); */
+											touchStart = undefined;
+										}
+									} else {
+										if (touchStart.x >= thresholdWidth) {
+											/* _showMessage(_format("Sidebar ({0}) swipe ({1}) canceled because {2} (touchStart.x)" +
+												" is greater than than {3} (threshold width).",
+												options.side, e.type,
+												Math.round(touchStart.x), Math.round(thresholdWidth))); */
+											touchStart = undefined;
+										}
+									}
+								}
+							}
+						}
+					}
+				});
+				element.on({
+					"DOMMouseScroll mousewheel touchscroll": function(e) {
+						var source = $(this),
+							scrollTop = this.scrollTop,
+							scrollHeight = this.scrollHeight,
+							height = source.height(),
+							delta = ((e.type == "DOMMouseScroll") ?
+									e.originalEvent.detail * -40 :
+									e.originalEvent.wheelDelta),
+							up = delta > 0;
+
+						if (!up && -delta > scrollHeight - height - scrollTop) {
+							// Scrolling down, but this will take us past the bottom.
+							source.scrollTop(scrollHeight);
+							return prevent(e);
+						} else if (up && delta > scrollTop) {
+							// Scrolling up, but this will take us past the top.
+							source.scrollTop(0);
+							return prevent(e);
+						}
+					}
+				});
+
+				return instance = {
+					close: function() {
+						animateTo(0);
+					},
+					getSide: function() {
+						return options.side;
+					},
+					getSidebar: function() {
+						return element;
+					},
+					isOpen: function() {
+						return status === "open";
+					},
+					open: function() {
+						animateTo(1);
+					},
+					status: function() {
+						return status;
+					}
+				};
+			};
+
+			var storage = function() {
+				var _contents = { };
+
+				return {
+					clear: function() {
+						_contents = { };
+					},
+					getItem: function(key) {
+						return _contents[key];
+					},
+					removeItem: function(key) {
+						delete _contents[key];
+					},
+					setItem: function(key, value) {
+						_contents[key] = value;
+					}
+				};
+			};
+
+			var swiper = function(options) {
+				var createTouchPoint,
+					prevent,
+					touchStart;
+
+				options = $.extend({ }, options || { });
+
+				options.appendTo = options.appendTo || document.body;
+				options.intentFactor = options.intentFactor || 0.5;
+				options.swipeThreshold = options.swipeThreshold || 0.15;
+
+				createTouchPoint = function(e) {
+					return {
+						x: e.originalEvent.changedTouches[0].pageX,
+						y: e.originalEvent.changedTouches[0].pageY
+					};
+				};
+
+				prevent = function(e) {
+					e.stopPropagation();
+					e.preventDefault();
+					e.returnValue = false;
+					return false;
+				};
+				$(options.appendTo).on({
+					"touchend": function(e) {
+						var width = $(options.appendTo).width();
+
+						if (touchStart && !e.isDefaultPrevented()) {
+							var touchPoint = createTouchPoint(e);
+
+							if (Math.abs(touchPoint.x - touchStart.x) > ((options.swipeThreshold > 1) ?
+								options.swipeThreshold : width * options.swipeThreshold)) {
+
+								if (touchPoint.x > touchStart.x) {
+									if (options.swipeRight) {
+										options.swipeRight();
+									}
+								} else if (options.swipeLeft) {
+									options.swipeLeft();
+								}
+							}
+						}
+						touchStart = undefined;
+					},
+					"touchmove": function(e) {
+						var touchPoint = createTouchPoint(e);
+
+						if (touchStart && Math.abs((touchPoint.y - touchStart.y) /
+							(touchPoint.x - touchStart.x)) > options.intentFactor) {
+
+							touchStart = undefined;
+						}
+					},
+					"touchstart": function(e) {
+						touchStart = undefined;
+						if (!$(e.target).closest(".noSwipe").length) {
+							touchStart = createTouchPoint(e);
+						}
+					}
+				});
+			};
+
+			var themeSelector = function(options) {
+				options = $.extend({ }, options);
+
+				options.appendTo = options.appendTo || document.body;
+
+				var selector = $(document.createElement("select"))
+					.addClass("themeSelector")
+					.appendTo(options.appendTo);
+
+				var groups = [ ];
+
+				$(THEMES).each(function() {
+					var found = false,
+						group = this.group;
+
+					for (var i = 0; i < groups.length; i++) {
+						if (groups[i] === group) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						groups.push(group);
+					}
+				});
+				$(groups).each(function(i) {
+					var group = this,
+						groupClass = (group === "Official") ?
+							"ui-state-default" :
+							(group === "Custom") ?
+								"ui-state-highlight" :
+								"ui-state-active",
+						groupElement = $(document.createElement("optgroup"))
+							.addClass(groupClass)
+							.attr({
+								"label": group
+							})
+							.appendTo(selector);
+
+					$(THEMES).each(function(j) {
+						if (this.group === group) {
+							$(document.createElement("option"))
+								.addClass(groupClass)
+								.attr({
+									"title": this.url
+								})
+								.val(this.url)
+								.text(this.name)
+								.appendTo(groupElement);
+						}
+					});
+				});
+				selector
+					.val(options.value || $("#" + THEME_ID).attr("href"))
+					.on({
+						"change": function() {
+							$("#" + THEME_ID).attr({
+								"href": selector.val()
+							});
+						}
+					});
+				if (options.value) {
+					selector.trigger("change");
+				}
+				return selector;
+			};
+
+			var _format = function(format) {
+				for (var i = 1; i < arguments.length; i++) {
+					format = format.replace(new RegExp("\\{" +
+						(i - 1).toString() + "\\}", "gi"), arguments[i]);
+				}
+				return format;
+			},
+			_formatAjaxError = function(textStatus, errorThrown) {
+				var errorText = new String();
+
+				if (textStatus) {
+					if (errorThrown) {
+						errorText = _format("{1} (Status: {0})",
+							textStatus, errorThrown);
+					} else {
+						errorText = textStatus;
+					}
+				} else if (errorThrown) {
+					errorText = errorThrown;
+				}
+				if (!(errorText && errorText.length)) {
+					errorText = "Unknown network error";
+				}
+				return errorText;
+			},
+			_formatFileSize = function(n) {
+				var s;
+
+				if (!isNaN(n = parseInt(n))) {
+					var g = n < 0,
+						m = 0x002D;
+
+					if (g) {
+						n = -n;
+					}
+					if (n === 0) {
+						s = "0 bytes";
+					} else if (n === 1) {
+						s = "1 byte";
+					} else {
+						var c = 0x0400, d = 10, h = Math.pow(d, 2),
+							l = Math.log(c), s = 0x0020,
+							ss = [ "bytes", "KB", "MB", "GB",
+							"TB", "PB", "EB" ];
+
+						var i = Math.floor(Math.log(n) / l),
+							r = Math.pow(d, (i < 2) ? 1 : 2),
+							t = Math.pow(c, Math.ceil(Math.log(n) / l));
+
+						if (n > Math.pow(d, 3 * (i + 1)) && n < t) {
+							n = Math.floor(n / t * h) / h;
+							i++;
+						} else {
+							n = Math.round(n / Math.pow(c, i) * r) / r;
+						}
+						s = n.toLocaleString() + String.fromCharCode(s) + ss[i];
+					}
+					if (g) {
+						s = String.fromCharCode(m) + s;
+					}
+				}
+				return s;
+			},
+			_getParameter = function(name) {
+				if (window.location.search && window.location.search.length) {
+					var parameters = window.location.search.substr(1).split("&");
+
+					for (var i = 0; i < parameters.length; i++) {
+						var p = parameters[i],
+							j = p.indexOf("=");
+
+						if (j >= 0) {
+							if (p.substr(0, j).toLowerCase() === name.toLowerCase()) {
+								return p.substr(j + 1);
+							}
+						}
+					}
+				}
+			},
+			_hideLoader = function() {
+				var result = $.Deferred();
+
+				if (--_loaders === 0) {
+					$.when($(".loader").dialog("close")).always(function() {
+						result.resolve();
+					});
+				} else {
+					result.resolve();
+				}
+				return result.promise();
+			},
+			_loaders = 0,
+			_localStorage = window.localStorage || new storage(),
+			_noProtocol = function(url) {
+				var p = url.indexOf(":"),
+					q = url.indexOf("/");
+
+				if (p >= 0 && q >= 0 && p < q) {
+					url = url.substr(p + 1);
+					while (url.length && url[0] === "/") {
+						url = url.substr(1);
+					}
+				}
+				return url;
+			},
+			_numericInput = function(input) {
+				$(input).on({
+					"keydown": function(e) {
+						switch (e.which) {
+							case   8: case   9: case  35: case  36: case  37: case  38: case  39: case  40:
+							case  46: case  48: case  49: case  50: case  51: case  52: case  53: case  54:
+							case  55: case  56: case  57: case  96: case  97: case  98: case  99: case 100:
+							case 101: case 102: case 103: case 104: case 105: case 123:
+								return true;
+						}
+						return false;
+					}
+				});
+			},
+			_sessionStorage = window.sessionStorage || new storage(),
+			_showError = function(error) {
+				_toast({
+					"class": "ui-state-error",
+					"dontHideOnClick": true,
+					"opacity": 1,
+					"slow": true,
+					"text": error
+				});
+			},
+			_showLoader = function(message) {
+				var result = $.Deferred();
+
+				if (typeof message !== "undefined") {
+					$(".loader").find(".loadingMessage").text(message);
+				}
+				if (_loaders++ === 0) {
+					$(".loader").dialog({
+						"dialogClass": "no-title",
+						"modal": true,
+						"open": function(event, ui) {
+							$(this).css({
+								"min-height": 0
+							});
+							result.resolve();
+						},
+						"width": "auto"
+					});
+				} else {
+					result.resolve();
+				}
+				return result.promise();
+			},
+			_showMessage = function(message) {
+				_toast({
+					"append": true,
+					"class": "ui-state-default",
+					"fast": true,
+					"text": message
+				});
+			},
+			_toast = function(options) {
+				var toastElement,
+					toasts = $(".toast");
+
+				var resetElement = function() {
+					toastElement.data({
+						"timeout": window.setTimeout(function() {
+							$.when(toastElement.fadeOut()).then(function() {
+								if (toastElement.data("timeout")) {
+									toastElement.remove();
+								}
+							});
+						}, (options.duration) ?
+							options.duration :
+							(options.slow) ?
+								10000 :
+								(options.fast) ?
+									1000 :
+									5000)
+					});
+				};
+
+				if (!$.isPlainObject(options)) {
+					options = {
+						"text": options
+					};
+				}
+				options.opacity = options.opacity || 0.75;
+
+				if (options.append && toasts.length) {
+					toastElement = toasts.last();
+
+					window.clearTimeout(toastElement.data("timeout"));
+					toastElement
+						.removeData("timeout")
+						.stop(true, false)
+						.fadeIn()
+						.children()
+						.first()
+						.append(("\n\n" + options.text)
+							.replace(/\n/g, "<br/>"));
+					resetElement();
+				} else {
+					var toastElement = $(document.createElement("div"))
+						.addClass("toast")
+						.append($(document.createElement("div"))
+							.addClass("ui-corner-all")
+							.addClass("ui-widget-content")
+							.css({
+								"font-size": "smaller",
+								"padding": "0.5em",
+								"position": "relative",
+								"left": "-50%"
+							})
+							.html(options.text.replace(/\n/g, "<br/>")))
+						.css({
+							"left": "50%",
+							"opacity": options.opacity,
+							"position": "fixed",
+							"zIndex": 2147483647
+						})
+						.hide()
+						.on({
+							"click": function(e) {
+								if (!options.dontHideOnClick) {
+									window.clearTimeout(toastElement.data("timeout"));
+									toastElement
+										.hide()
+										.remove();
+								}
+							}
+						})
+						.appendTo(document.body);
+
+					if (options["class"]) {
+						toastElement
+							.find("div")
+							.addClass(options["class"]);
+					}
+					if (toasts.length) {
+						toastElement.css({
+							"top": toasts.eq(toasts.length - 1).position().top -
+								(toastElement.height() + 8)
+						});
+					} else {
+						toastElement.css("bottom", "1em");
+					}
+					$.when(toastElement.fadeIn()).then(function() {
+						resetElement();
+					});
+				}
+			};
+
+			$().ready(function() {
+				var fillSideBar,
+					sideBar1,
+					sideBar2,
+					loadPage,
+					loadTheme,
+					nextPage,
+					pageIndex,
+					previousPage,
+					showOptions,
+					showPage;
+
+				fillSideBar = function(bar, side, fn) {
+					var count = 5 + Math.ceil(Math.random() * 25),
+						selectedIndex = _sessionStorage.getItem(side);
+
+					for (var i = 0; i < count; i++) {
+						var element = $(document.createElement("div"))
+							.addClass("ui-state-default")
+							.css({
+								"padding": "1em"
+							})
+							.on({
+								"click": function(e) {
+									var source = $(e.target)
+										.closest("div")
+										.addClass("ui-state-highlight");
+
+									source
+										.closest(".sidebar")
+										.find("div")
+										.not(source)
+										.removeClass("ui-state-highlight");
+
+									_sessionStorage.setItem(side, source.data("index"));
+									fn();
+								}
+							})
+							.data("index", i)
+							.text(_format("This is {0} item #{1}/{2}",
+								side, i + 1, count))
+							.appendTo(bar);
+						if (selectedIndex && selectedIndex == i) {
+							element.addClass("ui-state-highlight");
+							element[0].scrollIntoView();
+						}
+					}
+				}
+
+				loadPage = function() {
+					var themeLabel;
+
+					$("title")
+						.add(".headerText")
+						.text(PAGE_TITLE);
+					$(".loadingProgress").progressbar({
+						"value": false
+					});
+					$(".button").each(function(i) {
+						var b = $(this);
+
+						b.attr({
+							"href": "#"
+						}).on({
+							"click": function(e) {
+								e.preventDefault();
+							}
+						}).button({
+							"label": b.data("label"),
+							"icons": {
+								"primary": b.data("icon-primary")
+							},
+							"text": !!b.data("text")
+						});
+					});
+					$(".leftHeaderButton").on("click", function(e) {
+						e.stopPropagation();
+						if (sideBar1) {
+							sideBar1.open();
+						}
+						if (sideBar2) {
+							sideBar2.open();
+						}
+					});
+					$(".rightHeaderButton").on("click", showOptions);
+					$(".resetSessionButton").on("click", function() {
+						_sessionStorage.clear();
+						window.location.replace(window.location.href);
+					});
+					$(".toTop").on("click", function(e) {
+						$(document).scrollTop(0);
+					});
+					sideBar1 = new sidebar({
+						"changeThreshold": 0.2,
+						//"dontCloseOnClick": true,
+						//"dontHover": true,
+						"fill": function(bar) {
+							fillSideBar(bar, "left", function() {
+								$(".toTop").trigger("click");
+								/* sideBar1.close(); */
+							});
+						},
+						"swipeStartAreaFactor": $(window).width() * 0.5
+					});
+					if ($(window).width() >= 800) {
+						sideBar2 = new sidebar({
+							//"dontCloseOnClick": true,
+							//"dontHover": true,
+							"fill": function(bar) {
+								fillSideBar(bar, "right", function() {
+									$(".toTop").trigger("click");
+									/* sideBar2.close(); */
+								});
+							},
+							"side": "right"
+						});
+					}
+					$(document)
+						.on({
+							"scroll": function(e) {
+								if ($(this).scrollTop() > 0) {
+									$(".toTop").fadeIn("fast");
+								} else {
+									$(".toTop").fadeOut("fast");
+								}
+							},
+						});
+					swiper({
+						"swipeLeft": nextPage,
+						"swipeRight": previousPage,
+						"swipeThreshold": 40
+					});
+					themeLabel = $(document.createElement("label"))
+						.text("Theme:");
+					if ($(".options").contents().length) {
+						$(".options")
+							.contents()
+							.first()
+							.before(themeLabel);
+					} else {
+						$(".options").append(themeLabel);
+					}
+					themeSelector({
+						"appendTo": themeLabel,
+						"value": _sessionStorage.getItem("theme")
+					}).on({
+						"change": function(e) {
+							_sessionStorage.setItem("theme", $(e.target).val());
+						}
+					});
+					pageIndex = _sessionStorage.getItem("page");
+					pageIndex = (typeof pageIndex !== "undefined") ?
+						parseInt(pageIndex) || 0 : 0;
+					showPage(pageIndex, "Loading page {0}...").then(function() {
+						_showMessage("Page loaded");
+					});
+				};
+
+				nextPage = function() {
+					return showPage(pageIndex + 1, "Next page ({0})...");
+				}
+
+				previousPage = function() {
+					return showPage(pageIndex - 1, "Previous page ({0})...");
+				};
+
+				showOptions = function() {
+					$(".options").dialog({
+						"buttons": [{
+							"click": function() {
+								$(this).dialog("close");
+							},
+							"text": "OK"
+						}/* , {
+							"click": function() {
+								$(this).dialog("close");
+							},
+							"text": "Cancel"
+						} */],
+						"dialogClass": "optionsDialog",
+						"modal": true,
+						"width": "auto"
+					});
+				};
+
+				showPage = function(index, message) {
+					var container = $(".mockContent"),
+						result = $.Deferred();
+
+					if ((!sideBar1 || sideBar1.status() === "closed") &&
+					 	(!sideBar2 || sideBar2.status() === "closed")) {
+
+						$(".toTop").trigger("click");
+						$.when(container.fadeOut()).then(function() {
+							container.empty();
+							index = Math.max(index, 0);
+							_showLoader(_format(message, index + 1)).then(function() {
+								window.setTimeout(function() {
+									var count = 20 + Math.random() * 20;
+
+									for (var i = 0; i < count; i++) {
+										$(document.createElement("div"))
+											.text(_format("This is mock content #{1} on page #{0}.",
+												index + 1, i + 1))
+											.appendTo(container);
+									}
+									$.when(container.fadeIn()).then(function() {
+										_hideLoader().then(function() {
+											_sessionStorage.setItem("page", pageIndex = index);
+											result.resolve();
+										});
+									});
+								}, 500 + Math.ceil(Math.random() * 2500));
+							});
+						});
+					} else {
+						result.reject();
+					}
+					return result.promise();
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				-webkit-transition-duration: 0.5s;
+				-webkit-transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 	/* ease out cubic */
+
+				font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+				font-size: 1.1em !important;
+				padding: 0;
+				transition-duration: 0.5s;
+				transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 		/* ease out cubic */
+			}
+
+			.ui-dialog .loader {
+				text-align: center;
+				overflow: hidden;
+			}
+
+			.loadingProgress {
+				width: 100%;
+				height: 1em;
+			}
+
+			.loadingMessage {
+				font-size: 65%;
+				margin: 1em 3em 0;
+			}
+
+			.dialog {
+				display: none;
+				margin: 1em;
+			}
+
+			.centerButtons .ui-dialog-buttonpane {
+				text-align: center;
+			}
+
+			.centerButtons .ui-dialog-buttonpane .ui-dialog-buttonset {
+				float: none;
+			}
+
+			.no-title .ui-dialog-titlebar,
+			.no-close .ui-dialog-titlebar-close {
+				display: none;
+			}
+
+			.toast {
+				font-size: smaller;
+			}
+
+			.toast div {
+				padding: 0.2em;
+			}
+
+			.toTop {
+				bottom: 1em;
+				display: none;
+				opacity: 0.75;
+				position: fixed;
+				right: 1em;
+				z-index: 2;
+			}
+
+			@media all and (min-width: 800px) {
+				body.ui-widget {
+					font-size: 1.5em !important;
+				}
+			}
+
+			/* ******************************************************************************** */
+
+			body {
+				margin: 0;
+			}
+
+			.fixedHeader {
+				left: 0;
+				padding: 0.5em;
+				margin: 0 0 1em;
+				right: 0;
+				text-align: center;
+				top: 0;
+			}
+
+			.headerText {
+				margin-top: 0.25em;
+			}
+
+			.noTextButton  {
+				width: 1.5em;
+				height: 1.5em;
+			}
+
+			.leftHeaderButton {
+				float: left;
+			}
+
+			.rightHeaderButton {
+				float: right;
+			}
+
+			.optionsDialog {
+				font-size: 75% !important;
+			}
+
+			.optionsDialog .ui-dialog-content {
+				overflow: visible;
+			}
+
+			.themeSelector {
+				margin: 0 0 1em;
+				width: 100%;
+			}
+
+			.mockContent {
+				border: 1px dashed silver;
+				display: none;
+				margin: 1em;
+				text-align: center;
+			}
+
+			@media all and (min-width: 800px) {
+				body {
+					margin: 2.5em 0 0 0;
+					padding: 1em;
+				}
+
+				.fixedHeader {
+					position: fixed;
+					margin: 0;
+					z-index: 1001;
+				}
+
+				.sidebar {
+					top: 2.9em !important;
+				}
+
+				.mockContent {
+					margin: 0;
+				}
+			}
+		</style>
+	</head>
+	<body class="ui-widget-content">
+		<div class="dialog loader">
+			<div class="loadingProgress"></div>
+			<div class="loadingMessage"></div>
+		</div>
+		<div class="dialog options" title="Page options">
+			<a class="button resetSessionButton" data-label="Reset session" data-text="true" data-icon-primary="ui-icon-refresh"></a>
+		</div>
+		<a class="button noTextButton toTop" data-label="Scroll to top" data-text="false" data-icon-primary="ui-icon-arrowthickstop-1-n"></a>
+		<!-- ******************************************************************************** -->
+		<div class="fixedHeader ui-widget-header noSwipe">
+			<a class="button noTextButton leftHeaderButton" data-label="Sidebar" data-text="false" data-icon-primary="ui-icon-grip-solid-horizontal"></a>
+			<a class="button noTextButton rightHeaderButton" data-label="Options" data-text="false" data-icon-primary="ui-icon-gear"></a>
+			<div class="headerText"></div>
+		</div>
+		<div class="mockContent"></div>
+	</body>
+</html>

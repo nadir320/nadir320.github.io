@@ -1,0 +1,508 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="images/cors.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="images/cors.png" type="image/png"/>
+		<title>CORS Proxies</title>
+  		<script type="text/javascript" src="../js/pancake.min.js"></script>
+  		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/pepper-grinder/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../js/jquery.cors.min.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			$().ready(function() {
+				var READY_STATES = {
+						  0: "Initializing"
+						, 1: "Connected"
+						, 2: "Response received"
+						, 3: "Processing request"
+						, 4: "Request completed"
+					},
+					STORAGE_NAME = "CORSProxies";
+
+				var createTestCell = function(row, index, proxy, testName, isCORS, isJSON) {
+					if (proxy.supports && proxy.supports[testName]) {
+						row
+							.find("td")
+							.eq(index)
+							.addClass("proxyTest")
+							.addClass("ui-corner-all")
+							.addClass("ui-state-default")
+							.data({
+								"isCORS": isCORS,
+								"isJSON": isJSON,
+								"proxy": proxy
+							})
+							.on({
+								"click": function(e) {
+									var cell = $(e.target)
+										.closest("td"),
+										responseText = cell.data("responseText"),
+										title = cell.data("url");
+
+									if (responseText && responseText.length) {
+										$(".responseTextDialog")
+											.text(responseText)
+											.dialog({
+												"draggable": false,
+												"height": $(window).height() * 0.95,
+												"hide": true,
+												"modal": true,
+												"resizable": false,
+												"show": true,
+												"title": title,
+												"width": $(window).width() * 0.95
+											});
+									}
+								}
+							})
+							.append($(document.createElement("div"))
+								.addClass("testText")
+								.text("Idle"))
+							.append($(document.createElement("div"))
+								.addClass("testProgress")
+								.progressbar({
+									"value": 0
+								})
+								.css({
+									"visibility": "hidden"
+								}));
+					}
+				};
+
+				var loadPage = function() {
+					var idFormat = "p{0}",
+						isHTTPS = !!window.location.protocol.match(/https/i),
+						options = localStorage.getItem(STORAGE_NAME),
+						proxies = $.CORS.proxies.slice(),
+						table = $(".proxiesTable"),
+						tableBody = table.find("tbody");
+
+					/* proxies.sortBy("name"); */
+					$(proxies).each(function(i) {
+						var index = 2;
+
+						var row = $(document.createElement("tr"))
+							.data({
+								"proxy": this
+							})
+							.append($(document.createElement("td"))
+								.append($(document.createElement("input"))
+									.addClass("proxyCheckbox")
+									.attr({
+										"id": idFormat.format(i),
+										"type": "checkbox"
+									})))
+							.append($(document.createElement("td"))
+								.addClass("label")
+								.append($(document.createElement("span"))
+									.addClass("priority")
+									.text("[{0}] ".format(this.priority)))
+								.append($(document.createElement("label"))
+									.attr({
+										"for": idFormat.format(i)
+									})
+									.addClass((!this.active) ?
+										"inactive" :
+										undefined)
+									.text(this.name)))
+							.append($(document.createElement("td"))
+								.text(String.empty))
+							.append($(document.createElement("td"))
+								.text(String.empty))
+							.append($(document.createElement("td"))
+								.text(String.empty))
+							.append($(document.createElement("td"))
+								.text(String.empty))
+							.append($(document.createElement("td"))
+								.append($(document.createElement("a"))
+									.addClass("aboutButton")
+									.attr({
+										"href": this.about,
+										"target": "_blank",
+										"title": this.about
+									})
+									.button({
+										"icons": {
+											"primary": "ui-icon-info"
+										},
+										"text": false
+									})))
+							.appendTo(tableBody);
+
+						if (!(isHTTPS && !(this.supports && this.supports.HTTPS))) {
+							if (this.supports && this.supports.nonJSON) {
+								createTestCell(row, index + 0, this, "CORS", true, false);
+							}
+							createTestCell(row, index + 1, this, "CORS", true, true);
+							if (this.supports && this.supports.nonJSON) {
+								createTestCell(row, index + 2, this, "JSONP", false, false);
+							}
+							createTestCell(row, index + 3, this, "JSONP", false, true);
+						}
+					});
+
+					$(".testURLContainer")
+						.find("input")
+						.on({
+							"blur": function(e) {
+								saveOptions();
+							}
+						});
+
+					$("form")
+						.on({
+							"submit": function(e) {
+								saveOptions();
+								$(".proxyTest").each(function(i) {
+									startTest($(this), $(this)
+										.closest("tr")
+										.find(".proxyCheckbox")
+										.prop("checked"));
+								});
+								return e.preventAll();
+							}
+						})
+					$("#startTests")
+						.button({
+							"icons": {
+								"primary": "ui-icon-signal-diag"
+							}
+						});
+
+					$("#checkAll").on({
+						"click": function(e) {
+							$(".proxiesTable")
+								.find(".proxyCheckbox")
+								.prop("checked", $("#checkAll").prop("checked"));
+						}
+					});
+
+					$(window).on({
+						"beforeunload unload": function(e) {
+							saveOptions();
+						}
+					});
+					if (options && options.length) {
+						options = $.parseJSON(options);
+
+						$("#testJSONURL").val((options.testJSONURL && options.testJSONURL.length) ?
+							options.testJSONURL : $("#testJSONURL").attr("placeholder"));
+						$("#testURL").val((options.testURL && options.testURL.length) ?
+							options.testURL : $("#testURL").attr("placeholder"));
+						$(".proxyCheckbox").each(function(i) {
+							var isDisabled = false,
+								proxy = $(this)
+									.closest("tr")
+									.data("proxy");
+
+							if (options.disabledProxies && options.disabledProxies.length) {
+								for (i = 0; i < options.disabledProxies.length; i++) {
+									if (options.disabledProxies[i] === proxy.name) {
+										isDisabled = true;
+										break;
+									}
+								}
+							}
+							if (!isDisabled) {
+								$(this).prop("checked", true);
+							}
+						});
+					} else {
+						$(".proxyCheckbox").prop("checked", true);
+					}
+					$(".proxyCheckbox").on({
+						"click": function(e) {
+							refreshCheckAll();
+						}
+					});
+					refreshCheckAll();
+				};
+
+				var refreshCheckAll = function() {
+					$("#checkAll").prop("checked",
+							$(".proxiesTable")
+							.find("tbody")
+							.find(".proxyCheckbox:checked")
+							.length === $(".proxiesTable")
+								.find("tbody")
+								.find(".proxyCheckbox")
+								.length);
+				};
+
+				var startTest = function(cell, start) {
+					var elapsed,
+						cellData = cell.data(),
+						proxy = cellData.proxy,
+						isCORS = cellData.isCORS,
+						isJSON = cellData.isJSON,
+						statusElement = cell.find(".testText"),
+						progressbar = cell.find(".testProgress"),
+						startDate,
+						url = $("#" + ((isJSON) ?
+							"testJSONURL" : "testURL")).val();
+
+					cell
+						.removeClass("ui-state-highlight")
+						.removeClass("ui-state-error")
+						.removeData("responseText");
+
+					if (start && url && url.length) {
+						elapsed = function() {
+							return "{0} ms"
+								.format(($.now() - startDate)
+									.toLocaleString());
+						};
+
+						statusElement
+							.text("Connecting...");
+						progressbar
+							.progressbar("option", "value", false)
+							.css({
+								"visibility": "visible"
+							});
+						proxy.ajax({
+							"beforeSend": function(jqXHR, settings) {
+								startDate = $.now();
+							},
+							"dataType": (isCORS) ? (isJSON) ? "json" : "" : "jsonp",
+							"url": url,
+							"xhr": function() {
+								var xhr = window.jQuery.ajaxSettings.xhr();
+
+								$(xhr).on({
+									"readystatechange": function(e) {
+										statusElement.text(READY_STATES[e.target.readyState]);
+									}
+								});
+								return xhr;
+							}
+						}).done(function(data, textStatus, jqXHR) {
+							var e = elapsed(),
+								isError = isJSON && !$.isPlainObject(data),
+								responseText = $.isPlainObject(data) ?
+									JSON.stringify(data) :
+									data;
+
+							cell.data({
+								"responseText": responseText,
+								"url": url
+							});
+							cell.addClass(!(isError) ?
+								"ui-state-highlight" :
+								"ui-state-error");
+							statusElement
+								.text("{0} ({1}, {2})".format((isError) ?
+									"JSON expected" :
+									"Success",
+									responseText.length.fileSize(), e));
+						}).fail(function(jqXHR, textStatus, errorThrown) {
+							var e = elapsed();
+
+							cell.addClass("ui-state-error");
+							statusElement.text("{0} ({1})"
+								.format(formatAjaxError(textStatus, textStatus), e));
+						}).always(function() {
+							progressbar.css({
+								"visibility": "hidden"
+							});
+						});
+					} else {
+						statusElement
+							.text("Idle");
+						progressbar.css({
+							"visibility": "hidden"
+						});
+					}
+				};
+
+				var saveOptions = function() {
+					var disabledProxies = [ ];
+
+					$(".proxyCheckbox").each(function(i) {
+						if (!$(this).prop("checked")) {
+							disabledProxies.push($(this)
+								.closest("tr")
+								.data("proxy").name);
+						}
+					});
+					window.localStorage.setItem(STORAGE_NAME, JSON.stringify({
+						"disabledProxies": disabledProxies,
+						"testJSONURL": $("#testJSONURL").val(),
+						"testURL": $("#testURL").val()
+					}));
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body.ui-widget {
+				border: 0 !important;
+				font-size: 0.65em !important;
+			}
+
+			.centeredContainer .centeredContent {
+				width: 100%;
+			}
+
+			.pageHeader {
+				padding: 0.5em;
+				text-align: center;
+			}
+
+			.testURLContainer td {
+				font-weight: normal;
+				padding: 0.2em 0.4em;
+				white-space: nowrap;
+			}
+
+			.testURLContainer td:nth-child(1) {
+				width: 1em;
+			}
+
+			td.center {
+				text-align: center;
+			}
+
+			.testURLContainer input {
+				width: 100%;
+			}
+
+			.proxiesTableContainer {
+				overflow: auto;
+			}
+
+			.proxiesTable {
+				border-spacing: 0.25em;
+				border-collapse: separate;
+			}
+
+			.proxiesTable td {
+				font-weight: normal;
+				padding: 0.2em;
+			}
+
+			.proxiesTable td.label {
+				white-space: nowrap;
+			}
+
+			.proxiesTable .proxyTest {
+				width: 20em;
+			}
+
+			.proxiesTable .inactive {
+				color: silver;
+			}
+
+			.proxiesTable .priority {
+				font-size: 50%;
+				font-style: italic;
+			}
+
+			.proxiesTable .proxyTest.ui-state-highlight {
+				cursor: pointer;
+			}
+
+			.proxiesTable .testText {
+				border: 0 !important;
+				font-size: 75%;
+			}
+
+			.proxiesTable .ui-progressbar {
+				height: 0.333em;
+			}
+
+			.proxiesTable .aboutButton {
+				height: 1em;
+				width: 1em;
+			}
+
+			.responseTextDialog {
+				overflow: auto;
+			}
+
+			@media all and (min-width: 920px) {
+				body.ui-widget {
+					font-size: 1em !important;
+				}
+
+				.centeredContainer {
+					padding-left: 50%;
+				}
+
+				.centeredContainer .centeredContent {
+					margin-left: -75%;
+					width: 150%;
+				}
+			}
+		</style>
+	</head>
+	<body class="ui-widget ui-widget-content large-on-large-screens">
+		<div class="pageHeader ui-corner-all ui-widget-header">CORS Proxies</div>
+		<br/>
+		<div class="centeredContainer">
+			<form>
+				<table class="testURLContainer centeredContent ui-widget-content ui-state-default ui-corner-all">
+					<tbody>
+						<tr>
+							<td>
+								<label for="testURL">URL:</label>
+							</td>
+							<td>
+								<input id="testURL" type="url" placeholder="http://nadir3.000webhostapp.com/"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="testJSONURL">JSON URL:</label>
+							</td>
+							<td>
+								<input id="testJSONURL" type="url" placeholder="http://nadir3.000webhostapp.com/json/jQuery.CDN.json"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="center" colspan="2">
+								<button type="submit" id="startTests">Test</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+		</div>
+		<br/>
+		<div class="centeredContainer">
+			<div class="centeredContent proxiesTableContainer ui-widget-content ui-state-default ui-corner-all">
+				<table class="proxiesTable">
+					<thead>
+						<tr>
+							<th><input id="checkAll" type="checkbox"/></th>
+							<th>Proxy</th>
+							<th>CORS</th>
+							<th>CORS (JSON)</th>
+							<th>JSONP</th>
+							<th>JSONP (JSON)</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="dialog responseTextDialog"></div>
+		<div class="dialog loaderDialog">
+			<div class="loadingProgress"></div>
+			<div class="loadingMessage"></div>
+		</div>
+	</body>
+</html>

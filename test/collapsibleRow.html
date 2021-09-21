@@ -1,0 +1,364 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="../images/row.png">
+		<title>Collapsible Row Test</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<style type="text/css">
+			.transitionable {
+				-moz-transition: all 0.4s;
+				-ms-transition: all 0.4s;
+				-o-transition: all 0.4s;
+				-webkit-transition: all 0.4s ease-in-out;
+				transition: all 0.4s ease-in-out;
+			}
+
+			body {
+				background-color: ghostWhite;
+				color: darkSlateGray;
+				font-family: Verdana, "Sans Serif";
+				font-size: 10pt;
+				text-align: center;
+			}
+
+			button {
+				-moz-user-select: none;
+				-ms-user-select: none;
+				-o-user-select: none;
+				-webkit-user-select: none;
+				user-select: none;
+			}
+
+			table {
+				border: 0;
+				border-collapse: separate;
+				border-spacing: 0;
+				margin: 0 auto;
+				text-align: initial;
+				width: 90%;
+			}
+
+			th {
+				background-color: lavender;
+				border-top: 1px solid silver;
+				font-weight: normal;
+				text-align: left;
+				width: 20%;
+			}
+
+			th, td {
+				border-bottom: 1px solid silver;
+				padding: 0.25em;
+			}
+
+			th:first-child, td:first-child {
+				border-left: 1px solid silver;
+			}
+
+			th:last-child, td:last-child {
+				border-right: 1px solid silver;
+			}
+
+			tr.data {
+				border-top: 1px solid silver;
+				height: 2em;
+			}
+
+			tr.even {
+				background-color: white;
+			}
+
+			tr.odd {
+				background-color: whitesmoke;
+			}
+
+			td {
+				border-left: 1px solid silver;
+				opacity: 1;
+			}
+
+			tr:first-child th:first-child {
+				border-top-left-radius: 0.5em;
+			}
+
+			tr:first-child th:last-child {
+				border-top-right-radius: 0.5em;
+			}
+
+			.firstColumn {
+				padding: 0.25em 0.5em;
+				width: 0;
+			}
+
+			.firstColumn div {
+				width: 1.5em;
+			}
+
+			th.firstColumn {
+				cursor: pointer;
+			}
+
+			.hiddenRow td {
+				border-bottom-width: 0;
+				/* N.B.: modern WebKit browsers don't work with this: a unit is required! */
+				/* line-height: 0; */
+				line-height: 0px;
+				opacity: 0;
+				overflow: hidden;
+				padding-bottom: 0;
+				padding-top: 0;
+			}
+
+			.expandCollapseButton {
+				cursor: pointer;
+				height: 1.45em;
+				padding: 0;
+				text-align: center;
+				width: 1.45em;
+			}
+
+			.expanded .firstColumn {
+				border-bottom: 0;
+			}
+
+			.expanded td:nth-of-type(2) {
+				border-bottom-left-radius: 0.25em;
+			}
+
+			.warning {
+				color: darkOrange;
+			}
+
+			.error {
+				color: red;
+				font-weight: bold;
+			}
+
+			.remarks {
+				border-top: 0;
+				color: darkSlateBlue;
+				font-size: 85%;
+				line-height: 1em;
+			}
+
+			.remarks:nth-of-type(2) {
+				border-left: 0;
+			}
+
+			.remarks .remark {
+				font-weight: bold;
+			}
+
+			.remarks .remark:before, .remarks .remark:after {
+				content: "-";
+			}
+
+			.createTableButton {
+				margin-top: 1em;
+				padding: 0.5em;
+			}
+
+			@media (min-width: 60em) {
+				table {
+					width: 75%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<table id="table" class="transitionable"><tbody></tbody></table>
+		<button type="button" class="createTableButton" data-table="#table">Refresh</button>
+		<script type="text/javascript">
+			"use strict";
+
+			var _columns = 5,
+				_rows = 15;
+
+			var createRows = function(tbody, columns, rows) {
+				var button,
+					cell,
+					hasRemarks,
+					i,
+					j,
+					isError,
+					remark,
+					remarkClass,
+					row,
+					rowClass;
+
+				tbody.innerHTML = "";
+				for (i = 0; i < rows; i++) {
+					hasRemarks = Math.random() >= 0.85;
+
+					row = document.createElement("tr");
+					row.classList.add("data");
+					row.classList.add(rowClass = ((i % 2) === 0) ? "even" : "odd");
+
+					for (j = 0; j < columns; j++) {
+						cell = document.createElement("td");
+						if (j === 0) {
+							cell.classList.add("firstColumn");
+							if (hasRemarks) {
+								button = document.createElement("button");
+								button.setAttribute("type", "button");
+								button.classList.add("expandCollapseButton");
+								button.innerHTML = "+";
+								cell.appendChild(button);
+							} else {
+								cell.appendChild(document.createElement("div"));
+							}
+						} else {
+							cell.innerHTML = "" + (i + 1) + ", " + j;
+						}
+						row.appendChild(cell);
+					}
+					if (hasRemarks) {
+						row.classList.add(remarkClass = ((isError = (Math.random() < 0.667)) ? "error" : "warning"));
+						tbody.appendChild(row);
+
+						row = document.createElement("tr");
+						row.classList.add("hiddenRow");
+						row.classList.add(rowClass);
+
+						cell = document.createElement("td");
+						cell.classList.add("firstColumn");
+						cell.classList.add("remarks");
+						cell.classList.add("transitionable");
+						cell.innerHTML = "&nbsp;";
+						row.appendChild(cell);
+
+						cell = document.createElement("td");
+						cell.setAttribute("colspan", 5);
+						cell.classList.add("remarks");
+						cell.classList.add("transitionable");
+						cell.appendChild(document.createTextNode("This is the long "));
+
+						remark = document.createElement("span");
+						remark.classList.add("remark");
+						remark.classList.add(remarkClass);
+						remark.innerText = (isError) ? "error" : "warning";
+						cell.appendChild(remark);
+
+						cell.appendChild(document.createTextNode(" text that spans across all the columns."));
+						cell.appendChild(document.createElement("br"));
+						cell.appendChild(document.createElement("br"));
+						cell.appendChild(document.createTextNode("On more than one line."));
+						row.appendChild(cell);
+					}
+					tbody.appendChild(row);
+				}
+			};
+
+			var createTable = function(table, columns, rows) {
+				var cell,
+					i,
+					row,
+					thead,
+					tbody;
+
+				columns = columns || _columns;
+				rows = rows || _rows;
+
+				thead = table.querySelector("thead"),
+				tbody = table.querySelector("tbody");
+
+				if (!thead) {
+					thead = document.createElement("thead");
+					if (tbody) {
+						table.insertBefore(thead, tbody);
+					} else {
+						table.appendChild(thead);
+					}
+				}
+				if (!tbody) {
+					table.appendChild(tbody = document.createElement("tbody"));
+				}
+				thead.innerHTML = "";
+				thead.appendChild(row = document.createElement("tr"));
+				for (i = 0; i <= columns; i++) {
+					cell = document.createElement("th");
+					if (i === 0) {
+						cell.classList.add("firstColumn");
+						cell.innerHTML = "&nbsp;";
+						cell.addEventListener("click", function(e) {
+							expandCollapseAllRows(table);
+						});
+					} else {
+						cell.innerText = String.fromCharCode(0x61 + (i - 1));
+					}
+					row.appendChild(cell);
+				}
+				createRows(tbody, columns + 1, rows);
+				setupButtons(table);
+			};
+
+			var expandCollapseAllRows = function(table) {
+				var button,
+					buttons = table.querySelectorAll(".expandCollapseButton"),
+					collapsed,
+					expanded,
+					i,
+					count = buttons.length;
+
+				for (i = 0; i < count; i++) {
+					expanded = !!(parseInt((button = buttons[i]).dataset["expanded"]) || 0);
+
+					if (typeof collapsed === "undefined") {
+						collapsed = !expanded;
+					}
+					if (expanded !== collapsed) {
+						button.click();
+					}
+				}
+			};
+
+			var setupButtons = function(table) {
+				var buttons = table.querySelectorAll(".expandCollapseButton"),
+					collapsed,
+					i,
+					count = buttons.length;
+
+				for (i = 0; i < count; i++) {
+					buttons[i].addEventListener("click", function(e) {
+						var nextRow,
+							row = this.parentNode;
+
+						while (row && row.tagName !== "TR") {
+							row = row.parentNode;
+						}
+						if (row) {
+							nextRow = row.nextSibling;
+							while (nextRow && nextRow.tagName !== "TR") {
+								nextRow = nextRow.nextSibling;
+							}
+							if (nextRow) {
+								collapsed = nextRow.classList.toggle("hiddenRow");
+								this.dataset["expanded"] = (collapsed) ? 0 : 1;
+								row.classList[(collapsed) ? "remove" : "add"]("expanded");
+								this.innerHTML = (collapsed) ? "+" : "-";
+							}
+						}
+					});
+				}
+			};
+
+			(function() {
+				var button,
+					buttons = document.querySelectorAll(".createTableButton"),
+					i,
+					count = buttons.length;
+
+				for (i = 0; i < count; i++) {
+					(button = buttons[i]).addEventListener("click", function(e) {
+						createTable(document.querySelector(this.dataset["table"]));
+					});
+					button.click();
+				}
+			})();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,111 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/themeRoller.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/themeRoller.png" type="image/png"/>
+		<title>Theme Roller</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			$().ready(function() {
+				var loadPage = function() {
+					$("#theme-selector")
+						.themeSelector()
+						.selectmenu({
+							"change": function(e) {
+								refreshTheme();
+							}
+						});
+					refreshTheme();
+				};
+
+				var refreshTheme = function() {
+					var value = $("#theme-selector")
+							.find("option:selected"),
+						color = value.data("theme-color"),
+						theme = value.data("theme-theme");
+
+					$("#pageTheme").attr("href", value.data("theme-url"));
+					$.ui.autoTheme();
+					$(".theme-theme-color").css("background-color", theme);
+					$(".theme-color").css("background-color", color);
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				background-image: none !important;
+				border-width: 0 !important;
+				margin: 0;
+				padding: 1em 0 0;
+				text-align: center;
+			}
+
+			#theme-background {
+				bottom: 0;
+				left: 0;
+				position: fixed;
+				top: 0;
+				right: 0;
+				z-index: -1;
+			}
+
+			.theme-item {
+				padding: 0.5em;
+				margin: auto;
+				max-width: 80%;
+			}
+
+			.invert {
+				/* background-color: inherit; */
+				filter: invert(100%);
+				padding: 0.3em;
+				-ms-filter: invert(100%);
+				-moz-filter: invert(100%);
+				-o-filter: invert(100%);
+				-webkit-filter: invert(100%);
+			}
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<div id="theme-background" class="theme-color"></div>
+		<div class="theme-selector ui-corner-all">
+			<select id="theme-selector"></select>
+		</div>
+		<br/><div class="ui-corner-all theme-theme-color theme-item"><div class="invert">Theme</div></div>
+		<br/><div class="ui-widget-header ui-corner-all theme-item">Header</div>
+		<br/><div class="ui-state-default ui-corner-all theme-item">Default</div>
+		<br/><div class="ui-state-highlight ui-corner-all theme-item">Highlight</div>
+		<br/><div class="ui-state-error ui-corner-all theme-item">Error</div>
+		<br/><button type="button" class="loader-button">Loader</button>
+		<script type="text/javascript">
+			"use strict";
+
+			$(".loader-button")
+				.button()
+				.on({
+					"click": function(e) {
+						window.loader.show();
+					}
+				});
+			$().ready(function(e) {
+				window.loader.cancelButtonText("Close");
+				window.loader.cancelable(true);
+			});
+		</script>
+	</body>
+</html>

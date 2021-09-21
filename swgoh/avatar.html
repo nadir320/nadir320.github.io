@@ -1,0 +1,276 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="images/192-round-2017.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="images/192-round-2017.png" type="image/png"/>
+		<title>SWGOH Avatar Creator</title>
+		<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+		<!-- <link rel="stylesheet" type="text/css" href="https://s3.amazonaws.com/swgoh-media/css/swgohgg.f940c15d.min.css"/> -->
+		<link rel="stylesheet" type="text/css" href="css/swgohgg.f940c15d.min.css"/>
+		<style type="text/css">
+			body {
+				box-sizing: border-box;
+				text-align: center;
+				margin: 4em 0 0;
+			}
+			
+			.page {
+				background-color: aliceBlue;
+				border: 1px solid silver;
+				border-radius: 0.5em;
+				margin: 0 auto;
+				max-width: 90%;
+				padding: 0.5em;
+			}
+			
+			@media (min-width: 20em) {
+				.page {
+					max-width: 35%;
+				}
+			}
+
+			.params {
+				text-align: left;
+			}
+			
+			.params>.row>label>div {
+				float: right;
+			}
+			
+			.params>.row>label {
+				width: 100%;
+			}
+			
+			.params div>div {
+				clear: both;
+			}
+			
+			.params input:not([type=checkbox]), .params select {
+				height: 1.7em;
+				width: 20em;
+			}
+			
+			.portrait-container {
+				padding: 1em;
+				/* border: 1px solid red; */
+				margin: 0 auto;
+				width: 114px;
+			}
+
+			input[type=file] {
+				display: inline-block;
+			}
+
+			.player-char-portrait {
+				margin: 0 auto;
+			}
+
+			.star {
+				z-index: 3;
+			}
+
+			.char-portrait-full-img {
+				visibility: hidden;
+			}
+
+			.char-portrait-full-level {
+				padding: 0 2px;
+			}
+
+			.char-portrait-full-gear {
+				background-position: 2px 2px;
+				background-repeat: no-repeat;
+			}
+
+			.char-portrait-full-gear-t13 .char-portrait-full-gear {
+				background-position: 0 0;
+			}
+
+			.row {
+				margin: 0;
+			}
+			
+			#avatar a {
+				color: black;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<div class="portrait-container">
+				<div class="player-char-portrait char-portrait-full">
+					<img class="char-portrait-full-img" src="//:0" height="80" width="80">
+					<div class="char-portrait-full-gear"></div>
+					<div class="star star1" data-star="1"></div>
+					<div class="star star2" data-star="2"></div>
+					<div class="star star3" data-star="3"></div>
+					<div class="star star4" data-star="4"></div>
+					<div class="star star5" data-star="5"></div>
+					<div class="star star6" data-star="6"></div>
+					<div class="star star7" data-star="7"></div>
+					<div class="char-portrait-full-zeta"></div>
+					<div class="char-portrait-full-relic"></div>
+					<div class="char-portrait-full-level"></div>
+				</div>
+			</div>
+			<hr/>
+			<div class="params">
+				<div class="row"><label>Immagine: <div><input type="file" accept="image/*" id="image"/><div></div></div></label></div>
+				<div class="row"><label>Rarità: <div><input type="checkbox" checked/> <select id="stars" class="param"></select></div></label></div>
+				<div class="row"><label>Equipaggiamento: <div><input type="checkbox" checked/> <select id="gear" class="param auto"></select></div></label></div>
+				<div class="row alignment">
+					<label>Allineamento:
+						<div>
+							<select id="alignment" class="param auto">
+								<option value="char-portrait-full-alignment-light-side">Lato chiaro</option>
+								<option value="char-portrait-full-alignment-dark-side">Lato oscuro</option>
+								<option value="char-portrait-full-alignment-neutral">Neutrale</option>
+							</select>
+						</div>
+					</label>
+				</div>
+				<div class="row"><label>Livello: <div><input type="checkbox" checked/> <input type="number" id="level" class="param auto" min="0" value="85"/></div></label></div>
+				<div class="row"><label>Zeta: <div><input type="checkbox"/> <input type="number" id="zeta" class="param auto" min="0" value="1"/></div></label></div>
+				<div class="row"><label>Reperto: <div><input type="checkbox"/> <input type="number" id="relic" class="param auto" min="0" value="7"/></div></label></div>
+			</div>
+			<hr/>
+			<div class="row"><button type="button" id="create">Crea</button></div>
+			<br/>
+			<div class="row">
+				<div id="avatar">
+					<a href="#" download="avatar.png" target="_blank">
+						<img src="//:0"/>
+						<br/>
+						<button type="button">Scarica</button>
+					</a>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			"use strict";
+
+			(() => {
+				const g = document.getElementById("gear");
+
+				for (let i = 1, c = 13; i <= c; i++) {
+					let o = document.createElement("option");
+
+					o.value = "char-portrait-full-gear-t" + i.toString();
+					o.innerText = "G" + i.toString();
+					g.appendChild(o);
+				}
+				g.value = [...g.querySelectorAll("option")].pop().value;
+			})();
+			(() => {
+				const s = document.getElementById("stars");
+
+				for (let i = 0, c = 7; i <= c; i++) {
+					let o = document.createElement("option");
+
+					o.value = i;
+					o.innerText = i.toString() + "*";
+					s.appendChild(o);
+				}
+				s.value = [...s.querySelectorAll("option")].pop().value;
+			})();
+
+			const portrait = document.querySelector(".player-char-portrait");
+
+			const a = function() {
+				const f = (s) => {
+					const x = s.parentNode.querySelector("input[type=checkbox]");
+
+					return (x) ? x.checked : true;
+				};
+
+				const c = (s) => {
+					let n = s.getAttribute("id");
+
+					if (s.tagName === "SELECT") {
+						s.querySelectorAll("option").forEach((o) => portrait.classList.remove(o.value));
+						if (f(s)) {
+							portrait.classList.add(s.value);
+						}
+					} else {
+						n = ".char-portrait-full-" + n;
+
+						if (f(s)) {
+							document.querySelector(n).style.display = "";
+							document.querySelector(n).innerText = s.value;
+						} else {
+							document.querySelector(n).style.display = "none";
+						}
+					}
+				};
+
+				let source = document.getElementById("stars");
+
+				if (f(source)) {
+					const value = parseInt(source.value);
+
+					portrait.querySelectorAll(".star").forEach((s) => {
+						s.style.display = "";
+						s.classList[(parseInt(s.dataset["star"]) > value) ?
+							"add" : "remove"]("star-inactive");
+					});
+				} else {
+					portrait.querySelectorAll(".star").forEach((s) => {
+						s.style.display = "none";
+					});
+				}
+
+				const lastGear = f(source = document.getElementById("gear")) &&
+					source.value === [...source.querySelectorAll("option")].pop().value;
+
+				[...document.querySelectorAll(".alignment *")].forEach((i) => i.disabled = !lastGear);
+				[...document.querySelectorAll(".param.auto")].forEach(c);
+				document.getElementById("avatar").style.visibility = "hidden";
+			};
+
+			const b = function(e) {
+				e.srcElement.parentNode.querySelector(".param").disabled = !e.srcElement.checked;
+			};
+
+			[...document.querySelectorAll(".param")].forEach((i) => i.addEventListener("change", a));
+
+			document.getElementById("image").addEventListener("change", function(e) {
+				for (let i = 0, c = e.srcElement.files.length; i < c; i++) {
+					const reader = new FileReader();
+
+					reader.addEventListener("load", function(e2) {
+						const d = document.querySelector(".char-portrait-full-img");
+
+						d.src = this.result;
+						d.style.visibility = "visible";
+						a();
+					});
+					reader.readAsDataURL(e.srcElement.files[i]);
+					break;
+				}
+			});
+			document.querySelectorAll("input[type=checkbox]").forEach((c) => {
+				c.addEventListener("click", (e) => { b.call(this, e); a(); });
+				b({ srcElement: c });
+			});
+			document.getElementById("create").addEventListener("click", function(e) {
+				var d = document.getElementById("avatar");
+
+				html2canvas(portrait.parentNode, {
+					allowTaint: true,
+					backgroundColor: null
+				}).then((canvas) => {
+					const dataURL = canvas.toDataURL();
+					
+					d.style.visibility = "visible";
+					d.querySelector("img").src = dataURL;
+					d.querySelector("a").href = dataURL;
+				});
+			});
+			a();
+		</script>
+	</body>
+</html>

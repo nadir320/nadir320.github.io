@@ -1,0 +1,48 @@
+﻿body {
+	border: 0 !important;
+	margin: 0.5em;
+}
+
+.date {
+	margin-bottom: 0.5em;
+}
+
+strong {
+	font-size: 125%;
+}
+
+.dialog {
+	display: none;
+}
+
+.container {
+	text-align: center;
+}
+
+.date,
+.photoLink {
+	display: none;
+}
+
+.photoOfTheDay {
+	max-width: 100%;
+}
+
+.videoOfTheDay {
+	display: none;
+	max-width: 100%;
+	height: 730px;
+	width: 100%;
+}
+
+.copyright {
+	font-size: 50%;
+}
+
+.copyright:empty {
+	display: none;
+}
+
+.copyright:before {
+	content: "\24B8\20";
+}

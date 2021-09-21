@@ -1,0 +1,320 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/collage.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/collage.png" type="image/png"/>
+		<title>HTML Image Composer</title>
+		<script type="text/javascript" src="../../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/start/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../cdnjs.cloudflare.com/ajax/libs/jquery.pep/0.4.0/jquery.pep.min.js"></script>
+		<!-- <script type="text/javascript" src="sylvester.js"></script> -->
+		<script type="text/javascript" src="../cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+		<!-- <script type="text/javascript" src="jquery.touchy.min.js"></script> -->
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/jquery-ui.icon-font.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			$().ready(function() {
+				var dropZone = $(document.body);
+
+				var createImageToolbar = function(image) {
+					(image = $(image))
+						.data({
+							"imageToolbar": $(document.createElement("div"))
+								.addClass("imageToolbar")
+								.addClass("ui-corner-all")
+								.addClass("ui-state-highlight")
+								.append($(document.createElement("button"))
+									.attr({
+										"type": "button"
+									})
+									.button({
+										"icons": {
+											"primary": "ui-icon-close"
+										},
+										"text": false
+									})
+									.on({
+										"mousedown touchstart": function(e) {
+											if (e.type === "touchstart" || e.which === 1) {
+												image
+													.fadeOut()
+													.off()
+													.remove();
+											}
+										}
+									}))
+								.appendTo(image)
+						})
+						.on({
+							"mousedown touchstart": function(e) {
+								e.stopPropagation();
+								setSelection(image
+									.parent()
+									.append(image)
+									.end());
+							}/*,
+							"touchy-pinch": function(e, target, data) {
+								scaleImage($(target), data.scale / data.previousScale);
+							},
+							"touchy-rotate": function(e, phase, target, data) {
+								if (phase !== "start") {
+									rotateImage($(target), data.degrees);
+								}
+							}*/
+						})
+					/* image.data("touchyRotate").settings.requiredTouches = 2; */
+				};
+
+				var loadImage = function(file) {
+					var reader = new FileReader();
+
+					$(reader).on({
+						"load": function(e) {
+							createImageToolbar($(document.createElement("div"))
+								.addClass("draggableImage")
+								.append($(document.createElement("img"))
+									.on({
+										"load": function(e) {
+											var target = $(e.target),
+												area = {
+													"height": $(window).height(),
+													"width": dropZone.width()
+												},
+												scale,
+												size = {
+													"height": target.height(),
+													"width": target.width()
+												};
+
+											if (size.width > area.width ||
+												size.height > area.height) {
+
+												scale = 0.85 / Math.max(size.width / area.width,
+													size.height / area.height);
+
+												target.css({
+													"height": "{0}px".format(Math.round(size.height * scale)),
+													"width": "{0}px".format(Math.round(size.width * scale))
+												});
+											}
+										}
+									})
+									.attr({
+										"src": reader.result
+									}))
+								.pep()
+								.appendTo(dropZone));
+						}
+					});
+					reader.readAsDataURL(file);
+				};
+
+				var loadPage = function() {
+					$(document).on({
+						"click": function(e) {
+							resetSelection();
+						}
+					});
+					$(".addButton")
+						.button()
+						.on({
+							"click": function(e) {
+								$("#upload").val(String.empty);
+								$("#upload").trigger("click");
+							}
+						});
+					$("#upload").on({
+						"change": function(e) {
+							$(e.target.files).each(function(i, file) {
+								loadImage(file);
+							});
+						}
+					});
+					$(window).on({
+						"dragover": function(e) {
+							e.originalEvent.dataTransfer.dropEffect = "copy";
+							e.preventDefault();
+							e.stopPropagation();
+						},
+						"drop": function(e) {
+							e.preventDefault();
+							e.stopPropagation();
+
+							$(e.originalEvent.dataTransfer.items).each(function(i, item) {
+								loadImage(item.getAsFile());
+							});
+						}
+					});
+				};
+
+				var resetSelection = function() {
+					dropZone
+						.children(".ui-state-highlight")
+							.removeClass("ui-state-highlight")
+						.end()
+						.children(".selected")
+							.removeClass("selected");
+				};
+
+				var setSelection = function(element) {
+					resetSelection();
+					element
+						.addClass("ui-state-highlight")
+						.addClass("selected");
+				};
+
+				/* var rotateImage = function(image, degrees) {
+					var newRotate = (image = $(image)).data("rotate") || 0;
+
+					newRotate += degrees;
+					newRotate = newRotate % 360;
+					setTransform(image
+						.data({
+							"rotate": newRotate
+						}), {
+							"rotate": newRotate
+						});
+				};
+
+				var scaleImage = function(image, factor) {
+					var newScale = (image = $(image)).data("scale") || 1;
+
+					newScale *= factor;
+					setTransform(image
+						.data({
+							"scale": newScale
+						}), {
+							"scaleX": newScale,
+							"scaleY": newScale
+						});
+				};
+
+				var setTransform = function(element, transforms) {
+					var identity = Matrix.I(3),
+						cssMatrix = (element = $(element)).css("transform"),
+						matrix = Matrix.I(3),
+						values = cssMatrix.split("(").pop().split(")")[0].split(",");
+
+					if (!isNaN(parseFloat(values[0]))) {
+						matrix = $M([
+							[values[0], values[2], values[4]],
+							[values[1], values[3], values[5]],
+							[0, 0, 1]
+						]);
+					}
+					$(transforms).eachProp(function(name, value) {
+						value = Math.roundTo(parseFloat(value), 3);
+						switch (name) {
+							case "rotate":
+								value *= Math.PI / 180;
+								identity.elements[0][0] = identity.elements[1][1] = Math.roundTo(Math.cos(value), 3);
+								identity.elements[0][1] = -(identity.elements[1][0] = Math.roundTo(Math.sin(value), 3));
+								break;
+							case "scaleX":
+								//values[1] = Math.roundTo(parseFloat(value), 3);
+								break;
+							case "scaleY":
+								//values[3] = Math.roundTo(parseFloat(value), 3);
+								break;
+						}
+					});
+
+					values = matrix.multiply(identity).elements;
+					element.css({
+						"transform": "matrix({0},{1},{2},{3},{4},{5})"
+							.format(values[0][0], values[1][0], values[0][1], values[1][1], values[0][2], values[1][2])
+					});
+				}; */
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			.addButton {
+				font-weight: bold;
+				height: 4em;
+				position: fixed;
+				right: 1em;
+				bottom: 1em;
+				width: 4em;
+				z-index: 10000000;
+			}
+
+			.addButton .ui-button-text {
+				font-size: 200%;
+				padding: 0;
+				position: relative;
+				top: -0.05em;
+			}
+
+			.draggableImage {
+				box-sizing: content-box;
+				float: left;
+			}
+
+			.draggableImage:not(.ui-state-highlight) {
+				border: 1px solid transparent;
+			}
+
+			.draggableImage img {
+				pointer-events: none;
+			}
+
+			.draggableImage.selected {
+				background: none !important;
+			}
+
+			.draggableImage.selected .imageToolbar {
+				opacity: 0.7;
+			}
+
+			.imageToolbar {
+				-webkit-transition-duration: 1s;
+				-moz-transition-duration: 1s;
+				-ms-transition-duration: 1s;
+				-o-transition-duration: 1s;
+
+				box-sizing: border-box;
+				opacity: 0;
+				padding: 0.25em;
+				position: absolute;
+				text-align: right;
+				top: -2em;
+				transition-duration: 1s;
+				width: 100%;
+			}
+
+			.imageToolbar button {
+				width: 1em;
+				height: 1em;
+			}
+
+			.ui-button {
+				border-radius: 100%;
+			}
+
+			.upload {
+				display: none;
+			}
+		</style>
+	</head>
+	<body class="ui-widget">
+		<input type="file" accept="image/*" id="upload" class="upload" multiple/>
+		<button type="button" class="addButton ui-state-default">+</button>
+		<!-- <div class="dialog loaderDialog">
+			<div class="loadingProgress"></div>
+			<div class="loadingMessage"></div>
+			<button type="button" class="loadingCancelButton"></button>
+		</div> -->
+	</body>
+</html>

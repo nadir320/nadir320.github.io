@@ -1,0 +1,24 @@
+[
+	  { "text": "Codice fiscale", "url": "codiceFiscale/index.html", "icon": "./codiceFiscale/images/code.png" }
+	, { "text": "CORS", "url": "cors/index.html", "icon": "./cors/images/cors.png" }
+	, { "text": "ECCAIRS 5 Web API", "url": "eccairs5", "icon": "./eccairs5/favicon.ico", "forceHTTP": true }
+	, { "text": "Foto del giorno", "url": "natGeo", "icon": "./natGeo/images/natGeo.png" }
+	, { "text": "Foto del giorno (NASA)", "url": "nasa/apod.html", "icon": "./nasa/images/apod.png" }
+	, { "text": "Mediaset", "url": "./mediaset", "pages": [
+		  { "text": "L'isola dei famosi", "url": "?isolaDeiFamosi=1&title=L%27isola%20dei%20famosi", "icon": "./mediaset/images/isolaDeiFamosi.png" }
+		, { "text": "Temptation Island", "url": "?temptationIsland=1&title=Temptation%20Island", "icon": "./mediaset/images/temptationIsland.png" }
+		, { "text": "Uomini e donne", "url": "?uominiEDonne=1&title=Uomini%20e%20donne", "icon": "./mediaset/images/uominiEDonne.png" }
+	], "disabled": true }
+	, { "text": "Test", "url": "./test", "pages": [
+		  { "text": "Calcio a Genova", "url": "calcio.html", "icon": "./images/ball.png" }
+		, { "text": "Download", "url": "download.html", "icon": "./images/download.png" }
+		, { "text": "CryptoJS", "url": "cryptoJS.html", "icon": "./images/padlock.png" }
+		, { "text": "Mah Jong", "url": "../mahJong", "icon": "./mahJong/images/greenDragon.png" }
+		, { "text": "Mobile", "url": "mobile.html", "icon": "./images/mobile.png" }
+		, { "text": "Note", "url": "notes.html", "icon": "./images/notes.png" }
+		, { "text": "Un, due, BUE!", "url": "unDueBue.html", "icon": "./images/ox.png" }
+		, { "text": "Tabella espandibile", "url": "collapsibleRow.html", "icon": "./images/row.png" }
+		, { "text": "Temi jQuery UI", "url": "uiThemes.html", "icon": "./images/themeRoller.png" }
+		, { "text": "Swipe", "url": "swipe.html", "icon": "./images/swipe.png" }
+	] }
+]

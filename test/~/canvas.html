@@ -1,0 +1,414 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta id="themeColor" name="theme-color" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/brush.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/brush.png" type="image/png"/>
+		<title>Canvas</title>
+		<script type="text/javascript" src="../../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../../js/000webhost.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+		<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"/>
+		<script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.js"></script>
+		<script type="text/javascript" src="./floodfill.js-master/floodfill.js"></script>
+		<!-- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script> -->
+		<script type="text/javascript" src="../../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../css/base.min.css"/>
+		<script type="text/javascript">
+			window.Stroke = function(color, startX, startY) {
+				var _drawPoints = function(context, points, color) {
+						var i, length = points.length, point;
+
+						if (color) {
+							context.beginPath();
+							for (i = 0; i < length; i++) {
+								point = points[i];
+								context.moveTo(point.x - 2, point.y - 2);
+								context.lineTo(point.x + 2, point.y + 2);
+								context.moveTo(point.x - 2, point.y + 2);
+								context.lineTo(point.x + 2, point.y - 2);
+							}
+							context.lineWidth = 1;
+							context.strokeStyle = color;
+							context.stroke();
+						}
+					},
+					_instance,
+					_points = [ ],
+
+				_instance = {
+					"draw": function(context, pointsColor) {
+						var i, length = _points.length, p,
+							start = _points[0];
+
+						if (start) {
+							context.beginPath();
+							if (length > 1) {
+								context.moveTo(start.x, start.y);
+								/* Lines: */
+								for (i = 1; i < length; i++) {
+									context.lineTo((p = _points[i]).x, p.y);
+								}
+								context.lineCap = this.lineCap;
+								context.lineWidth = this.lineWidth;
+								context.strokeStyle = this.strokeStyle;
+								context.stroke();
+								_drawPoints(context, _points, pointsColor);
+							} else {
+								context.arc(start.x, start.y, this.lineWidth / 2, 0, 2 * Math.PI);
+								context.fillStyle = this.strokeStyle;
+								context.fill();
+								_drawPoints(context, [ start ], pointsColor);
+							}
+						}
+					},
+					get length() {
+						return _points.length;
+					},
+					"lineCap": "round",
+					"lineWidth": 16,
+					"moveTo": function(x, y) {
+						_points.push({
+							"x": x,
+							"y": y
+						});
+					},
+					"strokeStyle": color
+				};
+				if (startX !== undefined && startY !== undefined) {
+					_instance.moveTo(startX, startY);
+				}
+				return _instance;
+			};
+		</script>
+		<script type="text/javascript">
+			var CHECK_CLASS = "lighten-4",
+				MARGIN = 18;
+
+			$().ready(function() {
+				var _activeStrokes,
+					_canvas = $("canvas"),
+					_color = window.randomColor(),
+					_context = _canvas[0].getContext("2d"),
+					_completedStrokes,
+					_drawPoints = true,
+					_isBrush = true,
+					_mouseID,
+					_undone;
+
+				var _clear = function() {
+					_activeStrokes = { };
+					_completedStrokes = [ ];
+					_undone = [ ];
+					_refreshButtons();
+					_draw();
+				};
+
+				var _completeStroke = function(identifier) {
+					var stroke = _activeStrokes[identifier];
+
+					delete _activeStrokes[identifier];
+					_completedStrokes.push(stroke);
+					_undone = [ ];
+					_refreshButtons();
+					_draw();
+				};
+
+				var _checkButton = function(id) {
+					$("#" + id).addClass(CHECK_CLASS);
+				};
+
+				var _createStroke = function(id, x, y) {
+					_activeStrokes[id] = new Stroke(_color, x, y);
+				};
+
+				var _disableButton = function(id) {
+					$("#" + id).addClass("disabled");
+				};
+
+				var _draw = function() {
+					var count = 0,
+						height = _canvas.height(),
+						i,
+						name,
+						points = 0,
+						pointsColor,
+						stroke,
+						tolerance = parseInt($("#tolerance").val()),
+						width = _canvas.width();
+
+					_context.clearRect(0, 0, width, height);
+					_context.fillStyle = "white";
+					_context.fillRect(0, 0, width, height);
+					if (_drawPoints) {
+						pointsColor = "red";
+					}
+					for (i = 0; i < _completedStrokes.length; i++) {
+						stroke = _completedStrokes[i];
+						if (stroke.draw) {
+							points += stroke.length;
+							count++;
+							stroke.draw(_context, pointsColor);
+						} else {
+							_context.fillStyle = stroke.color;
+							_context.fillFlood(stroke.x, stroke.y, tolerance);
+						}
+					}
+					for (name in _activeStrokes) {
+						stroke = _activeStrokes[name];
+						points += stroke.length;
+						count++;
+						stroke.draw(_context, pointsColor);
+					}
+
+					_context.strokeStyle = _context.fillStyle = "black";
+					_context.textBaseline = "top";
+					_context.fillText("{0} strokes / {1} points".format(count.toLocaleString(),
+						points.toLocaleString()), 2, 2);
+				};
+
+				var _enableButton = function(id) {
+					$("#" + id).removeClass("disabled");
+				};
+
+				var _floodFill = function(e) {
+					var stroke = {
+						"color": window.randomColor()/*_color*/,
+						"x": e.offsetX,
+						"y": e.offsetY
+					};
+
+					_completedStrokes.push(stroke);
+					_undone = [ ];
+					_refreshButtons();
+					_draw();
+					window.console.info("{{0}, {1}}: fill with {2}"
+						.format(stroke.x, stroke.y, stroke.color));
+				};
+
+				var _redo = function() {
+					if (_undone.length) {
+						_completedStrokes.push(_undone.pop());
+						_refreshButtons();
+						_draw();
+					}
+				};
+
+				var _refreshButtons = function() {
+					var isEmpty = !_completedStrokes.length;
+
+					var c = function(id, checked) {
+						((checked) ? _checkButton : _uncheckButton)(id + "Button");
+					};
+
+					var f = function(id, enabled) {
+						((enabled) ? _enableButton : _disableButton)(id + "Button");
+					};
+
+					f("undo", !isEmpty);
+					f("redo", _undone.length);
+					f("clear", !isEmpty);
+					f("save", !isEmpty);
+
+					f("brush", !_isBrush);
+					f("floodFill", _isBrush);
+					c("drawPoints", _drawPoints);
+				};
+
+				var _save = function() {
+					var now = new Date();
+
+					$("#downloadLink")
+						.attr({
+							"download": "{0}-{1}-{2} {3}.{4}.{5}.png"
+								.format(now.getFullYear().toString().zeroPad(4),
+								(now.getMonth() + 1).toString().zeroPad(2),
+								now.getDate().toString().zeroPad(2),
+								now.getHours().toString().zeroPad(2),
+								now.getMinutes().toString().zeroPad(2),
+								now.getSeconds().toString().zeroPad(2)),
+							"href": _canvas[0].toDataURL()
+						})[0].click();
+				};
+
+				var _uncheckButton = function(id) {
+					$("#" + id).removeClass(CHECK_CLASS);
+				};
+
+				var _undo = function() {
+					if (_completedStrokes.length) {
+						_undone.push(_completedStrokes.pop());
+						_refreshButtons();
+						_draw();
+					}
+				};
+
+				var _updatePosition = function(e) {
+					var data = _context.getImageData(e.offsetX, e.offsetY, 1, 1).data;
+
+					/*console.info("{0}, {1}: ({2}, {3}, {4}, {5})"
+						.format(e.originalEvent.offsetX, e.originalEvent.offsetY, d[0], d[1], d[2], d[3]));*/
+				};
+
+				_canvas.on({
+					"mousedown": function(e) {
+						if (e.which === 1) {
+							if (_isBrush) {
+								_createStroke(_mouseID = window.guid(),
+									e.originalEvent.offsetX,
+									e.originalEvent.offsetY);
+							} else {
+								_floodFill(e.originalEvent);
+							}
+						}
+					},
+					"mousemove": function(e) {
+						if (_isBrush && e.which === 1) {
+							try {
+								_activeStrokes[_mouseID].moveTo(e.originalEvent.offsetX,
+									e.originalEvent.offsetY);
+							} catch (e2) { }
+							_draw();
+						}
+						_updatePosition(e.originalEvent);
+					},
+					"mouseup": function(e) {
+						if (_isBrush && e.which === 1) {
+							_completeStroke(_mouseID);
+							_draw();
+						}
+					},
+					"touchstart": function(e) {
+						var offset = $(e.target).offset();
+
+						$.each(e.originalEvent.changedTouches, function(i, item) {
+							if (_isBrush) {
+								_createStroke(item.identifier,
+									item.clientX - offset.left,
+									item.clientY - offset.top);
+							} else {
+								_floodFill(item);
+							}
+						});
+						return e.preventAll();
+					},
+					"touchmove": function(e) {
+						if (_isBrush) {
+							var offset = $(e.target).offset();
+
+							$.each(e.originalEvent.changedTouches, function(i, item) {
+								try {
+									_activeStrokes[item.identifier].moveTo(item.clientX - offset.left,
+										item.clientY - offset.top);
+								} catch (e2) { }
+							});
+							_draw();
+						}
+					},
+					"touchend": function(e) {
+						if (_isBrush) {
+							$.each(e.originalEvent.changedTouches, function(i, item) {
+								_completeStroke(item.identifier);
+							});
+							_draw();
+						}
+					}
+				});
+
+				$("#toolbar").vendorSpecificCss({
+					"user-select": "none"
+				});
+
+				$("#undoButton").on("click", _undo);
+				$("#redoButton").on("click", _redo);
+				$("#clearButton").on("click", _clear);
+				$("#saveButton").on("click", _save);
+				$("#tolerance").on("change", _draw);
+
+				$("#brushButton").on("click", function() { _isBrush = true; _refreshButtons(); });
+				$("#floodFillButton").on("click", function() { _isBrush = false; _refreshButtons(); });
+				$("#drawPointsButton").on("click", function() { _drawPoints = !_drawPoints; _draw(); _refreshButtons(); });
+				_clear();
+				$(window).on({
+					"resize": function(e) {
+						var size = {
+							"width": window.innerWidth - MARGIN,
+							"height": window.innerHeight - MARGIN
+						};
+
+						_canvas
+							.css(size)
+							.attr(size);
+						_draw();
+					}
+				}).trigger("resize");
+			});
+		</script>
+		<style type="text/css">
+			body {
+				background-color: whitesmoke;
+				margin: 0.5em;
+				overflow: hidden;
+			}
+
+			canvas {
+				background-color: white;
+				border: 1px solid silver;
+				/* border-radius: 0.25em; */
+				box-sizing: content-box;
+			}
+
+			#toolbarContainer {
+				position: absolute;
+				right: 0;
+			}
+
+			#toolbar {
+				height: 6em;
+				position: relative;
+			}
+
+			#downloadLink {
+				display: none;
+			}
+
+			.relative {
+				position: relative;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="toolbarContainer">
+			<div id="toolbar">
+				<div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute;">
+					<a class="btn-floating btn-large waves-effect waves-light green">
+						<i class="material-icons">menu</i>
+					</a>
+					<ul>
+						<li><a id="brushButton" class="btn-floating waves-effect waves-light"><i class="material-icons">brush</i></a></li>
+						<li><a id="floodFillButton" class="btn-floating waves-effect waves-light pink"><i class="material-icons">gradient</i></a></li>
+						<li><a id="chooseColorButton" class="btn-floating waves-effect waves-light yellow"><i class="material-icons">palette</i></a></li>
+						<br/>
+						<li><a id="drawPointsButton" class="btn-floating waves-effect waves-light red"><i class="material-icons">flare</i></a></li>
+						<br/>
+						<li><a id="undoButton" class="btn-floating waves-effect waves-light blue"><i class="material-icons">undo</i></a></li>
+						<li><a id="redoButton" class="btn-floating waves-effect waves-light blue"><i class="material-icons">redo</i></a></li>
+						<li><a id="clearButton" class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></a></li>
+						<br/>
+						<li><a id="saveButton" class="btn-floating waves-effect waves-light purple"><i class="material-icons">save</i></a></li>
+						<br/>
+						<li class="relative"><input type="range" id="tolerance" min="0" max="255" value="128"/></li>
+						<!-- <li><a id="#" class="btn-floating waves-effect waves-light"><i class="material-icons"></i></a></li> -->
+					</ul>
+				</div>
+			</div>
+		</div>
+		<canvas class="ui-corner-all"></canvas>
+		<a id="downloadLink"></a>
+	</body>
+</html>

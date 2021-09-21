@@ -1,0 +1,111 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="images/192-round-2017.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="images/192-round-2017.png" type="image/png"/>
+		<title>SWGOH Status Screenshot</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<script type="text/javascript" src="js/canvasUtilities.min.js"></script>
+		<script type="text/javascript" src="js/swgoh.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
+		<style type="text/css">
+			table {
+				border: 1px solid lightSkyBlue;
+				border-radius: 0.5em;
+				margin: 0 auto;
+				max-width: 95%;
+				text-align: left;
+			}
+
+			td.file {
+				text-align: right;
+			}
+
+			#output {
+				height: auto;
+				max-width: 95%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="fullscreen background"></div>
+		<table>
+			<tbody>
+				<tr>
+					<td>
+						<label for="file1">Primo screenshot:</label>
+					</td>
+					<td class="file">
+						<input type="file" id="file1" accept="image/png"/>
+					</td>
+				<tr/>
+				<tr>
+					<td>
+						<label for="file1">Secondo screenshot:</label>
+					</td>
+					<td class="file">
+						<input type="file" id="file2" accept="image/png"/>
+					</td>
+				<tr/>
+			</tbody>
+		</table>
+		<br/>
+		<a id="download" download>
+			<img id="output"/>
+		</a>
+		<script type="text/javascript">
+			var _createImage = function() {
+				var canvas = document.createElement("canvas"),
+					image1 = new Image();
+
+				image1.addEventListener("load", function(e) {
+					var image2 = new Image();
+
+					canvas.width = this.width;
+					canvas.height = this.height;
+
+					image2.addEventListener("load", function(e2) {
+						var name = window.SWGOH.getScreenshotFileName(image1.fileName) || image1.fileName, url;
+
+						window.SWGOH.statusScreenshotCreator.createFullDetailsImage(image1, image2, function(fullDetailsImage) {
+							canvas.getContext("2d").drawImage(fullDetailsImage, 0, 0);
+							url = canvas.toDataURL();
+							document.getElementById("download").setAttribute("download", name);
+							document.getElementById("download").setAttribute("href", url);
+							document.getElementById("download").setAttribute("title", name);
+							document.getElementById("output").setAttribute("src", url);
+						});
+					});
+					_loadImage("file2", image2);
+				});
+				_loadImage("file1", image1);
+			};
+
+			var _loadImage = function(fileElementID, image) {
+				var file = document.getElementById(fileElementID).files[0],
+					reader;
+
+				if (file) {
+					reader = new FileReader();
+					reader.addEventListener("load", function() {
+						image.src = this.result;
+					});
+					image.fileName = file.name;
+					reader.readAsDataURL(file);
+				}
+			};
+
+			(function() {
+				document.getElementById("file1").addEventListener("change", _createImage);
+				document.getElementById("file2").addEventListener("change", _createImage);
+			})();
+		</script>
+	</body>
+</html>

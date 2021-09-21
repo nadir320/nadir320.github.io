@@ -1,0 +1,97 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="data:image/png;base64,
+		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABfElEQVR42pXSTSgEYRzH8RklORAJOYhE
+		DlteajkpFyTEhb3IQXGSsspFW0qD2nLZ5EhJeS1RlriozW0OHCh5uSgSG4mkJN9/HnqMnd126tP/eWae
+		5zfPPPOYhssVWLWbDNNooJkGy+ry3scaZ8YJ2OdpmQrwE7CcbMACT3tU10PAabIB5Tw9onnL5BK3cSYD
+		s6mtuMQJgtiyfN5wYM2epN1NQBHtDGnjmv62HhChbqAZS5jDObyswE8dQyUqsIhjAqr0gBtqgerLRr2h
+		1/GBL/hEJoZUkAeHEtDCwGE6+epmFDku+/OACYxgHNV/BvGdNZRNbUWJrqipTc6jNMKHdpcJj8jSVjeq
+		B4Qog3HediFLRjpqccdm2npAKaUNV6hT3/lzyQamQI6zHOvQ719wvoYgOTTzKEQYA1hHJ/bkzegn5P1f
+		AJNzKWfqVz5hFjOYNr7PyQdWmDwVcwUE1FMO1DmQDe1DB3bxLN/P5Fd9jjMglbKDYglhcCTRf/wCoVd0
+		3W+4VAUAAAAASUVORK5CYII=">
+		<script type="text/javascript" src="../../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="../../swgoh/js/canvasUtilities.min.js"></script>
+		<title>Floodfill Test</title>
+		<style type="text/css">
+			body {
+				background-color: whitesmoke;
+				text-align: center;
+				margin: 1em;
+			}
+
+			canvas {
+				margin: 0 auto;
+				max-width: 95%;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas>
+		<br/>
+		<button type="button" id="newCanvas">New</button>
+		<script type="text/javascript">
+			"use strict";
+
+			var _ = {
+				get color() { return { "r": 255 }; },
+				get marker() { return { "g": 255 }; },
+				get height() { return 256; },
+				get width() { return 256; }
+			};
+
+			var _createRandomCanvas = function(canvas, blackAndWhite) {
+				var width = canvas.width,
+					height = canvas.height,
+					context = canvas.getContext("2d"),
+					imageData = context.getImageData(0, 0, width, height),
+					pixelData = imageData.data,
+					index, i, j, r, g, b;
+
+				for (j = 0; j < height; j++) {
+					for (i = 0; i < width; i++) {
+						index = 4 * (width * j + i);
+						if (blackAndWhite) {
+							r = g = b = (Math.random() > 0.5) ? 255 : 0;
+						} else {
+							r = Math.random() * 256;
+							g = Math.random() * 256;
+							b = Math.random() * 256;
+						}
+						pixelData[index + 0] = r;
+						pixelData[index + 1] = g;
+						pixelData[index + 2] = b;
+						pixelData[index + 3] = 255;
+					}
+				}
+				context.putImageData(imageData, 0, 0);
+			};
+
+			(function() {
+				var canvas = document.getElementById("canvas");
+
+				canvas.width = _.width;
+				canvas.height = _.height;
+				canvas.addEventListener("click", function(e) {
+					var context = this.getContext("2d"),
+						result;
+
+					if (result = context.floodFill(e.offsetX, e.offsetY, _.color)) {
+						context.setPixel(e.offsetX, e.offsetY, _.marker);
+						if (window.console && window.console.log) {
+							window.console.log(result.toLocaleString());
+						}
+					}
+				});
+				document.getElementById("newCanvas").addEventListener("click", function(e) {
+					_createRandomCanvas(canvas, true);
+				});
+				_createRandomCanvas(canvas, true);
+			})();
+		</script>
+	</body>
+</html>

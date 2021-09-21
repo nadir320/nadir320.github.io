@@ -1,0 +1,279 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="./images/readLater.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="./images/readLater.png" type="image/png"/>
+		<title>Test</title>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-database.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-auth.js"></script>
+		<style type="text/css">
+			body {
+				margin: 0.5em 15% 0;
+				overflow-x: auto;
+				overflow-y: scroll;
+			}
+
+			#refresh {
+				background-color: whitesmoke;
+				border: 1px solid silver;
+				border-radius: 0.25em;
+				cursor: pointer;
+				height: 2em;
+				position: fixed;
+				right: 0.5em;
+				top: 0.5em;
+				width: 8em;
+			}
+
+			#log .entry {
+				border-radius: 0.15em;
+				border-style: solid;
+				border-width: 1px;
+				margin: 0.25em;
+				padding: 0.35em;
+			}
+
+			#log .entry.external {
+				opacity: 0.25;
+			}
+
+			#log .entry.external:hover {
+				opacity: initial;
+			}
+
+			#log .entry.error { background-color: lavenderBlush; border-color: red; color: red; }
+			#log .entry.information { background-color: aliceBlue; border-color: dodgerBlue; color: dodgerBlue; }
+			#log .entry.log { background-color: whitesmoke; border-color: black; color: black; }
+			#log .entry.warning { background-color: lightyellow; border-color: orange; color: orange; }
+		</style>
+	</head>
+	<body>
+		<button id="refresh" type="button">Try again</button>
+		<div id="log"></div>
+		<script type="text/javascript">
+			"use strict";
+
+			(function(window) {
+				const e = window.document.getElementById("log");
+
+				let _error = window.console.error,
+					_info = window.console.info,
+					_log = window.console.log,
+					_warn = window.console.warn,
+					_write = function(type, b, a) {
+						if (e) {
+							let x = window.document.createElement("div");
+
+							x.classList.add("entry");
+							x.classList.add(type);
+
+							let d = new Date(),
+								i = 0,
+								m = Array.prototype.slice.call(a),
+								r = /%s|%d|%f|%@/g,
+								s = m[0].match(r);
+
+							m = (s) ? m[0].replace(r, (match, j) => m.slice(i + 1, ++i + 1)) : m.join();
+							if (b) {
+								m = "[" + d.getHours().toString().padStart(2, 0) + ":" +
+									d.getMinutes().toString().padStart(2, 0) + ":" +
+									d.getSeconds().toString().padStart(2, 0) + "." +
+									d.getMilliseconds().toString().padStart(3, 0) + "] " + m;
+							} else {
+								x.classList.add("external");
+							}
+							x.appendChild(window.document.createTextNode(m));
+							e.appendChild(x);
+							window.document.documentElement.scrollTo({
+								behavior: "smooth",
+								left: 0,
+								top: 9999
+							});
+						}
+					};
+
+				window.console.error = function() {
+					_error.apply(this, Array.prototype.slice.call(arguments));
+					_write("error", false, arguments);
+				};
+				window.console.error_ = function() {
+					_error.apply(this, Array.prototype.slice.call(arguments));
+					_write("error", true, arguments);
+				};
+				window.console.info = function() {
+					_info.apply(this, Array.prototype.slice.call(arguments));
+					_write("information", false, arguments);
+				};
+				window.console.info_ = function() {
+					_info.apply(this, Array.prototype.slice.call(arguments));
+					_write("information", true, arguments);
+				};
+				window.console.log = function() {
+					_log.apply(this, Array.prototype.slice.call(arguments));
+					_write("log", false, arguments);
+				};
+				window.console.log_ = function() {
+					_log.apply(this, Array.prototype.slice.call(arguments));
+					_write("log", true, arguments);
+				};
+				window.console.warn = function() {
+					_warn.apply(this, Array.prototype.slice.call(arguments));
+					_write("warning", false, arguments);
+				};
+				window.console.warn_ = function() {
+					_warn.apply(this, Array.prototype.slice.call(arguments));
+					_write("warning", true, arguments);
+				};
+				/* window.onerror = function(message, source, line, column, error) { }; */
+			})(window);
+
+			(function(window) {
+				window.document.getElementById("refresh").addEventListener("click", function(e) {
+					window.location.reload();
+				});
+			})(window);
+
+			(function(window) {
+				window.console.log_("Creating applications...");
+
+				const ApiKey = "AIzaSyA58csfwsnx3CIFhx73ecGlP0dY9-s8BS4",
+					DatabaseUrl = "https://readlater-274ac.firebaseio.com";
+
+				const authenticatedApp = window.firebase.initializeApp({
+					"apiKey": ApiKey,
+					"databaseURL": DatabaseUrl
+				}, "a");
+
+				const anonymousApp = window.firebase.initializeApp({
+					"apiKey": ApiKey,
+					"databaseURL": DatabaseUrl
+				}, "b");
+
+				window.console.log_("Logging in...");
+				authenticatedApp.auth().signInWithEmailAndPassword("nadir@readlater.com", "readlater").then(function(auth) {
+					window.console.log_("Logged in");
+
+					const testKey1 = "test" + new Date().getTime().toString(),
+						testKey2 = "test" + new Date().getTime().toString(),
+						testKey3 = "test" + new Date().getTime().toString(),
+						testKey4 = "test" + new Date().getTime().toString(),
+						uid = auth.user.uid;
+
+					let count = 0,
+						current = 0;
+
+					const check = function() {
+						if (count === 0 || ++current === count) {
+							authenticatedApp.delete();
+							anonymousApp.delete();
+							window.console.log_("Done");
+						}
+					};
+
+					const test = function(message, thenable, expectSuccess, thenCallback, catchCallback) {
+						window.console.log_(message + " - start...");
+						count++;
+						thenable().then(function() {
+							window.console[((expectSuccess) ? "info" : "error") + "_"](message + ": success");
+							if (thenCallback) {
+								thenCallback.apply(this, Array.prototype.slice.call(arguments));
+							}
+						}).catch(function() {
+							window.console[((expectSuccess) ? "error" : "info") + "_"](message + ": failure");
+							if (catchCallback) {
+								catchCallback.apply(this, Array.prototype.slice.call(arguments));
+							}
+						}).finally(check);
+					};
+
+
+					// Read:
+					if (false)
+					{
+						// Authenticated read / correct:
+						test("Authenticated read of own data", () => authenticatedApp.database().ref(uid).once("value"), true);
+
+						// Authenticated read / wrong:
+						test("Authenticated read of non-own data", () => authenticatedApp.database().ref(testKey1).once("value"));
+
+						// Anonymous read / wrong (1):
+						test("Anonymous read of test data", () => anonymousApp.database().ref(testKey1).once("value"));
+
+						// Anonymous read / wrong (2):
+						test("Authenticated read of user data", () => anonymousApp.database().ref(uid).once("value"));
+					}
+
+					// Write:
+					if (false || true)
+					{
+						const testData = { },
+							path = uid + "/" + testKey2;
+
+						testData[testKey2] = testKey2;
+
+						// Authenticated create / correct:
+						test("Authenticated create of own data (" + path + ")", () => authenticatedApp.database().ref(uid).update(testData), true, function(e) {
+							// Authenticated delete / correct:
+							test("Deletion of created own data", () => authenticatedApp.database().ref(path).set(null), true);
+						});
+
+						// Authenticated update / correct:
+						test("Authenticated overwrite of all own data", () => authenticatedApp.database().ref(uid).set(testData));
+
+						// Authenticated delete / wrong:
+						test("Authenticated delete of own account", () => authenticatedApp.database().ref(uid).set(null));
+
+						const alternatePath = testKey2 + "/" + testKey2;
+
+						// Authenticated create / wrong:
+						test("Authenticated create of non-own data (" + alternatePath + ")", () => authenticatedApp.database().ref(testKey2).update(testData), undefined, function(e) {
+							// Authenticated delete / correct:
+							test("Authenticated delete of non-own data (" + alternatePath + ")", () => authenticatedApp.database().ref(alternatePath).set(null), true);
+						});
+					}
+
+					// Write 2:
+					if (false || true)
+					{
+						const testData = { },
+							path = uid + "/" + testKey3;
+
+						testData[testKey3] = testKey3;
+
+						debugger;
+						// Anonymous write / correct:
+						test("Anonymous write in user data (" + path + ")", () => anonymousApp.database().ref(uid).update(testData), true, function(e) {
+							debugger;
+							// Anonymous delete / wrong:
+							test("Anonymous delete of user data (" + path + ")", () => anonymousApp.database().ref(path).set(null), undefined, undefined, function(e2) {
+								window.console.warn_(path + " has been written and cannot be deleted");
+								// Anonymous update / wrong:
+								debugger;
+								test("Anonymous update of user data", () => anonymousApp.database().ref(path).update(testData));
+							});
+						});
+					}
+
+					// Write 3:
+					if (false || true)
+					{
+						const testData = { };
+
+						testData[testKey4] = testKey4;
+
+						// Anonymous creation of a new user
+						test("Anonymous write in non-existing user data (" + testKey4 + ")", () => anonymousApp.database().ref(testKey4).set(testData));
+
+						// Authenticated creation of a new user
+						test("Authenticated write in non-existing user data (" + testKey4 + ")", () => anonymousApp.database().ref(testKey4).set(testData));
+					}
+				});
+			})(window);
+		</script>
+	</body>
+</html>

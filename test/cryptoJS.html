@@ -1,0 +1,301 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<link rel="icon" href="../images/padlock.png" type="image/png"/>
+		<link rel="shortcut icon" href="../images/padlock.png" type="image/png"/>
+		<title>CryptoJS</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/ui-lightness/jquery-ui.min.css"/>
+
+		<script type="text/javascript" src="../js/cryptoJS/rollups/aes.js"></script>
+		<script type="text/javascript" src="../js/cryptoJS/rollups/rabbit.js"></script>
+		<script type="text/javascript" src="../js/cryptoJS/rollups/rc4.js"></script>
+		<script type="text/javascript" src="../js/cryptoJS/rollups/tripledes.js"></script>
+		<script type="text/javascript">
+			"use strict";
+
+			window.NREUM = { };
+
+			var _algorithms = [
+				  { "name": "AES" }
+				, { "name": "DES" }
+				, { "name": "Rabbit"}
+				, { "name": "RC4" }
+				, { "name": "RC4Drop", "text": "RC4-drop[n]" }
+				, { "name": "TripleDES", "text": "Triple DES" }
+			];
+
+			var _format = function(format) {
+				for (var i = 1; i < arguments.length; i++) {
+					format = format.replace(new RegExp("\\{" +
+						(i - 1).toString() + "\\}", "gi"), arguments[i]);
+				}
+				return format;
+			};
+
+			$().ready(function() {
+				var loadPage = function() {
+					var clearDecrypted = function() {
+						$("#message")
+							.add($("#password"))
+							.val("");
+					};
+
+					var clearEncrypted = function() {
+						$("#encrypted")
+							.add($("#key"))
+							.add($("#iv"))
+							.add($("#salt"))
+							.val("");
+					};
+
+					var prevent = function(e) {
+						e.preventDefault();
+						e.stopImmediatePropagation();
+						e.stopPropagation();
+						return false;
+					};
+
+					$("#message")
+						.add($("#password"))
+						.on({
+							"input keypress": function(e) {
+								clearEncrypted();
+							}
+						});
+					$("#encrypted")
+							.add($("#key"))
+							.add($("#iv"))
+							.add($("#salt"))
+							.on({
+								"input keypress": function(e) {
+									clearDecrypted();
+								}
+							});
+					$(_algorithms).each(function(i) {
+						$(document.createElement("option"))
+							.text(this.text || this.name)
+							.val(this.name)
+							.appendTo("#algorithm");
+					});
+					$("#encrypt")
+						.button()
+						.on({
+							"click": function(e) {
+								var algorithm = CryptoJS[$("#algorithm").val()],
+									message = $("#message").val(),
+									password = $("#password").val();
+
+								if (message) {
+									try {
+										var encrypted = algorithm.encrypt(message, password);
+
+										$("#encrypted").val(encrypted.toString());
+										$("#key").val(encrypted.key.toString());
+										$("#iv").val(encrypted.iv.toString());
+										$("#salt").val((encrypted.salt || "").toString());
+									} catch (ex) {
+										window.alert(ex.message);
+									}
+								} else {
+									window.alert("Please specify a message.");
+								}
+								return prevent(e);
+							}
+						});
+					$("#decrypt")
+						.button()
+						.on({
+							"click": function(e) {
+								var algorithm = CryptoJS[$("#algorithm").val()],
+									message = $("#encrypted").val(),
+									key = CryptoJS.enc.Hex.parse($("#key").val()),
+									iv = CryptoJS.enc.Hex.parse($("#iv").val()),
+									salt = CryptoJS.enc.Hex.parse($("#salt").val());
+
+								if (message) {
+									try {
+										var decrypted = algorithm.decrypt(message, key, {
+											"iv": iv,
+											"salt": salt
+										}).toString(CryptoJS.enc.Utf8);
+
+										/* $("#message").val(decrypted);
+										$("#password").val(""); */
+
+										window.alert("Decrypted value is: [" + decrypted + "].");
+									} catch (ex) {
+										window.alert(ex.message);
+									}
+								} else {
+									window.alert("Please specify an encrypted message.");
+								}
+								return prevent(e);
+							}
+						});
+					$("#message")
+						.val(new Date().toLocaleString())
+						.focus();
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				-webkit-transition-duration: 0.5s;
+				-webkit-transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 	/* ease out cubic */
+
+				border: 0 !important;
+				font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+				font-size: 0.8em !important;
+				padding: 0;
+				transition-duration: 0.5s;
+				transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 		/* ease out cubic */
+
+			}
+
+			.pageHeader {
+				padding: 0.5em;
+				text-align: center;
+			}
+
+			.testTable {
+				-webkit-transition-duration: 0.5s;
+
+				border: 1px solid darkGray;
+				border-collapse: collapse;
+				transition-duration: 0.5s;
+				width: 100%;
+			}
+
+			.testTable td {
+				padding: 0.333em;
+			}
+
+			.testTable td:first-of-type {
+				width: 35%;
+			}
+
+			.testTable input,
+			.testTable select,
+			.testTable textarea {
+				box-sizing: border-box;
+				font-family: inherit;
+				font-size: inherit;
+				font-style: inherit;
+				font-weight: inherit;
+				width: 100%;
+			}
+
+			.testTable textarea {
+				height: 6em;
+				resize: none;
+			}
+
+			.centeredButton {
+				margin: 1em 0;
+				text-align: center;
+			}
+
+			@media all and (min-width: 920px) {
+				body {
+					font-size: 1em !important;
+				}
+
+				.tableContainer {
+					padding-left: 50%;
+				}
+
+				.testTable {
+					margin-left: -75%;
+					width: 150%;
+				}
+			}
+		</style>
+	</head>
+	<body class="ui-widget-content">
+		<div class="pageHeader ui-corner-all ui-widget-header"><a href="http://code.google.com/p/crypto-js/" target="_blank">CryptoJS</a></div>
+		<br/>
+		<form>
+			<div class="tableContainer">
+				<table class="testTable ui-widget-content">
+					<tr>
+						<td>
+							<label for="message">Message to encrypt:</label>
+						</td>
+						<td>
+							<input type="text" id="message" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="password">Password:</label>
+						</td>
+						<td>
+							<input type="text" id="password" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="algorithm">Algorithm:</label>
+						</td>
+						<td>
+							<select id="algorithm"></select>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="centeredButton">
+				<input type="submit" id="encrypt" value="Encrypt" />
+			</div>
+		</form>
+		<form>
+			<div class="tableContainer">
+				<table class="testTable ui-widget-content">
+					<tr>
+						<td>
+							<label for="encrypted">Encrypted message:</label>
+						</td>
+						<td>
+							<textarea id="encrypted"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="key">Encryption key:</label>
+						</td>
+						<td>
+							<input type="text" id="key" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="iv">Encryption initialization vector:</label>
+						</td>
+						<td>
+							<input type="text" id="iv" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="salt">Encryption salt:</label>
+						</td>
+						<td>
+							<input type="text" id="salt" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="centeredButton">
+				<input type="submit" id="decrypt" value="Decrypt" />
+			</div>
+		</form>
+	</body>
+</html>

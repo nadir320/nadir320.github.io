@@ -1,0 +1,233 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/coffee.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/coffee" type="image/png"/>
+		<title>Caffè</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			var COINS = [ 0.05, 0.10, 0.20, 0.50, 1.0, 2.0 ],
+				OPTIONS = "coffee_options",
+				PRICE = 0.33,
+				TABLE_COUNT = 15;
+
+			$().ready(function() {
+				var _options = { };
+
+				var formatNumber = function(n) {
+					if (n !== undefined) {
+						return n.toLocaleString(undefined, {
+							maximumFractionDigits: 2,
+							minimumFractionDigits: 2
+						});
+					}
+					return String.empty;
+				};
+
+				var getOption = function(name) {
+					return _options[name];
+				};
+
+				var isSumOf = function(n, factors) {
+					var f;
+
+					factors = factors.slice(0);
+					factors.sort(function(a, b) { return b - a; });
+					n = Math.roundTo(n, 2);
+					for (var i = 0; i < factors.length; i++) {
+						f = factors[i];
+						while (n >= f) {
+							n = Math.roundTo(n - f, 2);
+						}
+					}
+					return n === 0;
+				};
+
+				var loadMissing = function() {
+					var c,
+						i = 1,
+						missing = $("#missing"),
+						n = parseNumber($("#current").val()),
+						p = parseNumber($("#price").val());
+
+					missing.val(String.empty);
+					if (!isNaN(p)) {
+						if (!isNaN(n) && !isNaN(p)) {
+							var buffer = String.empty;
+
+							setOption("current", n);
+							c = p;
+							while (i <= TABLE_COUNT) {
+								if (isSumOf(c - n, COINS)) {
+									if (buffer.length) {
+										buffer += "\n";
+									}
+									buffer += "{0}€ ({1}€, {2} caffè)".format(formatNumber(c - n),
+										formatNumber(c), i.toLocaleString());
+								}
+								c += p;
+								i++;
+							}
+							missing.val(buffer);
+						} else {
+							setOption("current", undefined);
+						}
+					}
+					missing.css({
+						"height": 1
+					}).css({
+						"height": missing.get(0).scrollHeight + 2
+					});
+				};
+
+				var loadPage = function() {
+					var current,
+						options;
+
+					if (window.localStorage && window.localStorage.getItem) {
+						options = window.localStorage.getItem(OPTIONS);
+						if (options && options.length) {
+							_options = $.parseJSON(options);
+						}
+					}
+					$("#price")
+						.val(formatNumber(getOption("price") || PRICE))
+						.on("blur change input", function(e) {
+							loadPriceTable();
+							loadMissing();
+						});
+
+					$("#current")
+						.val(formatNumber(getOption("current")))
+						.on("blur change input", loadMissing);
+					loadPriceTable();
+					loadMissing();
+				};
+
+				var loadPriceTable = function() {
+					var price = parseNumber($("#price").val()),
+						table = $("#table").empty();
+
+					if (!isNaN(price)) {
+						setOption("price", price);
+						for (var i = 0; i < TABLE_COUNT; i++) {
+							$(document.createElement("tr"))
+								.append($(document.createElement("td"))
+									.text((i + 1).toLocaleString()))
+								.append($(document.createElement("td"))
+									.text(formatNumber(price * (i + 1))))
+								.appendTo(table);
+						}
+					} else {
+						setOption("price", undefined);
+					}
+				};
+
+				var parseNumber = function(n) {
+					return window.parseFloat(n.replace(/,/g, "."));
+				};
+
+				var setOption = function(name, value) {
+					if (value !== undefined) {
+						_options[name] = value;
+					} else {
+						delete _options[name];
+					}
+					if (window.localStorage && window.localStorage.setItem) {
+						window.localStorage.setItem(OPTIONS, window.JSON.stringify(_options));
+					}
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				background-color: linen;
+			}
+
+			input, select, textarea {
+				border: 1px solid;
+				box-sizing: border-box;
+				padding: 0.1em;
+				width: 15em;
+			}
+
+			.table {
+				border: 1px solid;
+				bottom: 1em;
+				overflow-y: auto;
+				padding: 0.25em;
+				position: absolute;
+				right: 1em;
+				top: 1em;
+				width: 5em;
+			}
+
+			.table table {
+				font-size: 70%;
+				font-style: italic;
+				width: 100%;
+			}
+
+			.table td+td {
+				text-align: right;
+			}
+
+			#price {
+				background-color: bisque;
+			}
+
+			#current {
+				background-color: lemonChiffon;
+			}
+
+			#missing {
+				background-color: peachPuff;
+				height: 4em;
+				resize: none;
+			}
+
+			.icon {
+				bottom: 1em;
+				font-size: 25%;
+				left: 1em;
+				opacity: 0.05;
+				position: absolute;
+			}
+
+			input, select, textarea, .table {
+				border-color: peru;
+			}
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<label for="price">Prezzo:</label>
+		<br/>
+		<input type="text" id="price" class="ui-corner-all" tabindex="1"/>
+		<br/>
+		<label for="current">Residuo:</label>
+		<br/>
+		<input type="text" id="current" class="ui-corner-all" tabindex="0"/>
+		<br/>
+		<label for="missing">Mancante:</label>
+		<br/>
+		<textarea type="text" id="missing" class="ui-corner-all" readonly></textarea>
+		<div class="table ui-corner-all">
+			<table id="table"></table>
+		</div>
+		<img class="icon" src="../images/coffee.png"/>
+	</body>
+</html>

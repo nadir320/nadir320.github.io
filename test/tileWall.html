@@ -1,0 +1,120 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<link rel="shortcut icon" type="image/png" href="data:image/png;base64,
+		iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+		YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmV
+		AAAADUlEQVQYV2P4//8/AwAI/AL+iF8G4AAAAABJRU5ErkJggg==">
+		<title>Tile Wall</title>
+		<style type="text/css">
+			html, body {
+				height: 100%;
+			}
+
+			body {
+				background-color: whitesmoke;
+				margin: 0;
+			}
+
+			.wrap {
+				border: 1px solid silver;
+				border-radius: 1.1em;
+				bottom: 1em;
+				left: 1em;
+				position: absolute;
+				right: 1em;
+				top: 1em;
+
+				perspective: 50em;
+				-webkit-perspective: 50em;
+			}
+
+			.board {
+				transform: rotateY(30deg);
+				-webkit-transform: rotateY(30deg);
+				-webkit-transform-origin: top left;
+				transform-style: preserve-3d;
+				-webkit-transform-style: preserve-3d;
+
+				transform: rotateX(-30deg) rotateY(-30deg);
+				-webkit-transform: rotateX(-30deg) rotateY(-30deg);
+			}
+
+			.tile {
+				margin: 0 auto;
+				position: relative;
+				transform-style: preserve-3d;
+				-webkit-transform-style: preserve-3d;
+			}
+
+			.face {
+				background-color: white;
+				border: 1px solid darkSlateBlue;
+				box-shadow: inset 0 0 3em silver;
+				opacity: 0.8;
+				position: absolute;
+			}
+
+			.face.front { background-color: red; }
+			.face.top { background-color: blue; }
+			.face.bottom { background-color: green; }
+			.face.left { background-color: yellow; }
+			.face.right { background-color: magenta; }
+		</style>
+	</head>
+	<body>
+		<div class="wrap"><div class="board"></div></div>
+		<script type="text/javascript">
+			"use strict";
+
+			(function() {
+				var _ = {
+					size: 80
+				};
+
+				var board = document.getElementsByClassName("board")[0];
+
+				var createTile = function(width, height, depth, left, top) {
+					var createFace = function(parent, name, w, h, t) {
+						var f = document.createElement("div");
+
+						f.classList.add("face");
+						f.classList.add(name);
+						f.style.width = w + "px";
+						f.style.height = h + "px";
+						f.style.transform = f.style["-webkit-transform"] = t;
+						parent.appendChild(f);
+						return f;
+					};
+
+					var tile = document.createElement("div");
+
+					tile.classList.add("tile");
+					tile.style.width = width + "px";
+					tile.style.left = (left || 0) + "px";
+					tile.style.top = (top || 0) + "px";
+
+					createFace(tile, "front", width, height, "translateZ(" + (depth / 2) + "px)");
+					createFace(tile, "back", width, height, "translateZ(-" + (depth / 2) + "px) rotateY(180deg)");
+					createFace(tile, "top", width, depth, "rotateX(90deg) translateZ(" + (depth / 2) + "px)");
+					createFace(tile, "bottom", width, depth, "rotateX(-90deg) translateZ(" + (height - depth / 2) + "px)");
+					createFace(tile, "left", depth, height, "rotateY(-90deg) translateZ(" + (depth / 2) + "px)");
+					createFace(tile, "right", depth, height, "rotateY(-90deg) translateZ(-" + (width - depth / 2) + "px)");
+
+					board.appendChild(tile);
+					return tile;
+				};
+
+				createTile(90, 40, 10);
+				createTile(90, 40, 10, 92);
+				createTile(90, 40, 10, 185);
+				createTile(40, 90, 10, 185, - 40);
+			})();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,574 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta id="themeColor" name="theme-color" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="images/tumblr.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="images/tumblr.png" type="image/png"/>
+		<title></title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../cdnjs.cloudflare.com/ajax/libs/snap.js/1.9.3/snap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../cdnjs.cloudflare.com/ajax/libs/snap.js/1.9.3/snap.min.css"/>
+		<script type="text/javascript" src="../cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+		<!-- <script type="text/javascript" src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script> -->
+		<!-- <script type="text/javascript" src="https://cdn.firebase.com/v0/firebase-token-generator.js"></script> -->
+		<link rel="stylesheet" type="text/css" href="../cdnjs.cloudflare.com/ajax/libs/webui-popover/2.1.15/jquery.webui-popover.min.css"/>
+		<script type="text/javascript" src="../cdnjs.cloudflare.com/ajax/libs/webui-popover/2.1.15/jquery.webui-popover.min.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<!-- <script type="text/javascript" src="../js/firebaseDataStore2.min.js"></script> -->
+		<script type="text/javascript" src="../js/firebaseDataStore3.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.swiper.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.cors.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/jquery.ui.video.min.css"/>
+		<script type="text/javascript" src="../js/jquery.ui.video.min.js"></script>
+		<script type="text/javascript" src="../js/oauth-1.0a.min.js"></script>
+		<script src="../js/cryptoJS/rollups/hmac-sha1.js"></script>
+		<script src="../js/cryptoJS/components/enc-base64-min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../js/lc/lc_gif_player.css"/>
+		<script type="text/javascript" src="../js/lc/lc_gif_player.pack.js"></script>
+
+		<script type="text/javascript" src="js/tumblr.min.js"></script>
+		<script type="text/javascript" src="js/app.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<div class="snap-drawers">
+			<div class="snap-drawer snap-drawer-left ui-widget-content" no-tabindex="-1">
+				<div id="blogs"><div class="localizedText noBlog ui-state-highlight ui-corner-all" data-localizedtext="noBlog"></div></div>
+			</div>
+		</div>
+		<div id="content" class="ui-widget-content snap-content" no-tabindex="-1">
+			<div class="header ui-widget-header">
+				<a href="#" class="snapper transitionable"></a>
+				<a class="loader"></a>
+				<button type="button" class="popover rightButton"></button>
+				<div class="webui-popover-content mainPopover">
+					<button type="button" class="menu"></button>
+					<button type="button" class="login"></button>
+					<button type="button" class="downloads"></button>
+					<button type="button" class="usageModes"></button>
+					<button type="button" class="filters"></button>
+					<button type="button" class="downloader"></button>
+					<button type="button" class="readLater"></button>
+				</div>
+				<div class="title">
+					<span class="localizedText" data-localizedtext="my"></span>
+					<a href="#">
+						<img src="https://secure.assets.tumblr.com/images/iframe_logo.png" class="tumblr ui-corner-all"/>
+					</a>
+					<video id="keepAlive" class="keepAlive" preload="auto" loop autoplay muted>
+						<source src="video/black.png" type="video/webm">
+					</video>
+				</div>
+			</div>
+			<div id="blogPageContainer" class="ui-widget-content">
+				<div class="blogHeader ui-widget-header">
+					<div class="blogPageTitle"></div>
+					<div class="blogNavigator"></div>
+				</div>
+				<div id="blogPage" tabindex="-1"></div>
+				<div class="blogNavigator ui-widget-header"></div>
+			</div>
+		</div>
+		<div class="dialog userDialog loginDialog">
+			<form>
+				<div class="centered">
+					<label for="username" class="localizedText" data-localizedtext="emailAddress"></label>
+				</div>
+				<input type="email" id="username" class="ui-corner-all"/>
+				<br/>
+				<div class="centered">
+					<label for="password" class="localizedText" data-localizedtext="password"></label>
+				</div>
+				<div class="passwordContainer">
+					<input type="password" id="password" class="ui-corner-all"/>
+					<button type="button" class="changePasswordButton localizedText" data-localizedtext="change"></button>
+				</div>
+				<div class="centered">
+					<input id="rememberMe" type="checkbox">
+					<label for="rememberMe" class="localizedText" data-localizedtext="rememberMe"></label>
+				</div>
+				<hr/>
+				<div class="centered">
+					<button type="submit" class="loginButton localizedText" data-localizedtext="connect"></button>
+					<button type="button" class="cancelButton localizedText" data-localizedtext="cancel"></button>
+				</div>
+			</form>
+		</div>
+		<div class="dialog userDialog changePasswordDialog">
+			<form>
+				<div class="centered">
+					<label for="username2" class="localizedText" data-localizedtext="emailAddress"></label>
+				</div>
+				<input type="email" id="username2" class="ui-corner-all"/>
+				<br/>
+				<div class="centered">
+					<label for="password2" class="localizedText" data-localizedtext="oldPassword"></label>
+				</div>
+				<input type="password" id="password2" class="ui-corner-all"/>
+				<br/>
+				<div class="centered">
+					<label for="newPassword" class="localizedText" data-localizedtext="newPassword"></label>
+				</div>
+				<input type="password" id="newPassword" class="ui-corner-all"/>
+				<br/>
+				<div class="centered">
+					<label for="newPassword2" class="localizedText" data-localizedtext="confirmNewPassword"></label>
+				</div>
+				<input type="password" id="newPassword2" class="ui-corner-all"/>
+				<hr/>
+				<div class="centered">
+					<button type="submit" class="setPasswordButton localizedText" data-localizedtext="change"></button>
+					<button type="button" class="cancelButton localizedText" data-localizedtext="cancel"></button>
+				</div>
+			</form>
+		</div>
+		<div class="dialog optionsDialog">
+			<label>
+				<span class="localizedText" data-localizedtext="theme"></span>
+				<br/>
+				<select id="options_theme"></select>
+			</label>
+
+			<br/>
+			<br/>
+			<hr/>
+
+			<label>
+				<span class="localizedText" data-localizedtext="avatarSize"></span>
+				<br/>
+				<select id="options_avatarSize"></select>
+			</label>
+
+			<br/>
+			<br/>
+			<label>
+				<span class="localizedText" data-localizedtext="showPosts"></span>
+				<br/>
+				<select id="options_postType"></select>
+			</label>
+
+			<br/>
+			<br/>
+			<label>
+				<span class="localizedText" data-localizedtext="postsPerPage"></span>
+				<br/>
+				<select id="options_postsPerPage"></select>
+			</label>
+
+			<br/>
+			<br/>
+			<div class="booleanOptions">
+				<label>
+					<span class="localizedText" data-localizedtext="imageResolution"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="radio" name="options_imageSize" value="best"/>
+					<span class="localizedText" data-localizedtext="imageSize_best"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="radio" name="options_imageSize" value="small"/>
+					<span class="localizedText" data-localizedtext="imageSize_small"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="radio" name="options_imageSize" value="micro"/>
+					<span class="localizedText" data-localizedtext="imageSize_micro"></span>
+				</label>
+				<hr/>
+				<label>
+					<input type="checkbox" id="options_preloadImages"/>
+					<span class="localizedText" data-localizedtext="preloadImages"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_fullScreenViewer"/>
+					<span class="localizedText" data-localizedtext="enableFullScreenViewer"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_fullScreenViewerFullScreen"/>
+					<span class="localizedText" data-localizedtext="enableFullScreenViewerFullScreen"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_showTags"/>
+					<span class="localizedText" data-localizedtext="showTags"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_showAllImageSizes"/>
+					<span class="localizedText" data-localizedtext="showAllImageSizes"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_showNotes"/>
+					<span class="localizedText" data-localizedtext="showNotes"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_embedVideos"/>
+					<span class="localizedText" data-localizedtext="embedVideos"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_embedLinks"/>
+					<span class="localizedText" data-localizedtext="embedLinks"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_enableImageSearch"/>
+					<span class="localizedText" data-localizedtext="enableImageSearch"></span>
+				</label>
+				<hr/>
+				<label>
+					<span class="localizedText" data-localizedtext="downloadSynchronization"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="radio" name="options_downloadSynchronization" value="synchronize"/>
+					<span class="localizedText" data-localizedtext="downloadSynchronization_synchronize"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="radio" name="options_downloadSynchronization" value="ask"/>
+					<span class="localizedText" data-localizedtext="downloadSynchronization_ask"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="radio" name="options_downloadSynchronization" value="skip"/>
+					<span class="localizedText" data-localizedtext="downloadSynchronization_skip"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_showMissingDownloads"/>
+					<span class="localizedText" data-localizedtext="showMissingDownloads"></span>
+				</label>
+				<hr/>
+				<label>
+					<input type="checkbox" id="options_sortByPosts"/>
+					<span class="localizedText" data-localizedtext="sortByPosts"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_nsfw"/>
+					<span class="localizedText" data-localizedtext="showNSFWBlogs"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_peekMode"/>
+					<span class="localizedText" data-localizedtext="peekMode"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_vibrateOnCheckCompletion"/>
+					<span class="localizedText" data-localizedtext="vibrateOnCheckCompletion"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_autoUpdatePostCountMismatches"/>
+					<span class="localizedText" data-localizedtext="autoUpdatePostCountMismatches"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_hideOldies"/>
+					<span class="localizedText" data-localizedtext="hideOldies"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_nativeDownload"/>
+					<span class="localizedText" data-localizedtext="nativeDownload"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_customVideoControls"/>
+					<span class="localizedText" data-localizedtext="customVideoControls"></span>
+				</label>
+				<br/>
+				<label>
+					<input type="checkbox" id="options_customGifControls"/>
+					<span class="localizedText" data-localizedtext="customGifControls"></span>
+				</label>
+			</div>
+		</div>
+		<div class="dialog usageModeDialog"></div>
+		<div class="dialog pageOptionsDialog">
+			<div class="blogDescription"><div></div><hr/></div>
+			<button type="button" class="localizedText archive" data-localizedtext="archive"></button>
+			<button type="button" class="localizedText blogStatistics" data-localizedtext="blogStatistics"></button>
+			<br/>
+			<button type="button" class="localizedText refreshPage" data-localizedtext="refreshCurrentPage"></button>
+			<br/>
+			<button type="button" class="viewDownloads"></button>
+			<br/>
+			<form>
+				<div>
+					<label>
+						<span class="localizedText" data-localizedtext="searchTag"></span>
+						<input type="text" id="tagToSearch" class="tagToSearch"/>
+						<button type="submit" class="searchTag" title="Search tag"></button>
+						<button type="submit" class="resetTag" title="Reset tag"></button>
+					</label>
+				</div>
+			</form>
+			<br/>
+			<form>
+				<div>
+					<label>
+						<span class="localizedText" data-localizedtext="goToPage"></span>
+						<input type="number" min="1" id="pageNumber" class="pageNumber"/>
+						<button type="submit" class="goToPage" title="Go"></button>
+						<button type="button" class="goToLastViewedPage localizedText" data-localizedtext="goToLastViewedPage"></button>
+					</label>
+				</div>
+			</form>
+			<hr/>
+			<span class="localizedText" data-localizedtext="goTo"></span>
+			<a href="#" class="goToBlog" target="_blank"></a>
+			<hr/>
+			<div class="blogOptions">
+				<div class="booleanOptions imageSizeOptions">
+					<label class="localizedText" data-localizedtext="imageSize"></label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_imageSize" value="best"/>
+						<span class="localizedText" data-localizedtext="imageSize_alwaysBest"></span>
+					</label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_imageSize" value="small"/>
+						<span class="localizedText" data-localizedtext="imageSize_alwaysSmall"></span>
+					</label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_imageSize" value="micro"/>
+						<span class="localizedText" data-localizedtext="imageSize_alwaysMicro"></span>
+					</label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_imageSize" value="default"/>
+						<span class="localizedText" data-localizedtext="useDefault"></span>
+					</label>
+					<hr/>
+				</div>
+				<div class="booleanOptions preloadImagesOptions">
+					<label class="localizedText" data-localizedtext="preloadImages2"></label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_preloadImages" value="preload"/>
+						<span class="localizedText" data-localizedtext="preloadImages_Preload"></span>
+					</label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_preloadImages" value="dontPreload"/>
+						<span class="localizedText" data-localizedtext="preloadImages_DontPreload"></span>
+					</label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_preloadImages" value="default"/>
+						<span class="localizedText" data-localizedtext="useDefault"></span>
+					</label>
+					<hr/>
+				</div>
+				<div class="booleanOptions forceNSFWOptions">
+					<label class="localizedText" data-localizedtext="forceNSFW"></label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_forceNSFW" value="nsfw"/>
+						<span class="localizedText" data-localizedtext="forceNSFW_NSFW"></span>
+					</label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_forceNSFW" value="sfw"/>
+						<span class="localizedText" data-localizedtext="forceNSFW_SFW"></span>
+					</label>
+					<br/>
+					<label>
+						<input type="radio" name="blogOptions_forceNSFW" value="noForce"/>
+						<span class="localizedText" data-localizedtext="forceNSFW_NoForce"></span>
+					</label>
+					<hr/>
+				</div>
+			</div>
+			<button type="button" class="localizedText disableBlog ui-state-error" data-localizedtext="disableBlog"></button>
+			<button type="button" class="localizedText enableBlog" data-localizedtext="enableBlog"></button>
+			<button type="button" class="localizedText addBlog" data-localizedtext="addBlog"></button>
+		</div>
+		<div class="dialog embeddedLinkDialog">
+			<iframe class="embeddedLink"></iframe>
+		</div>
+		<div class="dialog downloadsDialog">
+			<div class="downloadList"></div>
+			<button type="button" class="nextDownloads localizedText" data-localizedtext="more"></button>
+		</div>
+		<div class="dialog blogStatisticsDialog">
+			<table class="blogStatisticsTable">
+				<tr>
+					<td colspan="2" class="blogStatisticsDialogHeader url"></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div class="blogDescription"></div>
+					</td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="nsfw"></td>
+					<td class="value nsfw"></td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="forceNSFW"></td>
+					<td class="value forceNSFW"></td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="loginRequired"></td>
+					<td class="value loginRequired"></td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="lastUpdatedOn"></td>
+					<td class="value lastUpdatedOn"></td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="lastViewedOn"></td>
+					<td class="value lastViewedOn"></td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="firstPostOn"></td>
+					<td class="value firstPostOn"></td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="totalPosts"></td>
+					<td class="value totalPosts"></td>
+				</tr>
+				<tr class="postsPerType">
+					<td class="label postType"></td>
+					<td class="value postCount"></td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="postsPerDay"></td>
+					<td class="value postsPerDay"></td>
+				</tr>
+				<!-- <tr>
+					<td class="label localizedText" data-localizedtext="followers"></td>
+					<td class="value followers"></td>
+				</tr>
+				<tr>
+					<td class="label localizedText" data-localizedtext="likes"></td>
+					<td class="value likes"></td>
+				</tr> -->
+			</table>
+		</div>
+		<div class="dialog downloadsProgressDialog">
+			<div class="localizedText noActiveDownload" data-localizedtext="noActiveDownload"></div>
+			<ol class="downloadList">
+			</ol>
+		</div>
+		<div class="dialog uselessDialog">
+			<label>
+				<div class="localizedText" data-localizedtext="addUseless2"></div>
+				<input type="text" class="uselessText"/>
+			</label>
+		</div>
+		<div class="dialog readLaterDialog">
+		</div>
+		<div class="dialog filtersDialog">
+			<div class="filterTable">
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.opacity"></div>
+					<div class="filterValue"><input type="range" min="0.1" step="0.1" max="1" data-reset="1" data-filter="opacity"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.brightness"></div>
+					<div class="filterValue"><input type="range" min="0.5" step="0.1" max="1.5" data-reset="1" data-filter="brightness"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.contrast"></div>
+					<div class="filterValue"><input type="range" min="0.1" step="0.1" max="1.9" data-reset="1" data-filter="contrast"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.saturate"></div>
+					<div class="filterValue"><input type="range" min="0.1" step="0.1" max="1.9" data-reset="1" data-filter="saturate"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.hueRotation"></div>
+					<div class="filterValue"><input type="range" min="-180" step="1" max="180" data-reset="0" data-filter="hue-rotate" data-format="{0}deg"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.grayScale"></div>
+					<div class="filterValue"><input type="range" min="0" step="0.1" max="1" data-reset="0" data-filter="grayscale"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.sepia"></div>
+					<div class="filterValue"><input type="range" min="0" step="0.1" max="1" data-reset="0" data-filter="sepia"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.blur"></div>
+					<div class="filterValue"><input type="range" min="0" step="0.5" max="8" data-reset="0" data-filter="blur" data-format="{0}px"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.dropShadow"></div>
+					<div class="filterValue"><input type="range" min="0" step="1" max="10" data-reset="0" data-filter="drop-shadow" data-format="0px 0px {0}px black"/></div>
+				</div>
+				<div class="filterRow">
+					<div class="localizedText filterName" data-localizedtext="cssFilters.invert"></div>
+					<div class="filterValue"><input type="range" min="0" step="1" max="1" data-reset="0" data-filter="invert"/></div>
+				</div>
+			</div>
+			<button type="button" class="resetButton localizedText" data-localizedtext="reset"></button>
+		</div>
+		<div class="dialog loaderDialog">
+			<div class="loadingProgress"></div>
+			<div class="loadingMessage"></div>
+			<button type="button" class="loadingCancelButton"></button>
+		</div>
+		<div class="fullScreenContainer">
+			<a class="fullScreenButton closeFullScreen rounded right first">&nbsp;</a>
+			<a class="fullScreenButton fullScreenDownload rounded right second">&nbsp;</a>
+			<a class="fullScreenButton imageSearch transitionable rounded google right third"
+				data-imagesearchurl="https://www.google.com/searchbyimage?&image_url={0}"
+				data-backgroundimage="./images/google.png">&nbsp;</a>
+			<a class="fullScreenButton imageSearch transitionable rounded tineye right fourth"
+				data-imagesearchurl="https://www.tineye.com/search?url={0}"
+				data-backgroundimage="./images/tineye.png">&nbsp;</a>
+			<a class="fullScreenButton fullScreenFullScreen rounded right bottom">&nbsp;</a>
+			<div class="slideshowToolbar transitionable">
+				<a class="fullScreenButton previousPost rounded">&nbsp;</a>
+				<a class="fullScreenButton previous rounded">&nbsp;</a>
+				<a class="fullScreenButton next rounded">&nbsp;</a>
+				<a class="fullScreenButton nextPost rounded">&nbsp;</a>
+				<div class="fullScreenButton slideshowInfo ui-widget-content ui-corner-all">&nbsp;</div>
+			</div>
+			<div class="fullScreenButton fullScreenImageSize ui-widget-content ui-corner-all">&nbsp;</div>
+			<div class="fullScreen transitionable">
+				<div class="ui-widget-content backdrop"></div>
+				<div class="fullScreenImageContainer">
+					<audio src="" controls></audio>
+					<img src="" />
+				</div>
+			</div>
+		</div>
+		<noscript>
+			<div class="fullScreenContainer" style="display: initial;">
+				<div class="fullScreen">
+					<div class="ui-widget-content backdrop"></div>
+					<div class="fullScreenImageContainer">
+						<div class="noscript ui-state-error ui-corner-all">
+							This page requires JavaScript to be enabled in order to function properly. Please enable JavaScript and reload the page.
+						</div>
+					</div>
+				</div>
+			</div>
+		</noscript>
+		<button type="button" class="toTop">&nbsp;</button>
+	</body>
+</html>

@@ -1,0 +1,88 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="https://firebase.google.com/_static/2f0df771ae/images/firebase/favicon.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="https://firebase.google.com/_static/2f0df771ae/images/firebase/favicon.png" type="image/png"/>
+		<title>Firebase Test</title>
+		<script type="text/javascript" src="../../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.7.1/firebase-app.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.7.1/firebase-auth.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.7.1/firebase-database.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			$().ready(function() {
+				var loadPage = function() {
+					var application = firebase.initializeApp({
+						  "apiKey": "AIzaSyA4dckJaCSBB1R7gJVuWCeYXjr7P6Oi9DM"
+						//, "authDomain": "glowing-fire-7537.firebaseapp.com"
+						, "databaseURL": "https://glowing-fire-7537.firebaseio.com/"
+						//, "storageBucket": "glowing-fire-7537.appspot.com"
+					}, window.guid());
+
+					application.auth().signInWithEmailAndPassword("???", "???")
+						.then(function(database) {
+							var downloads = application.database().ref("nadir_mytumblr_com/downloads");
+
+							Object.getPrototypeOf(downloads).children = function(values) {
+								var ref = this;
+
+								return $.Deferred(function(deferred) {
+									var results = [ ];
+
+									$.when.apply(ref, $.map(values, function(item, i) {
+										return $.Deferred(function(childDeferred) {
+											ref.child(item).once("value")
+												.then(function(data) {
+													results[i] = data.val();
+													childDeferred.resolve();
+												}).catch(childDeferred.reject);
+										}).promise();
+									})).always(function() {
+										deferred.resolve(results);
+									});
+								}).promise();
+							};
+							downloads.child("_count").once("value").then(function(data) {
+								var value = data.val();
+
+								$.toast("{0} downloads".format(value.toLocaleString()));
+
+								debugger;
+								downloads.children([
+									  "vtt_tumblr_com_tumblr_o7aiif0AJE1uhxa8u_mp4"
+									, "vtt_tumblr_com_tumblr_o7almdNFHC1rbpxlo_mp4"
+									, "vtt_tumblr_com_tumblr_o7almdNFHC1rbpxlo_mp5"
+								]).then(function(values) {
+									debugger;
+								}, function(a, b, c) {
+									debugger;
+								});
+							}).catch($.toast.error);
+						}).catch($.toast.error);
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<!-- <div class="dialog loaderDialog">
+			<div class="loadingProgress"></div>
+			<div class="loadingMessage"></div>
+			<button type="button" class="loadingCancelButton"></button>
+		</div> -->
+	</body>
+</html>

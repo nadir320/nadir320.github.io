@@ -1,0 +1,98 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="data:image/png;base64,
+		iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+		YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmV
+		AAAADUlEQVQYV2P4//8/AwAI/AL+iF8G4AAAAABJRU5ErkJggg==">
+		<title>IndexedDB Test</title>
+		<style type="text/css">
+		</style>
+	</head>
+	<body>
+		<input type="file" id="inputFile"/>
+		<button id="import">Import</button>
+		<script type="text/javascript">
+			"use strict";
+
+			if (!window.indexedDB) {
+				window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+			}
+			if (!window.IDBTransaction) {
+				window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+			}
+			if (!window.IDBKeyRange) {
+				window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+			}
+
+			(function() {
+				var DBDeleteRequest = window.indexedDB.deleteDatabase("my_tumblr_downloads");
+
+				DBDeleteRequest.onsuccess = function(e) {
+					var DBOpenRequest = window.indexedDB.open("my_tumblr_downloads");
+
+					DBOpenRequest.onerror = function(e) {
+						debugger;
+					};
+
+					DBOpenRequest.onsuccess = function(e) {
+						debugger;
+					};
+
+					DBOpenRequest.onupgradeneeded = function(e) {
+						var db = event.target.result;
+
+						db.createObjectStore("downloads", {
+							keyPath: "key"
+						});
+					};
+				};
+			})();
+
+			document.getElementById("import").addEventListener("click", function(e) {
+				var fileInput = document.getElementById("inputFile"),
+					reader;
+
+				for (var i = 0; i < fileInput.files.length; i++) {
+					(reader = new FileReader()).addEventListener("load", function(e2) {
+						var actualCount = 0,
+							downloads = window.JSON.parse(this.result),
+							request = window.indexedDB.open("my_tumblr_downloads");
+
+						request.onsuccess = function(e3) {
+							var transaction = e3.target.result.transaction("downloads", "readwrite"),
+								store = transaction.objectStore("downloads"),
+								item;
+
+							debugger;
+							for (var name in downloads) {
+								if (name[0] !== "_") {
+									switch (name.split("_").pop()) {
+										case "gif":
+										case "jpg":
+										case "png":
+											break;
+										default:
+											item = downloads[name];
+											item.key = name;
+											store.add(item);
+											actualCount++;
+											break;
+									}
+								}
+							}
+							if (transaction.commit) {
+								transaction.commit();
+							}
+							alert(actualCount + " downloads imported");
+						};
+					});
+					reader.readAsText(fileInput.files[i]);
+				}
+			});
+		</script>
+	</body>
+</html>

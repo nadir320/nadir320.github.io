@@ -1,0 +1,727 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link id="favicon" rel="icon" href="//www.video.mediaset.it/vm_16x16.ico" type="image/x-icon"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="//www.video.mediaset.it/vm_16x16.ico" type="image/x-icon"/>
+		<title></title>
+		<script type="text/javascript" src ="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src ="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.4/themes/cupertino/jquery-ui.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			window.NREUM = { };
+
+			var _getParameter = function(name) {
+				var parameters = _getParameters();
+
+				name = name.toLowerCase();
+				for (var i in parameters) {
+					if (i.toLowerCase() === name) {
+						return parameters[i];
+					}
+				}
+			},
+			_getParameters = function(name) {
+				var parameters = { };
+
+				if (window.location.search && window.location.search.length) {
+					var a = window.location.search.substr(1).split("&");
+
+					for (var i = 0; i < a.length; i++) {
+						var p = a[i], j = p.indexOf("=");
+
+						parameters[decodeURIComponent(p.substr(0, j))] =
+							decodeURIComponent(p.substr(j + 1));
+					}
+				}
+				return parameters;
+			},
+			_setParameter = function(newParameters, parametersToRemove) {
+				var f, href = window.location.href,
+					i = href.indexOf("?"),
+					parameters = _getParameters();
+
+				if (i >= 0) {
+					href = href.substr(0, i);
+				}
+				if (parametersToRemove) {
+					for (i = 0; i < parametersToRemove.length; i++) {
+						delete parameters[parametersToRemove[i]];
+					}
+				}
+				if (newParameters) {
+					for (i in newParameters) {
+						if (newParameters[i] !== undefined) {
+							parameters[i] = newParameters[i];
+						}
+					}
+				}
+				f = false;
+				for (i in parameters) {
+					if (!f) {
+						href += "?";
+						f = true;
+					} else {
+						href += "&";
+					}
+					href += encodeURIComponent(i) + "=" +
+						encodeURIComponent(parameters[i]);
+				}
+				return href;
+			};
+
+			var
+				DEBUG = _getParameter("debug"),
+				DEBUG_TIMEOUT = parseInt(_getParameter("debugTimeout")) || 2000,
+				STORAGE_ENTRY_NAME = "archivio_mediaset";
+
+			var _format = function(format/*, parameters*/) {
+				for (var i = 1; i < arguments.length; i++) {
+					format = format.replace(new RegExp("\\{" +
+						(i - 1).toString() + "\\}", "gi"), arguments[i]);
+				}
+				return format;
+			},
+			_getVisitedURLs = function() {
+				var visitedURLs = [ ];
+
+				if (window.localStorage && window.localStorage.getItem) {
+					var value = window.localStorage.getItem(STORAGE_ENTRY_NAME);
+
+					if (value && value.length) {
+						visitedURLs = $.parseJSON(decodeURIComponent(value));
+					}
+				}
+				return visitedURLs;
+			},
+			_hideLoader = function() {
+				if (--_loaders === 0) {
+					$(".loader").dialog("close");
+				}
+			},
+			_isVisitedURL = function(url) {
+				var visitedURLs = _getVisitedURLs();
+
+				if (visitedURLs && visitedURLs.length) {
+					for (var i = 0; i < visitedURLs.length; i++) {
+						var visitedURL = visitedURLs[i];
+
+						if (url === visitedURL) {
+							return true;
+						}
+					}
+				}
+				return false;
+			},
+			_loaders = 0,
+			_noProtocol = function(url) {
+				var p = url.indexOf(":"),
+					q = url.indexOf("/");
+
+				if (p >= 0 && q >= 0 && p < q) {
+					url = url.substr(p + 1);
+				}
+				while (url.length && url[0] === "/") {
+					url = url.substr(1);
+				}
+				return url;
+			},
+			_setVisitedURL = function(url, reset) {
+				if (_isVisitedURL(url) == !!reset) {
+					var visitedURLs = _getVisitedURLs();
+
+					if (!visitedURLs) {
+						visitedURLs = [ ];
+					}
+					if (reset) {
+						for (var i = 0; i < visitedURLs.length; i++) {
+							var visitedURL = visitedURLs[i];
+
+							if (url === visitedURL) {
+								visitedURLs.splice(i, 1);
+								break;
+							}
+						}
+					} else {
+						visitedURLs.push(url);
+					}
+					if (window.localStorage && window.localStorage.setItem &&
+						window.JSON && window.JSON.stringify) {
+
+						window.localStorage.setItem(STORAGE_ENTRY_NAME,
+							encodeURIComponent(JSON.stringify(visitedURLs)));
+					}
+				}
+			},
+			_sameProtocol = function(url) {
+				var p = url.indexOf(":"),
+					q = url.indexOf("/");
+
+				if (p >= 0 && q >= 0 && p < q) {
+					url = url.substr(p + 1);
+				}
+				while (url.length && url[0] === "/") {
+					url = url.substr(1);
+				}
+				return "//" + url;
+			},
+			_showLoader = function(message) {
+				if (message !== undefined) {
+					$(".loader").find(".loadingMessage").text(message);
+				}
+				if (_loaders++ === 0) {
+					var r = $.Deferred();
+
+					$(".loader").dialog({
+						"dialogClass": "no-title",
+						"modal": true,
+						"open": function(event, ui) {
+							$(this).css({
+								"min-height": 0
+							});
+							r.resolve();
+						},
+						"resizable": false,
+						"width": "auto"
+					});
+					return r.promise();
+				}
+			};
+
+			var archive = function(indexURL, proxyURL) {
+				var getPage = function(url, data, hidden, jsonp) {
+					var r = $.Deferred();
+
+					var ajaxFn = function() {
+						return $.ajax({
+							data: $.extend({ }, data, {
+								"_": $.now()
+							}),
+							dataType: (jsonp) ? "jsonp" : undefined,
+							url: (jsonp) ? url : proxyURL + _noProtocol(url)
+						}).then(undefined, function(jqXHR, error, status) {
+							if (window.console && window.console.log) {
+								window.console.log(status || error);
+							}
+						});
+					}, fn = function() {
+						return $.when(ajaxFn()).then(function(ajaxData) {
+							r.resolve(ajaxData);
+						}, function() {
+							r.reject();
+						});
+					};
+
+					$.when((hidden) ? true : _showLoader()).then(function() {
+						if (DEBUG) {
+							window.setTimeout(function() {
+								fn();
+							}, DEBUG_TIMEOUT);
+						} else {
+							fn();
+						}
+					});
+					return r.always(function() {
+						if (!hidden) {
+							_hideLoader();
+						}
+					}).promise();
+				};
+
+				var getAndConvertIndexPage = function(page, responses, i) {
+					return getPage(indexURL, {
+						dim: archive.PAGE_SIZE,
+						page: page + 1
+					}).then(function(data) {
+						var response = [ ];
+
+						$(document.createElement("div")).html(data).find(".box").each(function(i) {
+							var episodeElement = $(this),
+								imageElement = episodeElement.find(".lazy"),
+								anchorElement = episodeElement.find("a").first();
+
+							response.push({
+								"description": episodeElement.find(".descr").text(),
+								"duration": episodeElement.find(".infoLength").text(),
+								"href": anchorElement.attr("href"),
+								"title": anchorElement.attr("title"),
+								"thumbnail": imageElement.data("src"),
+								"views": episodeElement.find(".infoView").text()
+							});
+						});
+
+						responses[i] = response;
+					});
+				};
+
+				var instance = {
+					getDownloadURL: function(videoID, useExternalProvider) {
+						//var CDN_URL = "//cdnselector.xuniplay.fdnames.com/GetCDN.aspx",
+						var CDN_URL = "//cdnsel01.mediaset.net/GetCdn.aspx",
+							EXTERNAL_URL = "//video.lazza.dk/vd.php";
+
+						if (useExternalProvider) {
+							return getPage(EXTERNAL_URL, {
+								"id": videoID
+							}).then(function(data) {
+								var urls = [ ];
+
+								$(data).find("video").filter(function() {
+									return $(this).attr("src").indexOf("manifest") < 0;
+								}).each(function(i) {
+									urls.push($(this).attr("src"));
+								});
+								return urls;
+							});
+						}
+						return getPage(CDN_URL, {
+							"format": "json",
+							"streamid": videoID
+						}, true, true).then(function(data) {
+							var urls = [ ];
+
+							$(data.videoList).each(function() {
+								var url = this.toString();
+
+								if (url.indexOf("manifest") < 0) {
+									urls.push(url);
+								}
+							});
+							return urls;
+						});
+					},
+					getIndexPage: function(page) {
+						if (!page) {
+							page = 0;
+						}
+
+						var requests = [ ],
+							responses = new Array(archive.PAGES),
+							result = $.Deferred();
+
+						for (var i = 0; i < responses.length; i++) {
+							requests.push(getAndConvertIndexPage(page + i, responses, i));
+						}
+
+						$.when.apply(this, requests).then(function() {
+							var allResponses = [ ];
+
+							$(responses).each(function(i) {
+								$(this).each(function(j) {
+									allResponses.push(this);
+								});
+							});
+							result.resolve(allResponses);
+						}, function() {
+							result.reject();
+						});
+						return result.promise();
+					}
+				};
+
+				return instance;
+			};
+			archive.DAYS = 5,
+			archive.PAGE_SIZE = 2;
+			archive.PAGES = Math.ceil(archive.DAYS / archive.PAGE_SIZE), // One week (five days)
+			archive.SEASON_SEPARATION_MONTH = 9, // September
+			archive.THUMBNAIL_WIDTH = 310;
+
+			$().ready(function() {
+				var acrossYears = true,
+					favicon = _getParameter("favicon"),
+					indexURL,
+					proxyURL = "//cors-anywhere.herokuapp.com/",
+					useExternalProvider = !!parseInt(_getParameter("external"));
+
+				var d = new Date(),
+					fy = d.getFullYear(),
+					m = d.getMonth() + 1,
+					p = parseInt(_getParameter("p")),
+					py = parseInt(_getParameter("y")),
+					y1, y2;
+
+				if (!!_getParameter("temptationIsland")) {
+					acrossYears = false;
+				}
+
+				if (py && !isNaN(py)) {
+					y1 = py;
+					y2 = py + 1;
+				} else if (acrossYears) {
+					y1 = (m < archive.SEASON_SEPARATION_MONTH) ? fy - 1 : fy,
+					y2 = (m < archive.SEASON_SEPARATION_MONTH) ? fy : fy + 1;
+				} else {
+					y1 = fy;
+					y2 = fy + 1;
+				}
+
+				if (!!_getParameter("uominiEDonne")) {
+					indexURL = _format("//www.video.mediaset.it/programma/uominiedonne/full_{0}_{1}_strip.shtml", y1, y2);
+				} else if (!!_getParameter("isolaDeiFamosi")) {
+					indexURL = _format("//www.video.mediaset.it/programma/l_isola_dei_famosi/full_stagione{0}_{1}_strip.shtml", y1 - 2004, y1 + 1);
+				} else if (!!_getParameter("temptationIsland")) {
+					indexURL = _format("//www.video.mediaset.it/programma/temptation_island/full_{0}_strip.shtml", y1);
+				}
+
+				$(".home").attr("href", _setParameter(undefined, [ "p", "y" ]));
+				$(".title").text(document.title = _getParameter("title") || "");
+				if (favicon && favicon.length) {
+					$("#favicon").add($("#shortcutIcon")).attr({
+						"href": decodeURIComponent(favicon)
+					});
+				}
+				$(".previousSeason")
+					.attr({
+						"href": _setParameter({ "y": y1 - 1 }, [ "p" ]),
+						"title": _format((acrossYears) ? "Stagione {0} / {1}" : "Stagione {0}", y1 - 1, y1)
+					})
+					.button({
+						"icons": {
+							"primary": "ui-icon-arrowthick-1-w"
+						},
+						"text": false
+					});
+				$(".season").text(_format((acrossYears) ? "{0} / {1}" : "{0}", y1, y2));
+				$(".nextSeason")
+					.attr({
+						"href": _setParameter({ "y": y2 }, [ "p" ]),
+						"title": _format((acrossYears) ? "Stagione {0} / {1}" : "Stagione {0}", y2, y2 + 1)
+					})
+					.button({
+						"icons": {
+							"primary": "ui-icon-arrowthick-1-e"
+						},
+						"text": false
+					});
+				$(".loadingProgress")
+					.progressbar()
+					.progressbar("option", "value", false);
+
+				if (p && !isNaN(p) && p > 1) {
+					$(".previousPage")
+						.attr({
+							"href": _setParameter({
+								"p": (p > 2) ? p - 1 : undefined,
+								"y": y1
+							}, [ (p > 2) ? undefined : "p" ]),
+							"title": _format("Pagina {0}", p - 1)
+						})
+						.button({
+							"icons": {
+								"primary": "ui-icon-arrowthick-1-w"
+							}
+						});
+				} else {
+					$(".previousPage").hide();
+				}
+				$(".nextPage")
+					.attr({
+						"href": _setParameter({
+							"p": (p && !isNaN(p)) ? p + 1 : 2,
+							"y": y1
+						}),
+						"title": _format("Pagina {0}",
+							(p && !isNaN(p)) ? p + 1 : 2)
+					})
+					.button({
+						"icons": {
+							"primary": "ui-icon-arrowthick-1-e"
+						}
+					});
+
+				if (indexURL && indexURL.length) {
+					var a = new archive(indexURL, proxyURL);
+
+					var getDownloadURL = function(element, item) {
+						var h = item.href, id;
+
+						while (h.length && h[h.length - 1] === "/") {
+							h = h.substr(0, h.length - 1);
+						}
+						h = h.split("/");
+
+						id = parseInt(h[h.length - 2]);
+						if (isNaN(id)) {
+							id = parseInt(h[h.length - 1]);
+						}
+						if (isNaN(id)) {
+							h = h[h.length - 1].replace("_", "-").split(/\W+/);
+							id = parseInt(h[h.length - 2]);
+							if (isNaN(id)) {
+								id = h[h.length - 1];
+							}
+						}
+
+						a.getDownloadURL(id, useExternalProvider).then(function(url) {
+							var urls = ($.isArray(url)) ? url : [ url ];
+
+							for (var i = 0; i < urls.length; i++) {
+								var u = urls[i],
+									ext;
+
+								if (urls.length > 1) {
+									var j = u.split(".");
+									ext = "." + j[j.length - 1];
+								}
+								if (!(ext && ext.length)) {
+									ext = ".mp4";
+								}
+								var button = $(document.createElement("a"))
+									.addClass("downloadButton")
+									.attr({
+										"download": item.title + ext,
+										"href": u,
+										"target": "_blank",
+										"title": u
+									})
+									.data({
+										"extension": ext,
+										"url": u
+									})
+									.button()
+									/* .addClass("ui-state-highlight") */
+									.on({
+										"click": function(e) {
+											_setVisitedURL($(e.target).closest("a").data("url"));
+											window.setTimeout(function() {
+												setVisited($(e.target).closest("a"));
+											}, 300);
+										}
+									})
+									.hide()
+									.appendTo(element);
+
+								var resetButton = $(document.createElement("a"))
+									.addClass("resetButton")
+									.addClass("ui-priority-secondary")
+									.attr({
+										"href": "#"
+									})
+									.data({
+										"url": u
+									})
+									.button({
+										"icons": {
+											"primary": "ui-icon-arrowreturnthick-1-w"
+										},
+										"label": "Segna come non scaricato",
+										"text": false
+									})
+									.on({
+										"click": function(e) {
+											_setVisitedURL($(e.target).closest("a").data("url"), true);
+											setVisited($(e.target).closest("a").prev());
+											e.preventDefault();
+										}
+									})
+									.hide()
+									.appendTo(element);
+
+								setVisited(button);
+								button.fadeIn("slow");
+
+								/* $.ajax({
+									"type": "HEAD",
+									"url": url
+								}).always(function() {
+									button.removeClass("ui-state-highlight");
+								}).fail(function(jqXHR, error, status) {
+									button.addClass("ui-state-error")
+										.button("option", "label",
+											jqXHR.statusText || status || error);
+								}); */
+							}
+						});
+					}
+
+					var setVisited = function(button) {
+						var url = button.attr("href"),
+							labelFormat = _format("{0} ({1})", "{0}",
+								button.data("extension").substr(1).toUpperCase()),
+							resetButton = button.next(),
+							visited = _isVisitedURL(url);
+
+						if (visited) {
+							button.addClass("ui-priority-secondary")
+								.button("option", "icons", {
+									"primary": "ui-icon-arrowthickstop-1-s"
+								})
+								.button("option", "label", _format(labelFormat, "Scaricato"));
+							resetButton.fadeIn("slow");
+						} else {
+							button.removeClass("ui-priority-secondary")
+								.button("option", "icons", {
+									"primary": "ui-icon-video"
+								})
+								.button("option", "label", _format(labelFormat, "Scarica"));
+							resetButton.hide();
+						}
+					};
+
+					if (p && !isNaN(p)) {
+						p = (p - 1) * archive.PAGES;
+					}
+					a.getIndexPage(p).then(function(data) {
+						var episodesElement = $(".episodes")
+							.empty();
+
+						if (data.length) {
+							$(".episodesTitle").fadeIn("slow");
+
+							$(data).each(function(i) {
+								getDownloadURL($(document.createElement("div"))
+									.addClass("episode")
+									.append($(document.createElement("h2"))
+										.text(this.title))
+									.append($(document.createElement("img"))
+										.attr({
+											"src": _sameProtocol(this.thumbnail),
+											"title": this.title
+										})
+										.css({
+											"max-width": archive.THUMBNAIL_WIDTH,
+											"width": "100%"
+										}))
+									.append($(document.createElement("div"))
+										.text(this.description))
+									.append($(document.createElement("br")))
+									.append($(document.createElement("a"))
+										.attr({
+											"href": this.href,
+											"target": "_blank",
+											"title": this.href
+										})
+										.text("Vai")
+										.button({
+											"icons": {
+												"primary": "ui-icon-document"
+											}
+										}))
+									.append($(document.createElement("span"))
+										.html("&nbsp;&nbsp;&nbsp;&nbsp;"))
+									.appendTo(episodesElement), this);
+								$(document.createElement("br"))
+									.appendTo(episodesElement);
+							});
+							if (data.length < archive.DAYS) {
+								$(".nextPage").hide();
+							}
+						} else {
+							$(".noEpisode").fadeIn();
+							$(".nextPage").hide();
+						}
+						$(".pager").fadeIn();
+					}, function() {
+						$(".noEpisode").fadeIn();
+					});
+				}
+			});
+		</script>
+		<style type="text/css">
+			body {
+				-webkit-transition-duration: 0.5s;
+				-webkit-transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 	/* ease out cubic */
+
+				font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+				font-size: 1em !important;
+				text-align: center;
+				transition-duration: 0.5s;
+				transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 		/* ease out cubic */
+			}
+
+			.header {
+				font-size: 2.5em;
+				font-weight: bold;
+				padding: 0.5em;
+				text-align: center;
+			}
+
+			.header .ui-button {
+				height: 1em;
+				width: 1em;
+			}
+
+			.home {
+				text-decoration: none;
+			}
+
+			.season {
+				font-size: smaller;
+			}
+
+			.nextPage,
+			.nextSeason,
+			.pager,
+			.previousPage,
+			.previousSeason {
+				margin: 0.2em;
+			}
+
+			.dialog,
+			.episodesTitle,
+			.noEpisode,
+			.pager {
+				display: none;
+			}
+
+			.downloadButton,
+			.resetButton {
+				margin-left: 0.3em;
+			}
+
+			.ui-dialog .loader {
+				text-align: center;
+				overflow: hidden;
+			}
+
+			.loadingProgress {
+				width: 9em;
+				height: 1em;
+			}
+
+			.loadingMessage {
+				font-size: 50%;
+				margin: 1em 0 0;
+			}
+
+			.no-title .ui-widget-header,
+			.no-close .ui-dialog-titlebar-close {
+				display: none;
+			}
+
+			@media all and (min-width: 56em) {
+				body.ui-widget {
+					font-size: 1.2em !important;
+				}
+			}
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<div class="header ui-widget-header">
+			<a class="home"><span class="title"></span></a>
+			<br/>
+			<a class="previousSeason"></a>
+			<span class="season"></span>
+			<a class="nextSeason"></a>
+		</div>
+		<div class="pager">
+			<a class="previousPage" title="Pagina precedente">Pagina precedente</a>
+			<a class="nextPage" title="Pagina seguente">Pagina seguente</a>
+			<hr/>
+		</div>
+		<h1 class="episodesTitle">Puntate:</h1>
+		<div class="episodes"></div>
+		<h2 class="noEpisode ui-state-error">Nessuna puntata trovata</h2>
+		<div class="pager">
+			<hr/>
+			<a class="previousPage" title="Pagina precedente">Pagina precedente</a>
+			<a class="nextPage" title="Pagina seguente">Pagina seguente</a>
+		</div>
+		<div class="dialog loader"><div class="loadingProgress"></div><div class="loadingMessage"></div></div>
+	</body>
+</html>

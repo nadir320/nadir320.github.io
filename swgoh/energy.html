@@ -1,0 +1,271 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="images/192-round-2017.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="images/192-round-2017.png" type="image/png"/>
+		<title>SWGOH Character Board Screenshot</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
+		<style type="text/css">
+			body {
+				font-family: Tahoma;
+				text-align: center;
+			}
+
+			.table {
+				border: 1px solid dodgerBlue;
+				border-radius: 1em;
+				display: table;
+				margin: 0 auto;
+				padding: 1em;
+			}
+
+			.table .row {
+				display: table-row;
+			}
+
+			.table .row * {
+				display: table-cell;
+			}
+
+			.table img {
+				position: absolute;
+			}
+
+			.table label {
+				font-size: smaller;
+				padding-left: 3em;
+				text-align: initial;
+			}
+
+			.table input {
+				min-width: 16em;
+			}
+
+			.table input.hr-before {
+				margin-top: .5em;
+			}
+
+			.table input.hr-after {
+				margin-bottom: .5em;
+			}
+
+			.table .hr {
+				border: 0.5px solid gray;
+				box-sizing: border-box;
+				height: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="fullscreen background"></div>
+		<div class="table">
+			<div class="row">
+				<a>&nbsp;</a>
+				<label for="currentDate">Ora:</label>
+				<input id="currentDate" class="hr-after" readonly />
+			</div>
+			<div class="row">
+				<div class="hr"></div>
+				<div class="hr"></div>
+				<div class="hr"></div>
+			</div>
+			<div class="row">
+				<img src="images/energy48.png"/>
+				<label for="energy_nextBonus">Prossimo bonus:</label>
+				<input id="energy_nextBonus" class="hr-before" readonly />
+			</div>
+			<div class="row">
+				<a>&nbsp;</a>
+				<label for="energy_maximum">Energia consigliata:</label>
+				<input id="energy_maximum" readonly />
+			</div>
+			<div class="row">
+				<img src="images/cantina48.png"/>
+				<label for="cantina_nextBonus">Prossimo bonus:</label>
+				<input id="cantina_nextBonus" readonly />
+			</div>
+			<div class="row">
+				<a>&nbsp;</a>
+				<label for="cantina_maximum">Energia consigliata:</label>
+				<input id="cantina_maximum" readonly />
+			</div>
+			<div class="row">
+				<img src="images/fleet48.png"/>
+				<label for="fleet_nextBonus">Prossimo bonus:</label>
+				<input id="fleet_nextBonus" readonly />
+			</div>
+			<div class="row">
+				<a>&nbsp;</a>
+				<label for="fleet_maximum">Energia consigliata:</label>
+				<input id="fleet_maximum" readonly />
+			</div>
+			<div class="row">
+				<img src="images/mod48.png"/>
+				<label for="mod_nextBonus">Prossimo bonus:</label>
+				<input id="mod_nextBonus" readonly />
+			</div>
+			<div class="row">
+				<a>&nbsp;</a>
+				<label for="mod_maximum">Energia consigliata:</label>
+				<input id="mod_maximum" readonly />
+			</div>
+		</fieldset>
+		<script type="text/javascript">
+			"use strict";
+
+			var _bonusEnergy = 45,
+				_dailyHour = {
+					"dst": 23,
+					"st": 22
+				},
+				_maxEnergy = 144;
+
+			var _energy = {
+				"cantina": {
+					"max": _maxEnergy,
+					"bonus": _bonusEnergy,
+					"every": .2,
+					"times": {
+						"dst": [ 11 ],
+						"st": [ 10 ]
+					}
+				},
+				"energy": {
+					"max": _maxEnergy,
+					"bonus": _bonusEnergy,
+					"every": .1,
+					"times": {
+						"dst": [ 11, 17, 20 ],
+						"st": [ 10, 16, 19 ]
+					}
+				},
+				"fleet": {
+					"max": _maxEnergy,
+					"bonus": _bonusEnergy,
+					"every": .2,
+					"times": {
+						"dst": [ 17 ],
+						"st": [ 16 ]
+					}
+				},
+				"mod": {
+					"max": _maxEnergy,
+					"bonus": _bonusEnergy,
+					"every": .1,
+					"times": {
+						"dst": [ 11 ],
+						"st": [ 10 ]
+					}
+				}
+			};
+
+			var getDateString = function(date, now) {
+				var s = "alle {0}:{1}:{2}"
+					.format(date.getHours().toString().zeroPad(2),
+						date.getMinutes().toString().zeroPad(2),
+						date.getSeconds().toString().zeroPad(2));
+
+				if (typeof now !== "undefined" &&
+					(date.getFullYear() !== now.getFullYear() ||
+					date.getMonth() !== now.getMonth() ||
+					date.getDate() !== now.getDate())) {
+
+					s = "il {0} {1}".format(date.toLocaleString(undefined, {
+						"year": (date.getFullYear() !== now.getFullYear()) ?
+							"numeric" : undefined,
+						"month": "numeric",
+						"day": "numeric"
+					}), s);
+				}
+				return s;
+			};
+
+			var getTimeInterval = function(ms) {
+				var h, m, n = Math.floor(ms / 1e3), s;
+
+				s = n % 60;
+				n = Math.floor(n / 60);
+				m = n % 60;
+				n = Math.floor(n / 60);
+				h = n;
+				return "{0}:{1}:{2}"
+					.format(h.toString().zeroPad(2),
+						m.toString().zeroPad(2),
+						s.toString().zeroPad(2));
+			}
+
+			var refresh = function() {
+				var now = new Date(),
+					gmtNow = new Date(now.getTime() + now.getTimezoneOffset() * 6e4),
+					hours = gmtNow.getHours(),
+					timeType = (now.getTimezoneOffset() === new Date(now.getFullYear(), 1, 1)
+						.getTimezoneOffset()) ?
+							"st" :
+							"dst";
+
+				document.getElementById("currentDate").value = getDateString(now);
+
+				var maxEnergy = { };
+
+				for (var name in _energy) {
+					(function() {
+						var item = _energy[name],
+							times = item.times[timeType];
+
+						var hoursToNextBonus;
+
+						for (var i = 0, n = times.length; i < n; i++) {
+							if (times[i] > hours) {
+								hoursToNextBonus = (new Date(now.getFullYear(),
+									now.getMonth(),
+									now.getDate(),
+									times[i]).getTime() - gmtNow.getTime());
+								break;
+							}
+						}
+						if (typeof hoursToNextBonus === "undefined") {
+							hoursToNextBonus = (new Date(now.getFullYear(),
+								now.getMonth(),
+								now.getDate() + 1,
+								times[0]).getTime() - gmtNow.getTime());
+						}
+
+						maxEnergy[name + "_nextBonus"] = "fra {0} ({1})"
+							.format(getTimeInterval(hoursToNextBonus),
+								getDateString(new Date(now.getTime() + hoursToNextBonus), now));
+
+						var dailyHour = _dailyHour[timeType];
+
+						var hoursToDaily = (new Date(now.getFullYear(),
+							now.getMonth(),
+							now.getDate() + ((gmtNow.getHours() >= dailyHour) ? 1 : 0),
+							dailyHour).getTime() - gmtNow.getTime());
+
+						var getEnergy = function(h) {
+							return Math.floor(item.max - h / item.every / 36e5) - 1;
+						};
+
+						maxEnergy[name + "_maximum"] = "{0} (massimo {1})"
+							.format(getEnergy(Math.min(hoursToDaily, hoursToNextBonus)).toLocaleString(),
+							getEnergy(hoursToNextBonus).toLocaleString());
+					})();
+				}
+				for (name in maxEnergy) {
+					try {
+						document.getElementById(name).value = maxEnergy[name].toLocaleString();
+					} catch { }
+				}
+			};
+			refresh();
+			window.setInterval(refresh, 5e2);
+		</script>
+	</body>
+</html>

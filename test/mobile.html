@@ -1,0 +1,115 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/mobile.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/mobile.png" type="image/png"/>
+		<title>Mobile</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript" src="../js/mobile-detect.min.js"></script>
+		<script type="text/javascript">
+			"use strict";
+
+			$().ready(function() {
+				var loadPage = function() {
+					var agent = window.location.parameters["agent"] || window.navigator.userAgent,
+						detailsElement = $(".details"),
+						detector = new MobileDetect(agent),
+						deviceElement = $(".device"),
+						listMember = function(name, text) {
+							if (text) {
+								if (text.toLocaleString) {
+									text = text.toLocaleString();
+								}
+								if (text.length) {
+									detailsElement.append($(document.createElement("li"))
+										.append($(document.createElement("span"))
+											.addClass("label")
+											.text("{0}: ".format(name.splitByCase().join(" ")
+												.toTitleCase())))
+										.append($(document.createElement("span"))
+											.addClass("value")
+											.text(text)));
+								}
+							}
+						},
+						member,
+						mobile = detector.mobile();
+
+					if (mobile !== null) {
+						deviceElement
+							.addClass("mobile")
+							.text("You are on a mobile device!");
+						for (var name in detector) {
+							if (name[0] !== "_") {
+								member = detector[name];
+								if (!$.isFunction(member) ||
+									(member !== detector.constructor &&
+									member.toString().match(/\(\)\{/))) {
+
+									listMember(name, ($.isFunction(member)) ?
+										member.call(detector) :
+										member);
+								}
+							}
+						}
+						if (typeof window.devicePixelRatio !== undefined) {
+							listMember("devicePixelRatio", window.devicePixelRatio);
+						}
+					} else {
+						deviceElement
+							.addClass("desktop")
+							.text("You are on a desktop computer!");
+						detailsElement.text(agent);
+					}
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				background-color: whitesmoke;
+				margin: 4em 20% 0;
+				text-shadow: 0.2em 0.2em 0.6em darkGray;
+			}
+
+			.device {
+				font-weight: bold;
+			}
+
+			.device.desktop {
+				color: darkOrange;
+			}
+
+			.device.mobile {
+				color: midnightBlue;
+			}
+
+			.details {
+				color: darkSlateGray;
+			}
+
+			.label {
+				font-weight: bold;
+			}
+
+			.value {
+				font-size: 90%;
+			}
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<div class="device"></div>
+		<ul class="details"></ul>
+	</body>
+</html>

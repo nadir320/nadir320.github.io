@@ -1,0 +1,288 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/ox.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/ox.png" type="image/png"/>
+		<title>Un due bue!</title>
+  		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/ui-lightness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript" src="../js/contatore.min.js"></script>
+		<script type="text/javascript">
+			"use strict";
+
+			$().ready(function() {
+				var _counter = new contatore(),
+					_i,
+					_ox,
+					_player,
+					_players,
+					_timer;
+
+				var createPlayerCircle = function(target, players) {
+					if (target && (target = $(target)).length) {
+						target
+							.find(".player")
+							.remove();
+						for (var i = 0; i < players; i++) {
+							$(document.createElement("div"))
+								.addClass("ui-widget-content")
+								.addClass("player")
+								.text("Giocatore n°{0}".format(i + 1))
+								.append($(document.createElement("br")))
+								.append($(document.createElement("span"))
+									.addClass("value")
+									.attr({
+										"id": "value{0}".format(i)
+									})
+									.text("_"))
+								.appendTo(target);
+						}
+						_players = players;
+					}
+				};
+
+				var loadPage = function() {
+					var sliderChanged = function(e, ui) {
+						if ($(e.target).data("onchange")) {
+								loadPlayers();
+						}
+						updateSlider($(e.target), ui.value);
+					}
+
+					$(".slider").each(function(i) {
+						var slider = $(this);
+
+						slider.slider({
+							"animate": true,
+							"change": sliderChanged,
+							"max": slider.data("max"),
+							"min": slider.data("min"),
+							"slide": sliderChanged,
+							"value": slider.data("value")
+						});
+						updateSlider(slider);
+					});
+					$("#start")
+						.button()
+						.on({
+							"click": function(e) {
+								e.preventDefault();
+								setRunning(true);
+								_i = 0;
+								_player = Math.floor(Math.random() *
+									_players);
+								_ox = $("#ox").slider("option", "value");
+								$(".value").text("_");
+								play();
+								_timer = window.setInterval(play,
+									1000 / $("#speed").slider("option", "value"));
+							}
+						});
+					$("#stop")
+						.button({
+							"disabled": true
+						})
+						.on({
+							"click": function(e) {
+								e.preventDefault();
+								window.clearInterval(_timer);
+								setRunning(false);
+							}
+						});
+					loadPlayers();
+					$(window).on({
+						"resize": resizePage
+					});
+				};
+
+				var loadPlayers = function() {
+					createPlayerCircle($(".players"), $("#players").slider("option", "value"));
+					resizePage();
+				};
+
+				var play = function() {
+					var n = ++_i;
+
+					$(".value").removeClass("ui-state-highlight");
+					$("#value{0}".format(_player))
+						.addClass("ui-state-highlight")
+						.text((n % _ox == 0 || n.toString()
+							.indexOf(_ox.toString()) >= 0) ?
+								"Bue!" : _counter.toString(n));
+					_player = (++_player) % _players;
+				};
+
+				var resizePage = function() {
+					var target = $(".players"),
+						players = $(".players").find(".player"),
+						angle = Math.PI / 2.0,
+						height = target.height(),
+						width = target.width(),
+						center = {
+							"x": width / 2.0,
+							"y": height / 2.0
+						},
+						radius = {
+							"x": width * 0.35,
+							"y": height * 0.40
+						};
+
+					players.each(function(i) {
+						$(this).css({
+							"left": center.x + radius.x * Math.cos(angle),
+							"top": center.y + radius.y * Math.sin(angle)
+						})
+						angle += 2.0 * Math.PI / players.length;
+					});
+				};
+
+				var setRunning = function(running) {
+					$("#controls").find(".slider").slider("option", "disabled", running);
+					$("#start").button("option", "disabled", running);
+					$("#stop").button("option", "disabled", !running);
+				};
+
+				var updateSlider = function(slider, value) {
+						slider.find(".ui-slider-handle")
+							.text(value || slider.slider("option", "value"));
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				font-size: 0.75em !important;
+			}
+
+			.header {
+				padding: 0.25em;
+				text-align: center;
+			}
+
+			table {
+				border-collapse: collapse;
+				width: 100%;
+			}
+
+			table td {
+				border: 1px solid silver;
+				vertical-align: top;
+			}
+
+			.background {
+				background-image: url("images/ox.png");
+				background-position: center center;
+				background-repeat: no-repeat;
+				bottom: 0;
+				left: 0;
+				position: absolute;
+				opacity: 0.5;
+				right: 0;
+				top: 0;
+			}
+
+			.players {
+				height: 18em;
+				overflow: hidden;
+				position: relative;
+			}
+
+			.controls  {
+				padding: 0.5em;
+				text-align: center;
+				width: 6em;
+			}
+
+			.controls .slider {
+				margin: 0.4em 0.2em 0;
+				width: 90%;
+			}
+
+			.controls a {
+				margin: 0.2em 0;
+				width: 100%;
+			}
+
+			.player {
+				-moz-transform: translate(-50%, -50%);
+				-ms-transform: translate(-50%, -50%);
+				-o-transform: translate(-50%, -50%);
+				-webkit-transform: translate(-50%, -50%);
+				border: 1px solid skyBlue;
+				border-radius: 3em;
+				font-size: 75%;
+				padding: 0.3em 0.8em 0.6em;
+				position: absolute;
+				text-align: center;
+				transform: translate(-50%, -50%);
+				white-space: nowrap;
+			}
+
+			.value {
+				border: 0 !important;
+				opacity: 0.75;
+				text-decoration: underline;
+			}
+
+			.ui-slider-handle {
+				line-height: 1.2em;
+				text-align: center;
+			}
+
+			@media all and (min-width: 920px) {
+				body.ui-widget {
+					font-size: 1em !important;
+				}
+
+				.player {
+					font-size: 65%;
+				}
+			}
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<div class="header ui-widget-header ui-corner-top">Un, due, BUE!</div>
+		<table cellspacing="0" cellpadding="0">
+			<tr>
+				<td>
+					<div class="players">
+						<div class="background"></div>
+					</div>
+				</td>
+				<td id="controls" class="controls ui-widget ui-state-default">
+					<label>
+						Giocatori:
+						<br/>
+						<div id="players" class="slider" data-min="2" data-max="10" data-value="5" data-onchange="true"></div>
+					</label>
+					<br/>
+					<label>
+						'Bue!' ogni:
+						<br/>
+						<div id="ox" class="slider" data-min="2" data-max="9" data-value="3"></div>
+					</label>
+					<br/>
+					<label>
+						Velocità:
+						<br/>
+						<div id="speed" class="slider" data-min="1" data-max="10" data-value="2"></div>
+					</label>
+					<hr/>
+					<a id="start" href="#">Inizia</a>
+					<br/>
+					<a id="stop" href="#">Ferma</a>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

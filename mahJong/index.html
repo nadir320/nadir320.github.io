@@ -1,0 +1,44 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="images/greenDragon.png">
+		<title>Mah Jong</title>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+	</head>
+	<body>
+		<div id="messageBackdrop" class="backdrop fade hidden"></div>
+		<div id="message" class="message fade hidden">
+			<span id="messageText"></span>
+			<br/>
+			<button class="newGame">Nuova</button>
+			<button class="restart">Ricomincia</button>
+			<button class="cancel">Annulla</button>
+		</div>
+		<div class="status">
+			<div>Tempo: <span id="time"></span></div>
+			<div>Rimanenti: <span id="tiles"></span></div>
+			<div>Mosse: <span id="freeTiles"></span></div>
+			<button class="newGame">Nuova</button>
+			<br/>
+			<button class="undo">Annulla</button>
+			<br/>
+			<button class="hint">Suggerimento</button>
+		</div>
+		<div class="scaler">
+			<div class="board"></div>
+		</div>
+		<form>
+			<input type="hidden" id="wonMessage" value="Hai vinto!"/>
+			<input type="hidden" id="lostMessage" value="Hai perso..."/>
+			<input type="hidden" id="askNewMessage" value="Iniziare una nuova partita?"/>
+			<input type="hidden" id="restartMessage" value="Riiniziare la partita?"/>
+		</form>
+		<script type="text/javascript" src="js/mahJong.min.js"></script>
+	</body>
+</html>

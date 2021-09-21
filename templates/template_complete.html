@@ -1,0 +1,345 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<link rel="icon" href="***" type="image/png"/>
+		<link rel="shortcut icon" href="***" type="image/png"/>
+		<title>***</title>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+		<script type="text/javascript">
+			"use strict";
+
+			window.NREUM = { };
+
+			var
+				CORS_PROXY_URL = "//cors-anywhere.herokuapp.com/",
+				THEME_ID = "pageTheme",
+				THEMES = [
+					  { "name": "Black tie" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/black-tie/jquery-ui.min.css" }
+					, { "name": "Blitzer"					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.min.css" }
+					, { "name": "Cupertino" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/cupertino/jquery-ui.min.css" }
+					, { "name": "Dark Hive" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/dark-hive/jquery-ui.min.css" }
+					, { "name": "Dot LUV" 					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/dot-luv/jquery-ui.min.css" }
+					, { "name": "Eggplant"	 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/eggplant/jquery-ui.min.css" }
+					, { "name": "Excite Bike" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/excite-bike/jquery-ui.min.css" }
+					, { "name": "Flick" 					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/flick/jquery-ui.min.css" }
+					, { "name": "Hot Sneaks" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/hot-sneaks/jquery-ui.min.css" }
+					, { "name": "Humanity" 					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/humanity/jquery-ui.min.css" }
+					, { "name": "Le Frog" 					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/le-frog/jquery-ui.min.css" }
+					, { "name": "Mint Choc" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/mint-choc/jquery-ui.min.css" }
+					, { "name": "Overcast" 					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/overcast/jquery-ui.min.css" }
+					, { "name": "Pepper Grinder" 			, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/pepper-grinder/jquery-ui.min.css" }
+					, { "name": "Redmond"					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.min.css" }
+					, { "name": "Smoothness" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css" }
+					, { "name": "South Street" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/south-street/jquery-ui.min.css" }
+					, { "name": "Start" 					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/start/jquery-ui.min.css" }
+					, { "name": "Sunny" 					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/sunny/jquery-ui.min.css" }
+					, { "name": "Swanky Purse" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/swanky-purse/jquery-ui.min.css" }
+					, { "name": "Trontastic"				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/trontastic/jquery-ui.min.css" }
+					, { "name": "UI Darkness" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/ui-darkness/jquery-ui.min.css" }
+					, { "name": "UI Lightness" 				, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/ui-lightness/jquery-ui.min.css" }
+					, { "name": "Vader" 					, "group": "Official"	, "url": "//code.jquery.com/ui/1.11.4/themes/vader/jquery-ui.min.css" }
+
+					/* , { "name": "Aristo" 				, "group": "Custom"	, "url": "http://taitems.github.com/Aristo-jQuery-UI-Theme/css/Aristo/Aristo.css" } */
+					/* , { "name": "Bootstrap" 				, "group": "Custom"	, "url": "http://addyosmani.github.io/jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.10.3.custom.css" } */
+					/* , { "name": "Selene" 				, "group": "Custom"	, "url": "http://gravityonmars.github.com/Selene/css/ui-selene/jquery-ui-1.8.17.custom.css" } */
+					/* , { "name": "Delta" 					, "group": "Custom"	, "url": "http://kiandra.github.com/Delta-jQuery-UI-Theme/theme/jquery-ui.min.css" } */
+                                        /*
+					/* , { "name": "WIJMO - Arctic" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/arctic/jquery-wijmo.css" } */
+					/* , { "name": "WIJMO - Midnight" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/midnight/jquery-wijmo.css" } */
+					/* , { "name": "WIJMO - Rocket" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/rocket/jquery-wijmo.css" } */
+					/* , { "name": "WIJMO - Cobalt" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/cobalt/jquery-wijmo.css" } */
+					/* , { "name": "WIJMO - Sterling" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/sterling/jquery-wijmo.css" } */
+					/* , { "name": "WIJMO - Metro" 			, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/metro/jquery-wijmo.css" } */
+					/* , { "name": "WIJMO - Metro (dark)" 	, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/metro-dark/jquery-wijmo.css" } */
+					/* , { "name": "WIJMO - Bootstrap" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/bootstrap/jquery-ui.min.css" } */
+					/* , { "name": "WIJMO - Aristo" 		, "group": "WIJMO"	, "url": "http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css" } */
+				];
+
+			var storage = function() {
+				var _contents = { };
+
+				return {
+					clear: function() {
+						_contents = { };
+					},
+					getItem: function(key) {
+						return _contents[key];
+					},
+					removeItem: function(key) {
+						delete _contents[key];
+					},
+					setItem: function(key, value) {
+						_contents[key] = value;
+					}
+				};
+			};
+
+			var _format = function(format) {
+				for (var i = 1; i < arguments.length; i++) {
+					format = format.replace(new RegExp("\\{" +
+						(i - 1).toString() + "\\}", "gi"), arguments[i]);
+				}
+				return format;
+			},
+			_formatAjaxError = function(textStatus, errorThrown) {
+				var errorText = new String();
+
+				if (textStatus) {
+					if (errorThrown) {
+						errorText = _format("{1} (Status: {0})",
+							textStatus, errorThrown);
+					} else {
+						errorText = textStatus;
+					}
+				} else if (errorThrown) {
+					errorText = errorThrown;
+				}
+				if (!(errorText && errorText.length)) {
+					errorText = "Unknown network error";
+				}
+				return errorText;
+			},
+			_getParameter = function(name) {
+				if (window.location.search && window.location.search.length) {
+					var parameters = window.location.search.substr(1).split("&");
+
+					for (var i = 0; i < parameters.length; i++) {
+						var p = parameters[i],
+							j = p.indexOf("=");
+
+						if (j >= 0) {
+							if (p.substr(0, j).toLowerCase() === name.toLowerCase()) {
+								return p.substr(j + 1);
+							}
+						}
+					}
+				}
+			},
+			_hideLoader = function() {
+				if (--_loaders === 0) {
+					$(".loader").dialog("close");
+				}
+			},
+			_loaders = 0,
+			_localStorage = window.localStorage || new storage(),
+			_noProtocol = function(url) {
+				var p = url.indexOf(":"),
+					q = url.indexOf("/");
+
+				if (p >= 0 && q >= 0 && p < q) {
+					url = url.substr(p + 1);
+					while (url.length && url[0] === "/") {
+						url = url.substr(1);
+					}
+				}
+				return url;
+			},
+			_numericInput = function(input) {
+				$(input).on({
+					"keydown": function(e) {
+						switch (e.which) {
+							case   8: case   9: case  35: case  36: case  37: case  38: case  39: case  40:
+							case  46: case  48: case  49: case  50: case  51: case  52: case  53: case  54:
+							case  55: case  56: case  57: case  96: case  97: case  98: case  99: case 100:
+							case 101: case 102: case 103: case 104: case 105: case 123:
+								return true;
+						}
+						return false;
+					}
+				});
+			},
+			_sessionStorage = window.sessionStorage || new storage(),
+			_showError = function(error) {
+				_toast({
+					"class": "ui-state-error",
+					"dontHideOnClick": true,
+					"opacity": 1,
+					"slow": true,
+					"text": error
+				});
+			},
+			_showLoader = function(message) {
+				if (message !== undefined) {
+					$(".loader").find(".loadingMessage").text(message);
+				}
+				if (_loaders++ === 0) {
+					var r = $.Deferred();
+
+					$(".loader").dialog({
+						"dialogClass": "no-title",
+						"modal": true,
+						"open": function(event, ui) {
+							$(this).css({
+								"min-height": 0
+							});
+							r.resolve();
+						},
+						"width": "auto"
+					});
+					return r.promise();
+				}
+			},
+			_showMessage = function(message) {
+				_toast({
+					"class": "ui-state-default",
+					"fast": true,
+					"text": message
+				});
+			},
+			_toast = function(options) {
+				var toasts = $(".toast");
+
+				if (!$.isPlainObject(options)) {
+					options = {
+						"text": options
+					};
+				}
+				var toastElement = $(document.createElement("div"))
+					.addClass("toast")
+					.append($(document.createElement("div"))
+						.addClass("ui-corner-all")
+						.addClass("ui-widget-content")
+						.css({
+							"font-size": "smaller",
+							"padding": "0.5em",
+							"position": "relative",
+							"left": "-50%"
+						})
+						.html(options.text.replace(/\n/g, "<br/>")))
+					.css({
+						"left": "50%",
+						"opacity": options.opacity || 0.75,
+						"position": "fixed",
+						"zIndex": 2147483647
+					})
+					.hide()
+					.on({
+						"click": function(e) {
+							if (!options.dontHideOnClick) {
+								window.clearTimeout(toastElement.data("timeout"));
+								toastElement.hide().remove();
+							}
+						}
+					})
+					.appendTo(document.body);
+
+				if (options["class"]) {
+					toastElement
+						.find("div")
+						.addClass(options["class"]);
+				}
+				if (toasts.length) {
+					toastElement.css({
+						"top": toasts.eq(toasts.length - 1).position().top -
+							(toastElement.height() + 8)
+					});
+				} else {
+					toastElement.css({
+						"bottom": "1em",
+					});
+				}
+				$.when(toastElement.fadeIn()).then(function() {
+					toastElement.data({
+						"timeout": window.setTimeout(function() {
+							$.when(toastElement.fadeOut()).then(function() {
+								toastElement.remove();
+							});
+						}, (options.duration) ?
+							options.duration :
+							(options.slow) ?
+								10000 :
+								(options.fast) ?
+									1000 :
+									5000)
+					});
+				});
+			};
+
+			$().ready(function() {
+				var loadPage = function() {
+					/* *** */
+				};
+
+				var loadTheme = function(themeID) {
+					if (themeID >= 0 && themeID < THEMES.length) {
+						$("#" + THEME_ID).attr("href", THEMES[themeID].url);
+					}
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				-webkit-transition-duration: 0.5s;
+				-webkit-transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 	/* ease out cubic */
+
+				font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+				font-size: 1em !important;
+				padding: 0;
+				transition-duration: 0.5s;
+				transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); 		/* ease out cubic */
+			}
+
+			.ui-dialog .loader {
+				text-align: center;
+				overflow: hidden;
+			}
+
+			.loadingProgress {
+				width: 100%;
+				height: 1em;
+			}
+
+			.loadingMessage {
+				font-size: 50%;
+				margin: 1em 3em 0;
+			}
+
+			.dialog {
+				display: none;
+				margin: 1em;
+			}
+
+			.centerButtons .ui-dialog-buttonpane {
+				text-align: center;
+			}
+
+			.centerButtons .ui-dialog-buttonpane .ui-dialog-buttonset {
+				float: none;
+			}
+
+			.no-title .ui-dialog-titlebar,
+			.no-close .ui-dialog-titlebar-close {
+				display: none;
+			}
+
+			.toast {
+				font-size: smaller;
+			}
+
+			.toast div {
+				padding: 0.2em;
+			}
+
+			@media all and (min-width: 920px) {
+				body.ui-widget {
+					font-size: 1.5em !important;
+				}
+			}
+		</style>
+	</head>
+	<body class="ui-widget">
+		<!-- <div class="dialog loaderDialog">
+			<div class="loadingProgress"></div>
+			<div class="loadingMessage"></div>
+			<button type="button" class="loadingCancelButton"></button>
+		</div> -->
+	</body>
+</html>

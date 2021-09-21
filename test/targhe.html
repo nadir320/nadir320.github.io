@@ -1,0 +1,358 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/aa.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/aa.png" type="image/png"/>
+		<title>Targhe</title>
+  		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/start/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			$().ready(function() {
+				var CHARS = "abcdefghjklmnprstvwxyz".toLowerCase().split(String.empty),
+					LENGTH = 7,
+					REF = "cw103tx";
+
+				var _tabIndex = 0;
+
+				var createPlate = function(label, name, appendTo) {
+					var inputs = [ ],
+						isNumber;
+
+					$(document.createElement("label"))
+						.attr({
+							"for": name + 1..toString()
+						})
+						.text(label)
+						.appendTo($(document.createElement("div"))
+							.addClass("label")
+							.appendTo(appendTo));
+					for (var i = 0; i < LENGTH; i++) {
+						isNumber = i === 2 ||
+							i === 3 ||
+							i === 4;
+
+						inputs.push($(document.createElement("input"))
+							.addClass("plate")
+							.addClass("ui-corner-all")
+							.addClass(name)
+							.attr({
+								/* "autocapitalize": "off", */
+								/* "autocomplete": "off", */
+								/* "autocorrect": "off", */
+								"id": name + (i + 1).toString(),
+								"max": (isNumber) ? 9 : undefined,
+								"maxlength": 1,
+								/* "spellcheck": "false", */
+								"tabindex": ++_tabIndex,
+								"type": (isNumber) ? "number" : "text"
+							})
+							.data({
+								"isNumber": isNumber
+							})
+							.appendTo($(document.createElement("div"))
+								.addClass("plateItem")
+								.append((!isNumber) ? $(document.createElement("div"))
+									.addClass("ui-state-error")
+									.addClass("ui-corner-all")
+									.addClass("plateScore")
+									.attr({
+										"id": name + (i + 1).toString() + "_score"
+									}) : undefined)
+								.appendTo(appendTo)));
+					}
+					$(document.createElement("br"))
+						.appendTo(appendTo);
+					$(document.createElement("div"))
+						.addClass("count")
+						.addClass("ui-corner-all")
+						.attr({
+							"id": name + "_count"
+						})
+						.appendTo(appendTo);
+					$(document.createElement("button"))
+						.addClass("resetButton")
+						.attr({
+							"id": name + "_reset"
+						})
+						.data({
+							"plates": inputs
+						})
+						.button({
+							"label": "X"
+						})
+						.on({
+							"click": function(e) {
+								var plateInputs = $(e.target).closest(".ui-button").data("plates");
+
+								$(plateInputs).each(function(i, item) {
+									$(item).val(String.empty);
+								});
+								parsePlates();
+								plateInputs[0].focus();
+								window.setTimeout(function() {
+									plateInputs[0].trigger("focus");
+								}, 50);
+							}
+						})
+						.appendTo(appendTo);
+				};
+
+				var getCount = function(value, isNumber) {
+					if (value && value.length) {
+						return (isNumber) ?
+							parseInt(value) :
+							$.inArray(value.toLowerCase(), CHARS) + 1;
+					}
+				};
+
+				var getPlate = function(name) {
+					var plate = String.empty;
+
+					for (var i = 0; i < LENGTH; i++) {
+						plate += $("#" + name + (i + 1).toString()).val() || String.empty;
+					}
+					return plate;
+				};
+
+				var go = function(element, backward) {
+					var other = $(element).closest(".plateItem")[(backward) ?
+						"prev" :
+						"next"](".plateItem").find(".plate").first();
+
+					other.focus();
+					window.setTimeout(function() {
+						other.trigger("focus");
+					}, 50);
+				};
+
+				var loadPage = function() {
+					var ref = window.location.get("ref");
+
+					if (!(ref && ref.length)) {
+						ref = REF;
+					}
+					createPlate("Mia targa", "ref", $("#ref"));
+					setPlate("ref", ref);
+					createPlate("Confronta con", "plate", $("#plate"));
+					setPlate("plate", window.location.get("plate"));
+					$("input").on({
+						"change input": function(e) {
+							var source = $(e.target),
+								isNumber = source.data("isNumber"),
+								isWrong,
+								originalValue = source.data("value"),
+								value = source.val() || String.empty;
+
+							if (value.length) {
+								value = value.charAt(value.length - 1).toLowerCase();
+								if (!((isNumber) ?
+									value.match(/[0-9]/) :
+									$.inArray(value, CHARS) >= 0)) {
+
+									value = String.empty;
+								}
+								source
+									.val(value.toUpperCase())
+									.data({
+										"value": value
+									});
+								if (value.length) {
+									go(source);
+								}
+							}
+							parsePlates();
+						},
+						"focus": function(e) {
+							var source = $(e.target);
+
+							source.data({
+								"value": source.val()
+							});
+							try {
+								e.target.select();
+							} catch (e2) { }
+						},
+						"keydown": function(e) {
+							if (e.which === 8) {	/* Backspace */
+								$(e.target).val(String.empty);
+								window.setTimeout(function() {
+									go(e.target, true);
+								}, 50);
+							}
+						}
+					});
+					parsePlates();
+				};
+
+				var parsePlate = function(plate) {
+					var count = 0;
+
+					if (plate && plate.length === LENGTH) {
+						for (var i = 0; i < plate.length; i++) {
+							count += getCount(plate[i], i === 2 || i === 3 || i === 4);
+						}
+					}
+					return count;
+				};
+
+				var parsePlates = function() {
+					setCount("ref");
+					setCount("plate");
+
+					var ref = getPlate("ref"),
+						refCount = parsePlate(ref),
+						plate = getPlate("plate"),
+						plateCount = parsePlate(plate);
+
+					if (ref.length === plate.length && ref.length === LENGTH) {
+						$("#difference")
+							[(plateCount > refCount) ? "addClass" : "removeClass"]("ui-state-error")
+							[(plateCount === refCount) ? "addClass" : "removeClass"]("ui-state-default")
+							[(plateCount < refCount) ? "addClass" : "removeClass"]("ui-state-active")
+							.text(((refCount > plateCount) ? "+" : String.empty) +
+								(refCount - plateCount).toLocaleString())
+							.show();
+					} else {
+						$("#difference").hide();
+					}
+				}
+
+				var setCount = function(name) {
+					var count = parsePlate(getPlate(name)),
+						hasScore,
+						score,
+						source;
+
+					$("#" + name + "_count")
+						[(count) ? "addClass" : "removeClass"]("ui-state-highlight")
+						.text((count) ? count.toLocaleString() : String.empty);
+					for (var i = 0; i < LENGTH; i++) {
+						source = "#" + name + (i + 1).toString();
+						score = getCount($(source).val(),
+							i === 2 || i === 3 || i === 4);
+						$(source + "_score")
+							[(hasScore = hasScore || !!score) ? "show" : "hide"]()
+							.text(score);
+					}
+					$("#" + name + "_reset")[(hasScore) ? "show" : "hide"]();
+				};
+
+				var setPlate = function(plate, value) {
+					for (var i = 0; i < LENGTH; i++) {
+						$("#" + plate + (i + 1).toString())
+							.val((value && value.length >= i) ?
+								value[i] :
+								String.empty);
+					}
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				text-align: center;
+			}
+
+			.container {
+				background: none;
+				margin: 0 auto;
+			}
+
+			.container .header {
+				border-left-width: 0;
+				border-right-width: 0;
+				border-top-width: 0;
+				padding: 0.25em;
+			}
+
+			.container .content {
+				padding: 0.2em;
+			}
+
+			.row {
+				text-align: left;
+			}
+
+			.label {
+				float: left;
+				font-size: 80%;
+				padding: 0.2em 0 0;
+				width: 8em;
+			}
+
+			.plateItem {
+				display: inline-block;
+				position: relative;
+			}
+
+			.plate {
+				border-width: 1px;
+				cursor: pointer;
+				font-weight: bold;
+				margin: 0 0.1em;
+				text-align: center;
+				text-transform: uppercase;
+				width: 1.6em;
+			}
+
+			.plateScore {
+				border-width: 0;
+				display: inline-block;
+				font-size: 50%;
+				padding: 2px;
+				position: absolute;
+				top: 105%;
+			}
+
+			.count {
+				display: inline-block;
+				font-size: 125%;
+				margin: 0 0 0 0.5em;
+				min-width: 2em;
+				text-align: center;
+			}
+
+			.resetButton {
+				background-image: none !important;
+				font-size: 50% !important;
+				margin: -0.5em 0 0 0.5em;
+			}
+
+			@media all and (min-width: 920px) {
+				.container {
+					width: 50%;
+				}
+
+				.container .content {
+					padding: 1em;
+				}
+			}
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<div class="container ui-widget-header ui-corner-all">
+			<div class="header ui-widget-header ui-corner-top">Targhe</div>
+			<div class="content ui-widget-content">
+				<div id="ref" class="row"></div>
+				<hr/>
+				<div id="plate" class="row"></div>
+				<hr/>
+				<div class="row">
+					<div id="difference" class="count ui-corner-all"></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

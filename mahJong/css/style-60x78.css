@@ -1,0 +1,222 @@
+﻿* {
+	box-sizing: border-box;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	background-color: whitesmoke;
+	margin: 0 !important;
+
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: -webkit-flex;
+	display: flex;
+
+	-ms-align-items: center;
+	-moz-align-items: center;
+	-o-align-items: center;
+	-webkit-align-items: center;
+	align-items: center;
+
+	-ms-justify-content: center;
+	-moz-justify-content: center;
+	-o-justify-content: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+}
+
+form {
+	display: none;
+}
+
+button:focus {
+	outline: 0 solid transparent;
+}
+
+.board {
+	background-color: rgba(34, 139, 34, 0.15);
+	border-radius: 0.5em;
+	box-shadow: 0 0 0.5em;
+	color: rgba(34, 139, 34, 0.15);
+	position: relative;
+}
+
+.hidden,
+.hidden * {
+	opacity: 0 !important;
+	pointer-events: none !important;
+}
+
+.message {
+	background-color: silver;
+	border: 1px solid darkslateBlue;
+	border-radius: 1em;
+	box-shadow: 0 0 .5em blueViolet;
+	cursor: pointer;
+	padding: 1em;
+	position: fixed;
+	text-align: center;
+	text-shadow: 0 0 .5em rgba(128, 43, 226, 0.75);
+	width: 30em;
+	z-index: 9999;
+}
+
+.message.compatible {
+	margin-left: 5%;
+	top: 8em;
+}
+
+.backdrop {
+	background-color: black;
+	bottom: 0;
+	left: 0;
+	opacity: 0.35;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 9998;
+}
+
+.status {
+	background-color: white;
+	border: 1px solid silver;
+	border-radius: 1em;
+	box-shadow: .1em .1em .1em;
+	font-size: 80%;
+	/* min-width: 7.5em; */
+	opacity: 0.75;
+	padding: 0.35em;
+	pointer-events: none;
+	right: 0.35em;
+	position: fixed;
+	text-align: center;
+	top: 0.25em;
+	width: 9em;
+	z-index: 9997;
+}
+
+.status button,
+.message button {
+	border: 1px solid silver;
+	border-radius: 0.25em;
+	cursor: pointer;
+	margin: 0.25em 0;
+	padding: 0.5em;
+	pointer-events: initial;
+	text-shadow: 0 0 .1em rgba(128, 43, 226, 0.75);
+}
+
+.status button {
+	width: 100%;
+}
+
+.message button {
+	margin-top: 1em;
+	width: 7em;
+}
+
+.tile {
+	background-color: ivory;
+	color: gray;
+	position: absolute;
+}
+
+.tile.free {
+	background-color: cornsilk;
+	cursor: pointer;
+}
+
+.tile.free:hover {
+	background-color: silver;
+}
+
+.tile.free.clicked {
+	background-color: cornflowerBlue;
+	color: cornflowerBlue;
+}
+
+.tile.free.clicked.last {
+	background-color: violet;
+	color: violet;
+}
+
+.tile.matching {
+	background-color: gold;
+	color: gold;
+}
+
+.tile.matching.last {
+	background-color: rosyBrown;
+	color: rosyBrown;
+}
+
+.tile.free.matching {
+	background-color: paleGreen;
+	color: paleGreen;
+}
+
+.tile.free.matching.last {
+	background-color: thistle;
+	color: thistle;
+}
+
+.tile .face {
+	background-clip: content-box;
+	background-image: url("../images/tiles60x78.png");
+	background-origin: content-box;
+	background-repeat: no-repeat;
+	box-shadow: inset 0 0 0.75em;
+	color: dimGray;
+}
+
+.tile.hint .face {
+	color: darkViolet;
+}
+
+.working {
+	border-style: dotted !important;
+}
+
+.working.working1 { border-color: red !important; }
+.working.working2 { border-color: blue !important; }
+.working.working3 { border-color: green !important; }
+.working.working4 { border-color: orange !important; }
+
+@media (max-width: 36em), (max-height: 24em) {
+	.status br {
+		display: none;
+	}
+
+	.status button {
+		background-position: center;
+		background-repeat: no-repeat;
+		color: transparent;
+		margin: 2px;
+		height: 36px;
+		overflow: hidden;
+		text-shadow: none;
+		width: 36px;
+	}
+
+	.status button.newGame { background-image: url("../images/new.png"); }
+
+	.status button.askRestart { background-image: url("../images/restart.png"); }
+
+	.status button.undo { background-image: url("../images/undo.png"); }
+
+	.status button.hint { background-image: url("../images/hint.png"); }
+}
+
+@media (min-width: 56em), (min-height: 36em) {
+	.fade {
+		-ms-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+		-moz-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+		-o-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+		-webkit-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+		transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+	}
+}

@@ -1,0 +1,76 @@
+﻿.centered {
+	text-align: center;
+}
+
+.title {
+	border-bottom-width: 0px;
+}
+
+.email {
+	display: none;
+	font-size: 50% !important;
+	position: absolute;
+	right: 2em;
+	top: 3em;
+}
+
+.refresh {
+	display: none;
+	margin: 1em;
+}
+
+.no-link {
+	display: none;
+}
+
+.title,
+.no-link {
+	padding: 1em;
+}
+
+#list li {
+	border-top: 1px solid silver;
+	margin-right: 1em;
+	padding: 0.5em 0;
+}
+
+#list li:first-of-type {
+	border-top-width: 0;
+	padding-top: 0;
+}
+
+#list li:last-of-type {
+	padding-bottom: 0;
+}
+
+#list li .favicon {
+	margin-right: 0.25em;
+	vertical-align: middle;
+}
+
+#list a {
+	font-size: 80%;
+	word-break: break-word;
+}
+
+#list button.remove {
+	float: right;
+	font-size: 50%;
+	margin-right: 0.25em;
+}
+
+.loginDialog {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+.loginDialog input[type=email],
+.loginDialog input[type=password],
+.loginDialog input[type=text] {
+	box-sizing: border-box;
+	border-width: 1px !important;
+	margin: .2em 15%;
+	width: 70%;
+}

@@ -1,0 +1,408 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="images/code.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="images/code.png" type="image/png"/>
+		<title>Codice Fiscale Online</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="js/datepicker-it.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/le-frog/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			var STORAGE_NAME = "calcolo_codice_fiscale";
+
+			var _evenChars = ["0123456789", "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ],
+				_filler = "X",
+				_homocodies = "LMNPQRSTUV",
+				_months = "ABCDEHLMPRST",
+				_oddChars = [ "10   2 3 4   5 6 7 8 9", "BAKPLCQDREVOSFTGUHMINJWZYX" ],
+				_wovels = "AEIOU";
+
+			var calculateCode = function(name, surname, sex, birthDate, municipality, homocody) {
+				var code = getHomocodicCode(getNameCode((surname || String.empty).toUpperCase()) +
+					getNameCode((name || String.empty).toUpperCase(), true) +
+					zeroPad(birthDate.getYear() % 100, 2) + _months[birthDate.getMonth()] +
+						zeroPad(birthDate.getDate() + (((sex || String.empty).toLowerCase() !== "m") ? 40 : 0), 2) +
+					municipality.toUpperCase(), homocody);
+
+				return code + checksum(code);
+			};
+
+			var checksum = function(s) {
+				var evenTotal = 0,
+					i,
+					index,
+					j,
+					isEven,
+					oddTotal = 0,
+					tables,
+					value;
+
+				for (i = 0; i < s.length; i++) {
+					tables = (isEven = (i + 1) % 2 === 0) ?
+						_evenChars : _oddChars;
+
+					for (j = 0; j < tables.length; j++) {
+						if ((index = tables[j].indexOf(s[i])) >= 0) {
+							value = index;
+							break;
+						}
+					}
+					if (isEven) {
+						evenTotal += value;
+					} else {
+						oddTotal += value;
+					}
+				}
+				return String.fromCharCode(65 + (evenTotal + oddTotal) % 26);
+			};
+
+			var getHomocodicCode = function(code, count) {
+				var c,
+					chars = code.split(String.empty),
+					i,
+					j = chars.length - 1;
+
+				count = Math.min(count, _homocodies.length);
+				for (i = 0; i < count; i++) {
+					for (; j >= 0; j--) {
+						if (/\d/.test(c = chars[j])) {
+							chars[j] = _homocodies[parseInt(c)];
+							break;
+						}
+					}
+				}
+				return chars.join(String.empty);
+			};
+
+			var getNameCode = function(name, isName) {
+				var c,
+					code = String.empty,
+					consonants = [ ],
+					i,
+					set,
+					wovels = [ ];
+
+				name = name.replace(/ /g, String.empty);
+				for (i = 0; i < name.length; i++) {
+					if (_wovels.indexOf(c = name[i]) >= 0) {
+						wovels.push(c);
+					} else {
+						consonants.push(c);
+					}
+				}
+				if (isName && consonants.length > 3) {
+					consonants.splice(1, 1);
+				}
+				set = consonants.join(String.empty) + wovels.join(String.empty);
+				i = 0;
+				while (i < set.length && code.length < 3) {
+					code += set[i++];
+				}
+				while (code.length < 3) {
+					code += "X";
+				}
+				return code;
+			};
+
+			var loadSettings = function() {
+				var settings;
+
+				if (window.sessionStorage) {
+					settings = window.sessionStorage.getItem(STORAGE_NAME);
+
+					if (settings && settings.length) {
+						return window.JSON.parse(settings);
+					}
+				}
+			};
+
+			var saveSettings = function(settings) {
+				if (window.sessionStorage) {
+					window.sessionStorage.setItem(STORAGE_NAME,
+						window.JSON.stringify(settings));
+				}
+			};
+
+			var zeroPad = function(s, length) {
+				s = (s || String.empty).toString();
+
+				while (s.length < length) {
+					s = "0" + s;
+				}
+				return s;
+			};
+
+			$().ready(function() {
+				var loadPage = function() {
+					var settings = loadSettings();
+
+					$("button").button();
+					$("#birthDate").datepicker({
+						"maxDate": 0
+					}).datepicker("setDate", new Date());
+					$("#homocody").spinner();
+
+					if (settings) {
+						$("#name").val(settings.name);
+						$("#surname").val(settings.surname);
+						$("[name=sex]").val([settings.sex]);
+						$("#birthDate").datepicker("setDate", new Date(settings.birthDate));
+						$("#homocody").spinner("value", settings.homocody);
+					}
+					window.loading(function() {
+						return $.when($.getJSON("json/comuni.min.json")).then(function(list) {
+							var destination = $("#municipality"),
+								updateDestination = function(ui) {
+									if (ui.item) {
+										destination
+											.data({
+												"value": ui.item.value
+											})
+											.val(ui.item.label);
+									} else {
+										destination
+											.removeData("value")
+											.val(String.empty);
+									}
+								},
+								value;
+
+							list = $.map(list, function(item, i) {
+								return $.extend(item, {
+									"n": window.unescape(window.JSON.parse("\"" + item.n + "\""))
+								});
+							});
+							if (destination.get(0).nodeName.toLowerCase() === "select") {
+								$.each(list, function(i, item) {
+									$(document.createElement("option"))
+										.text(item.n)
+										.val(item.c)
+										.appendTo(destination);
+								});
+								if (settings) {
+									destination.val(settings.municipality);
+								}
+							} else {
+								list = $.map(list, function(item, i) {
+									if (settings &&
+										settings.municipality &&
+										settings.municipality.length &&
+										settings.municipality == item.c) {
+
+										value = item.n;
+									}
+									return {
+										"label": item.n,
+										"value": item.c
+									};
+								});
+								destination.autocomplete({
+									"change": function(e, ui) {
+										updateDestination(ui);
+									},
+									"close": function(e, ui) {
+										return e.preventAll();
+									},
+									"focus": function(e, ui) {
+										destination.val(ui.item.label);
+										return false;
+									},
+									"minLength": 2,
+									"select": function(event, ui) {
+										updateDestination(ui);
+										return false;
+									},
+									"source": function(request, response) {
+										var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(request.term), "i");
+
+										response($.grep(list, function(item) {
+											return matcher.test(item.label);
+										}));
+									}
+								});
+								if (value && value.length) {
+									destination.data({
+										"value": settings.municipality
+									}).val(value);
+								}
+							}
+						});
+					}, "Caricamento pagina...");
+					$("#calculate").on({
+						"click": function(e) {
+							var name = $.trim($("#name").val()),
+								surname = $.trim($("#surname").val()),
+								sex = $("[name=sex]:checked").val(),
+								birthDate = $("#birthDate").datepicker("getDate"),
+								municipality = $("#municipality"),
+								homocody = $("#homocody").spinner("value");
+
+							municipality = (municipality.get(0).nodeName.toLowerCase() === "select") ?
+								municipality.val() :
+								municipality.data("value");
+
+							$("#code").val(String.empty);
+							if (name && name.length) {
+								if (surname && surname.length) {
+									if (birthDate) {
+										if (municipality && municipality.length) {
+											saveSettings({
+												"name": name,
+												"surname": surname,
+												"sex": sex,
+												"birthDate": birthDate,
+												"municipality": municipality,
+												"homocody": homocody
+											});
+											$("#code").val(calculateCode(name, surname, sex, birthDate, municipality, homocody));
+										} else {
+											$.toast.error("Specificare una località di nascita.");
+										}
+									} else {
+										$.toast.error("Specificare una data di nascita.");
+									}
+								} else {
+									$.toast.error("Specificare un cognome.");
+								}
+							} else {
+								$.toast.error("Specificare un nome.");
+							}
+							return e.preventAll();
+						}
+					});
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				border: 0 !important;
+				text-align: center;
+			}
+
+			form {
+				margin: 0 auto;
+				width: 16em;
+			}
+
+			fieldset {
+				border-width: 1px;
+			}
+
+			.label,
+			.radio-buttons {
+				padding: 0.2em 0 0;
+			}
+
+			form span {
+				display: block;
+				overflow: hidden;
+			}
+
+			input {
+				text-transform: uppercase;
+			}
+
+			.field {
+				border: 1px solid silver;
+				box-sizing: border-box !important;
+				padding: 0.2em 0.5em;
+				width: 12em;
+			}
+
+			.advanced {
+				display: none;
+			}
+
+			#homocody {
+				width: 1em;
+			}
+
+			#code {
+				font-weight: bold;
+			}
+
+			.ui-autocomplete {
+				max-height: 8em;
+				overflow-x: hidden;
+				overflow-y: auto;
+				text-align: left;
+			}
+
+			@media all and (min-width: 920px) {
+				form {
+					text-align: left;
+					width: 26em;
+				}
+
+				.label {
+					float: left;
+					width: 12em;
+				}
+
+				.centered-on-large-screens {
+					text-align: center;
+				}
+			}
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<form>
+			<fieldset class="ui-widget-content ui-corner-all">
+				<label for="name" class="label">Nome:</label>
+				<span>
+					<input id="name" type="text" class="field ui-corner-all" autofocus/>
+				</span>
+				<label for="surname" class="label">Cognome:</label>
+				<span>
+					<input id="surname" type="text" class="field ui-corner-all"/>
+				</span>
+				<label class="label">Sesso:</label>
+				<span class="radio-buttons">
+					<label><input type="radio" name="sex" class="sex" value="m" checked>Maschio</label>
+					<label><input type="radio" name="sex" class="sex" value="f">Femmina</label>
+				</span>
+				<label for="birthDate" class="label">Data di nascita:</label>
+				<span>
+					<input id="birthDate" type="text" class="field ui-corner-all"/>
+				</span>
+				<label for="municipality" class="label">Comune di nascita:</label>
+				<span>
+					<!-- <select id="municipality" class="field ui-corner-all"></select> -->
+					<input type="text" id="municipality" class="field ui-corner-all"/>
+				</span>
+				<div class="advanced">
+					<label for="homocody" class="label">Omocodia:</label>
+					<span>
+						<input id="homocody" type="text" min="0" max="7" value="0"/>
+					</span>
+				</div>
+				<hr/>
+				<div class="centered-on-large-screens">
+					<button type="submit" id="calculate">Calcola</button>
+				</div>
+				<hr/>
+				<label for="code" class="label">Codice fiscale:</label>
+				<span>
+					<input id="code" type="text" class="field ui-corner-all" readonly/>
+				</span>
+			</fieldset>
+		</form>
+		<div class="dialog loaderDialog">
+			<div class="loadingProgress"></div>
+			<div class="loadingMessage"></div>
+		</div>
+	</body>
+</html>

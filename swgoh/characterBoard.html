@@ -1,0 +1,437 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="images/192-round-2017.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="images/192-round-2017.png" type="image/png"/>
+		<title>SWGOH Character Board Screenshot</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<script type="text/javascript" src="js/canvas-to-blob.min.js"></script>
+		<script type="text/javascript" src="js/canvasUtilities.min.js"></script>
+		<script type="text/javascript" src="js/swgoh.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
+		<style type="text/css">
+			body {
+				color: darkSlateGray;
+				margin-top: 0.5em;
+			}
+
+			#splash, #splashContent {
+				display: none;
+				z-index: 1000;
+			}
+
+			#splash, #loader, #status {
+				background-color: lightSteelBlue;
+			}
+
+			#splash {
+				opacity: 0.75;
+			}
+
+			#splashContent {
+				padding-top: 8em;
+			}
+
+			#splashTitle {
+				margin: 0 0 1em;
+			}
+
+			#splashLog {
+				color: darkSlateBlue;
+				font-size: 50%;
+				margin: 0 auto;
+				max-height: 85%;
+				max-width: 80%;
+				overflow: auto;
+				white-space: nowrap;
+			}
+
+			#loader, #status {
+				opacity: 0.75;
+				padding: 0.25em;
+				position: fixed;
+			}
+
+			#loader {
+				border-radius: 0.5em;
+				right: 0.5em;
+				top: 0.5em;
+			}
+
+			#loader button {
+				float: right;
+			}
+
+			#fileLoader input {
+				display: none;
+			}
+
+			#board {
+				display: none;
+				height: auto;
+				max-width: 95%;
+
+				/* opacity: 0.15;
+				-webkit-filter: grayscale(100%); */
+			}
+
+			#status {
+				bottom: 0;
+				font-size: 50%;
+				position: fixed;
+				left: 0;
+				right: 0;
+			}
+
+			#status>div {
+				float: left;
+				margin: 0.5em 0.25em;
+			}
+
+			@media all and (min-width: 480px) {
+				#splashLog {
+					font-size: 65%;
+					max-width: 45%;
+				}
+
+				#status {
+					font-size: 80%;
+				}
+			}
+
+			@media all and (min-width: 920px) {
+				#splashLog {
+					max-width: 30%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="fullscreen background"></div>
+		<div id="splash" class="fullscreen"></div>
+		<div id="splashContent" class="fullscreen">
+			<div id="splashTitle">Working, please wait...</div>
+			<div id="splashLog"></div>
+		</div>
+		<div id="loader">
+			<div id="fileLoader"></div>
+			<button id="add">Add</button>
+			<br/>
+			<button id="clear">Clear</button>
+		</div>
+		<a id="download">
+			<img id="board" src="//:0"/>
+		</a>
+		<div id="status">
+			<div id="images"></div>
+			<div id="strips"></div>
+			<div id="timings"></div>
+		</div>
+		<script type="text/javascript">
+			"use strict";
+
+			(function() {
+				var _log = function(text) {
+					if (window.console && window.console.log) {
+						var now = new Date(),
+							zeroPad = function(n, l) {
+								n = "" + n;
+								l = l || 2;
+								while (n.length < l) {
+									n = 0..toString() + n;
+								}
+								return n;
+							};
+
+						window.console.log(zeroPad(now.getHours()) + ":" +
+							zeroPad(now.getMinutes()) + ":" +
+							zeroPad(now.getSeconds()) + "." +
+							zeroPad(now.getMilliseconds(), 3) + ": " +
+							text);
+					}
+				};
+
+				var _trace = function(text) {
+					var e = document.getElementById("splashLog"),
+						x = document.createElement("div");
+
+					_log(text);
+					x.innerText = text;
+					e.appendChild(x);
+					e.scrollTop = e.scrollHeight;
+				};
+
+				var _timer = function(name) {
+					var _now = function() {
+						return new Date();
+					}, _elapsed = 0,
+						_running,
+						_startedOn;
+
+					return {
+						get "elapsed"() {
+							return _elapsed;
+						},
+						get "name"() {
+							return name;
+						},
+						"reset": function() {
+							_elapsed = 0;
+							_startedOn = undefined;
+							_running = false;
+						},
+						"restart": function() {
+							this.reset();
+							this.start();
+						},
+						"start": function() {
+							_startedOn = _now();
+							_running = true;
+							_log(name + " - started");
+						},
+						"stop": function() {
+							if (_running) {
+								_elapsed = _now().getTime() - _startedOn.getTime();
+								_running = false;
+								_log(name + " - stopped (" + _elapsed.toLocaleString() + "ms)");
+							}
+						},
+						"toString": function() {
+							return (name || "timer") + ((_running) ?
+								" (running) - started on " + _startedOn :
+								" - elapsed: " + _elapsed.toLocaleString() + "ms");
+						}
+					};
+				};
+
+				var _createBoard = new _timer("Creating board"),
+					_loaded,
+					_loadFile = new _timer("Loading file"),
+					_loadImage = new _timer("Loading image"),
+					_inspectImage = new _timer("Inspecting image");
+
+				var _ = (function() {
+					return {
+						get "emptyImage"() {
+							return "data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+						},
+						get "supportsDirectorySelection"() {
+							return window.navigator.platform.match(/win/i);
+						}
+					}
+				})();
+
+				var _file,
+					_images = [ ];
+
+				var _clearTrace = function() {
+					document.getElementById("splashLog").innerHTML = "";
+				};
+
+				var _createCharacterBoard = function(created) {
+					var firstImage,
+						strips;
+
+					if (_images.length) {
+						_images.sort(function(a, b) {
+							a = a.date.getTime();
+							b = b.date.getTime();
+							return (a < b) ? -1 : (a > b) ? 1 : 0;
+						});
+						firstImage = _images[0];
+						_images.sort(function(a, b) {
+							a = a.scrollbarY;
+							b = b.scrollbarY;
+							return (a < b) ? -1 : (a > b) ? 1 : 0;
+						});
+						_images.map(function(item) {
+							strips = (strips || [ ]).concat(item.strips);
+						});
+						_trace("Creating character board...");
+						_createBoard.restart();
+						window.SWGOH.characterBoardCreator.createCharacterBoard(firstImage.image, strips, function(board) {
+							var download = document.getElementById("download"),
+								name = window.SWGOH.getScreenshotFileName(firstImage.date);
+
+							_createBoard.stop();
+							_trace("Character board created");
+							document.getElementById("board").src = board.src;
+							document.getElementById("board").style.display = "initial";
+
+							download.setAttribute("download", name);
+							download.setAttribute("href", board.src);
+							download.setAttribute("title", name);
+							_showStatus();
+							if (created) {
+								created();
+							}
+						});
+					} else {
+						document.getElementById("board").style.display = "none";
+						document.getElementById("board").src = _.emptyImage;
+					}
+				};
+
+				var _createFileInput = function() {
+					var fileInput = document.createElement("input");
+
+					fileInput.setAttribute("type", "file");
+					fileInput.setAttribute("accept", "image/*");
+					fileInput.setAttribute("multiple", "multiple");
+					if (_.supportsDirectorySelection) {
+						fileInput.setAttribute("webkitdirectory", "webkitdirectory");
+					}
+					fileInput.addEventListener("change", function(e) {
+						var checkLoad = function(image) {
+							var done = ++loaded == length;
+
+							if (image) {
+								_images.push(image);
+								if (done) {
+									_createCharacterBoard(_hideSplash);
+								}
+							} else if (done) {
+								_hideSplash();
+							}
+						}, file, files, found, i, images = [ ], length, loaded = 0, reader;
+
+						_clearTrace();
+						_showSplash();
+						_loaded = true;
+						for (i = 0, length = (files = e.target.files).length; i < length; i++) {
+							file = files[i];
+							found = false;
+							_images.map(function(image) {
+								if (image.fileName.toLowerCase() === file.name.toLowerCase()) {
+									found = true;
+								}
+							});
+							if (found && window.confirm("File '" + file.name + "' has already been loaded.\nAre you sure you want to continue?")) {
+								found = false;
+							}
+							if (!found) {
+								(reader = new FileReader()).addEventListener("load", function(e2) {
+									var image,
+										sequenceString = this.sequenceString;
+
+									_loadFile.stop();
+									_trace("File " + ((image = new Image()).fileName = this.fileName) + sequenceString + " loaded");
+									image.addEventListener("load", function(e3) {
+										var date = window.SWGOH.getDateFromScreenshotFileName(this.fileName),
+											item,
+											scrollbar;
+
+										_loadImage.stop();
+										_trace("Image " + this.fileName + sequenceString + " loaded");
+										if (date) {
+											_trace("Inspecting image " + this.fileName + sequenceString + "...");
+											_inspectImage.restart();
+											scrollbar = window.SWGOH.characterBoardCreator.findScrollbar(this);
+
+											if (scrollbar !== undefined) {
+												images.push(item = {
+													"date": date,
+													"fileName": this.fileName,
+													"outputFileName": window.SWGOH.getScreenshotFileName(date),
+													"image": this,
+													"scrollbarY": scrollbar
+												});
+												window.SWGOH.characterBoardCreator.getCharacterStrips(this, function(strips) {
+													_trace("Image " + item.fileName + sequenceString + " inspected (" + strips.length.toLocaleString() + " strips)");
+													_inspectImage.stop();
+													item.strips = strips;
+													checkLoad(item);
+												});
+											} else {
+												_trace("Image " + this.fileName + sequenceString + " inspected (unable to find scrollbar position, wrong file?)");
+												_inspectImage.stop();
+												checkLoad();
+											}
+										} else {
+											_trace("Image " + this.fileName + sequenceString + " not recognized as screenshot");
+											checkLoad();
+										}
+									});
+									image.addEventListener("error", function(e3) {
+										_loadImage.stop();
+										checkLoad();
+									});
+									_trace("Loading image " + this.fileName + "...");
+									_loadImage.restart();
+									image.src = this.result;
+								});
+								_trace("Loading file " + (reader.fileName = file.name) + (reader.sequenceString = " (" +
+									((reader.index = i) + 1).toLocaleString() + "/" +
+									length.toLocaleString() + ")") + "...");
+								_loadFile.restart();
+								reader.index = i;
+								reader.readAsDataURL(file);
+							} else {
+								checkLoad();
+							}
+						}
+					});
+					return fileInput;
+				}
+
+				var _hideSplash = function() {
+					document.getElementById("splash").style.display = "none";
+					document.getElementById("splashContent").style.display = "none";
+				};
+
+				var _showSplash = function() {
+					document.getElementById("splash").style.display = "block";
+					document.getElementById("splashContent").style.display = "block";
+				};
+
+				var _showStatus = function() {
+					var strips = 0;
+
+					_images.map(function(image) {
+						strips += image.strips.length;
+					});
+					document.getElementById("images").innerText = "Images: " + _images.length.toLocaleString();
+					document.getElementById("strips").innerText = "Strips: " + strips.toLocaleString();
+
+					var loadFileTime = 0,
+						loadImageTime = 0,
+						inspectImageTime = 0,
+						createBoardTime = 0;
+
+					if (_loaded) {
+						loadFileTime = _loadFile.elapsed;
+						loadImageTime = _loadImage.elapsed;
+						inspectImageTime = _inspectImage.elapsed;
+						createBoardTime = _createBoard.elapsed;
+					}
+					document.getElementById("timings").innerText = (_loaded) ?
+						"Load: " + loadFileTime.toLocaleString() + " + " + loadImageTime.toLocaleString() + "ms" +
+							", Scan: " + inspectImageTime.toLocaleString() + "ms" +
+							", Create: " + createBoardTime.toLocaleString() + "ms" +
+							", Total: " + (loadFileTime + loadImageTime + inspectImageTime + createBoardTime).toLocaleString() + "ms" :
+						"";
+				};
+
+				document.getElementById("add").addEventListener("click", function(e) {
+					_file.value = "";
+					_file.click();
+				});
+				document.getElementById("clear").addEventListener("click", function(e) {
+					_file.value = "";
+					_images = [ ];
+					_loaded = false;
+					_createCharacterBoard();
+				});
+				document.getElementById("fileLoader").appendChild(_file = _createFileInput());
+				_showStatus();
+			})();
+		</script>
+	</body>
+</html>

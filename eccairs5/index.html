@@ -1,0 +1,2506 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link rel="icon" href="//eccairs-eval.softeco.it/E5Web/favicon.ico" type="image/png"/>
+		<link rel="shortcut icon" href="//eccairs-eval.softeco.it/E5Web/favicon.ico" type="image/png"/>
+		<title>ECCAIRS 5 Web</title>
+		<script type="text/javascript" src ="//code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src ="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.min.css"/>
+		<script type="text/javascript">
+			"use strict";
+
+			window.NREUM = { };
+			(function() {
+				var parameters = [ ];
+
+				if (location.search && location.search.length) {
+					var a = location.search.substr(1).split("&");
+
+					for (var i = 0; i < a.length; i++) {
+						var p = a[i], j = p.indexOf("=");
+
+						parameters[decodeURIComponent(p.substr(0, j))] =
+							decodeURIComponent(p.substr(j + 1));
+					}
+				}
+				window.parameters = parameters;
+			})();
+
+			var ALLROWS = !!parameters["allRows"],
+				BATCH_SIZE = parseInt(parameters["batchSize"]) || 100,
+				DEBUG = /* true */false,
+				PAGE_SIZE = parseInt(parameters["pageSize"]) || 30,
+				SERVICE_URL,
+				STORAGE_NAME = "e5webapi",
+				STORAGE_USERTOKEN = "e5userToken";
+
+			/* Latest released WebAPI version: */
+			SERVICE_URL = "eccairs-eval.softeco.it/eccairs5webapi/webAPI.svc";
+
+			/* Alternate latest released WebAPI version (NO HTTPS): */
+			/* SERVICE_URL = "eval.softeco.it/eccairs5/webAPI.svc"; */
+
+			/* Local IIS hosting (NO HTTPS): */
+			/* SERVICE_URL = "localhost/e5hosting/webAPI.svc"; */
+
+			/* Local self-hosted (NO HTTPS): */
+			/* SERVICE_URL = "localhost:8748/eccairs5/web"; */
+
+			SERVICE_URL = parameters["serviceURL"] || SERVICE_URL;
+
+			if (SERVICE_URL.indexOf("://") < 0) {
+				SERVICE_URL = window.location.protocol + "//" + SERVICE_URL;
+			}
+			var _format = function(format/*, parameters*/) {
+				for (var i = 1; i < arguments.length; i++) {
+					format = format.replace(new RegExp("\\{" +
+						(i - 1).toString() + "\\}", "gi"), arguments[i]);
+				}
+				return format;
+			};
+
+			var _getLocalSetting = function(name) {
+				return _getOptions()[name];
+			};
+
+			var _getOptions = function() {
+				var options;
+
+				if (window.localStorage && STORAGE_NAME && STORAGE_NAME.length) {
+					options = window.localStorage.getItem(STORAGE_NAME);
+				}
+				if (options && options.length) {
+					options = $.parseJSON(decodeURIComponent(options));
+				}
+				return options || { };
+			};
+
+			var _setLocalSetting = function(name, value) {
+				var options = _getOptions();
+
+				if (value !== undefined) {
+					options[name] = value;
+				} else if ($.isPlainObject(name)) {
+					for (var i in name) {
+						options[i] = name[i];
+					}
+				} else {
+					delete options[name];
+				}
+				if (window.localStorage && STORAGE_NAME && STORAGE_NAME.length) {
+					window.localStorage.setItem(STORAGE_NAME,
+						encodeURIComponent(window.JSON.stringify(options)));
+				}
+			};
+
+			var _toHTML = function(p, o, s) {
+				var table = $(document.createElement("table")).css({
+					"border-collapse": "collapse"
+				}).appendTo(p), tdStyle = {
+					"border": "1px solid silver",
+					"padding": "0.3em"
+				};
+
+				try {
+					for (var i in o) {
+						var lastOne = false,
+							row = $(document.createElement("tr"))
+								.appendTo(table);
+
+						row.append($(document.createElement("td"))
+							.css(tdStyle)
+							.css({
+								"font-weight": "bold",
+								"vertical-align": "top"
+							})
+							.html(i));
+
+						var value;
+
+						try {
+							value = o[i];
+						} catch (e) {
+							value = e.message;
+						}
+
+						var cell = $(document.createElement("td"))
+							.css(tdStyle)
+							.html("&nbsp;")
+							.appendTo(row);
+
+						if (value === null) {
+							value = "null";
+						} else if (typeof value === "undefined") {
+							value = "undefined";
+						} else if (value instanceof Window) {
+							value = value.constructor.toString()
+								.split(/\(/)[0]
+								.split(/\b/)
+								.pop() + " object";
+						} else if (value instanceof HTMLDocument ||
+							value instanceof HTMLElement) {
+
+							lastOne = true;
+						}
+
+						var isArray = /Array$/i.test(value.constructor.toString().split(/\(/)[0]) && false;
+
+						if (!s && !isArray && typeof value === "object") {
+							_toHTML(cell.empty(), value, lastOne);
+						} else {
+							if (isArray || typeof value === "array") {
+								value = value.toString() + "[" + value.length + "]";
+							} else if (typeof value === "function") {
+								value = value.toString().split(/\(/)[0] + "()";
+							}
+							cell.css("font-style", "italic").html(value.toString());
+						}
+					}
+				} catch (e) { }
+			};
+
+			var webAPI = function(serviceURL, userToken) {
+				var _about,
+					_instance,
+					_printingTemplates,
+					_queue = [ ],
+					_serviceURL = serviceURL,
+					_userToken = userToken || "";
+
+				var getMethodURL = function(name, parameters) {
+					var firstParameter = true,
+						url = _serviceURL + "/" + name;
+
+					for (var parameterName in parameters) {
+						if (firstParameter) {
+							firstParameter = false;
+							url += "?";
+						} else {
+							url += "&";
+						}
+						url += encodeURIComponent(parameterName);
+						url += "=";
+						url += encodeURIComponent(parameters[parameterName]);
+					}
+					return url;
+				};
+
+				var invokeMethod = function(name, parameters, returnResult, post, storeUserToken) {
+					var data = { },
+						result = $.Deferred(),
+						onError = function(e) {
+							if (_instance.onError) {
+								_instance.onError(e);
+							}
+							if (e != null && window.console && window.console.warn) {
+								window.console.warn(e);
+							}
+							result.reject(e);
+						};
+
+					for (var parameterName in parameters) {
+						data[parameterName] = parameters[parameterName];
+					}
+
+					var request = function() {
+						var ajaxData = {
+							"data": data,
+							"url": _serviceURL + "/" + name
+						}, start;
+
+						if (_instance.supports.CORS && post) {
+							ajaxData["type"] = "POST";
+						} else if (!_instance.supports.CORS) {
+							ajaxData["dataType"] = "jsonp";
+						}
+						start = $.now();
+						$.ajax(ajaxData).then(function(resultData) {
+							var end = $.now();
+
+							if (console && console.log) {
+								console.log(name + ": " + (end - start).toString() + " ms");
+							}
+							if (resultData.ReturnCode === 1) {
+								if (storeUserToken) {
+									_userToken = resultData.UserToken || "";
+								}
+								result.resolve((returnResult) ?
+									resultData :
+									$.parseJSON(resultData.Data));
+							} else {
+								onError(resultData.ErrorDetails);
+							}
+						}, function(jqXHR, status, error) {
+							onError(error || status);
+						});
+					};
+
+					if (DEBUG) {
+						window.setTimeout(function() {
+							request();
+						}, 1500);
+					} else {
+						request();
+					}
+					return result.promise();
+				}
+
+				var queue = function(methodName) {
+					if (_queue[methodName]) {
+						return _queue[methodName]
+							.always(function() {
+								delete _queue[methodName];
+							});
+					}
+					return _queue[methodName] = invokeMethod(methodName);
+				};
+
+				return _instance = {
+					/* Support methods and properties: */
+					batchSize: undefined,
+					getServiceURL: function() {
+						return _serviceURL;
+					},
+					getUserToken: function() {
+						return _userToken;
+					},
+					isLoggedIn: function() {
+						return this.isValidToken();
+					},
+					pageSize: undefined,
+					supports: { },
+
+					/* WebAPI interface: */
+					about: function() {
+						return _about || queue("about")
+							.then(function(data) {
+								_instance.supports = data.Capabilities;
+								return _about = data;
+							});
+					},
+					attachmentExists: function(attachmentKey) {
+						return invokeMethod("attachmentExists", {
+							"attachmentKey": attachmentKey,
+							"userToken": _userToken
+						});
+					},
+					executeQuery: function(libraryName, queryName, pageSize, options) {
+						return invokeMethod("executeQuery", {
+							"batchSize": this.batchSize,
+							"libraryName": libraryName,
+							"options": options,
+							"pageSize": pageSize || this.pageSize,
+							"queryName": queryName,
+							"userToken": _userToken
+						});
+					},
+					executeQueryCount: function(libraryName, queryName) {
+						return invokeMethod("executeQueryCount", {
+							"libraryName": libraryName,
+							"queryName": queryName,
+							"userToken": _userToken
+						});
+					},
+					executeQueryObject: function(queryObject, pageSize, options) {
+						if ($.isPlainObject(queryObject)) {
+							queryObject = window.JSON.stringify(queryObject);
+						}
+						return invokeMethod("executeQueryObject", {
+							"batchSize": this.batchSize,
+							"options": options,
+							"pageSize": pageSize || this.pageSize,
+							"queryObject": queryObject,
+							"userToken": _userToken
+						}, undefined, true);
+					},
+					executeQueryObjectCount: function(queryObject) {
+						if ($.isPlainObject(queryObject)) {
+							queryObject = window.JSON.stringify(queryObject);
+						}
+						return invokeMethod("executeQueryObjectCount", {
+							"queryObject": queryObject,
+							"userToken": _userToken
+						}, undefined, true);
+					},
+					formatOccurrenceWithTemplate: function(eccairsNumber, responsibleEntity, templateName) {
+						return getMethodURL("formatOccurrenceWithTemplate", {
+							"eccairsNumber": eccairsNumber,
+							"responsibleEntity": responsibleEntity,
+							"templateName": templateName,
+							"userToken": _userToken
+						});
+					},
+					formatOccurrenceWithTemplateByKey: function(occurrenceKey, templateName) {
+						return getMethodURL("formatOccurrenceWithTemplateByKey", {
+							"occurrenceKey": occurrenceKey,
+							"templateName": templateName,
+							"userToken": _userToken
+						});
+					},
+					getAllSubRepositories: function(rootRepository) {
+						return invokeMethod("getAllSubRepositories", {
+							"rootRepository": rootRepository
+						}).then(function(repositories) {
+							if (repositories && repositories.length) {
+								repositories.sort(function(a, b) {
+									return (a.Description < b.Description) ?
+										-1 :
+										(a.Description > b.Description) ?
+											1 :
+											0;
+								});
+							}
+							return repositories;
+						});
+					},
+					getAttachment: function(attachmentKey) {
+						return getMethodURL("getAttachment", {
+							"attachmentKey": attachmentKey,
+							"userToken": _userToken
+						});
+					},
+					getAttachmentsDetails: function(eccairsNumber, responsibleEntity) {
+						return invokeMethod("getAttachmentsDetails", {
+							"eccairsNumber": eccairsNumber,
+							"responsibleEntity": responsibleEntity,
+							"userToken": _userToken
+						});
+					},
+					getAttachmentsDetailsByKey: function(occurrenceKey) {
+						return invokeMethod("getAttachmentsDetailsByKey", {
+							"occurrenceKey": occurrenceKey,
+							"userToken": _userToken
+						});
+					},
+					getExecutedQuery: function(operationID) {
+						return invokeMethod("getExecutedQuery", {
+							"operationID": operationID,
+							"userToken": _userToken
+						});
+					},
+					getExecutedQueryObject: function(operationID, options) {
+						return invokeMethod("getExecutedQueryObject", {
+							"operationID": operationID,
+							"serializationOption": options,
+							"userToken": _userToken
+						});
+					},
+					getLibraries: function(sort) {
+						return invokeMethod("getLibraries", {
+							"userToken": _userToken
+						}).then(function(libraries) {
+							if (sort && libraries && libraries.length) {
+								libraries.sort(function(a, b) {
+									return (a.Name < b.Name) ?
+										-1 :
+										(a.Name > b.Name) ?
+											1 :
+											0;
+								});
+							}
+							return libraries;
+						});
+					},
+					getOccurrence: function(eccairsNumber, responsibleEntity) {
+						return invokeMethod("getOccurrence", {
+							"eccairsNumber": eccairsNumber,
+							"responsibleEntity": responsibleEntity,
+							"userToken": _userToken
+						});
+					},
+					getOccurrenceAsPDF: function(eccairsNumber, responsibleEntity, viewName) {
+						return getMethodURL("getOccurrenceAsPDF", {
+							"eccairsNumber": eccairsNumber,
+							"responsibleEntity": responsibleEntity,
+							"userToken": _userToken,
+							"viewName": viewName
+						});
+					},
+					getOccurrenceAsPDFByKey: function(occurrenceKey, viewName) {
+						return getMethodURL("getOccurrenceAsPDFByKey", {
+							"occurrenceKey": occurrenceKey,
+							"userToken": _userToken,
+							"viewName": viewName
+						});
+					},
+					getOccurrenceByKey: function(occurrenceKey) {
+						return invokeMethod("getOccurrenceByKey", {
+							"occurrenceKey": occurrenceKey,
+							"userToken": _userToken
+						});
+					},
+					getOccurrencePrintingTemplates: function() {
+						return _printingTemplates ||
+							invokeMethod("getOccurrencePrintingTemplates", {
+								"userToken": _userToken
+							}).then(function(data) {
+								return _printingTemplates = data;
+							});
+					},
+					getQueries: function(libraryName, sort) {
+						return invokeMethod("getQueries", {
+							"libraryName": libraryName,
+							"userToken": _userToken
+						}).then(function(queries) {
+							if (sort && queries && queries.length) {
+								queries.sort(function(a, b) {
+									return (a.Name < b.Name) ?
+										-1 :
+										(a.Name > b.Name) ?
+											1 :
+											0;
+								});
+							}
+							return queries;
+						});
+					},
+					getQueriesByExample: function(sort) {
+						return invokeMethod("getQueriesByExample", {
+							"userToken": _userToken
+						}).then(function(queries) {
+							if (sort && queries && queries.length) {
+								queries.sort(function(a, b) {
+									return (a.Name < b.Name) ?
+										-1 :
+										(a.Name > b.Name) ?
+											1 :
+											0;
+								});
+							}
+							return {
+								"Name": "Queries by example",
+								"Queries": queries
+							};
+						});
+					},
+					getQueryByExampleData: function(queryName) {
+						return invokeMethod("getQueryByExampleData", {
+							"queryName": queryName,
+							"userToken": _userToken
+						});
+					},
+					getQueryByExampleObject: function(queryName, options) {
+						return invokeMethod("getQueryByExampleObject", {
+							"serializationOption": options,
+							"queryName": queryName,
+							"userToken": _userToken
+						});
+					},
+					getQueryData: function(libraryName, queryName) {
+						return invokeMethod("getQueryData", {
+							"libraryName": libraryName,
+							"queryName": queryName,
+							"userToken": _userToken
+						});
+					},
+					getQueryObject: function(libraryName, queryName, options) {
+						return invokeMethod("getQueryObject", {
+							"libraryName": libraryName,
+							"serializationOption": options,
+							"queryName": queryName,
+							"userToken": _userToken
+						});
+					},
+					getQueryResult: function(operationID, page, order) {
+						if (!page) {
+							page = 0;
+						}
+						if (!order) {
+							order = "";
+						}
+						return invokeMethod("getQueryResult", {
+							"operationID": operationID,
+							"order": order,
+							"page": page,
+							"userToken": _userToken
+						});
+					},
+					getRepositories: function() {
+						return invokeMethod("getRepositories").then(function(repositories) {
+							if (repositories && repositories.length) {
+								repositories.sort(function(a, b) {
+									return (a.Description < b.Description) ?
+										-1 :
+										(a.Description > b.Description) ?
+											1 :
+											0;
+								});
+							}
+							return repositories;
+						});
+					},
+					getUserInfo: function() {
+						return invokeMethod("getUserInfo", {
+							"userToken": _userToken
+						});
+					},
+					getViewImage: function(viewName) {
+						return getMethodURL("getViewImage", {
+							"userToken": _userToken,
+							"viewName": viewName
+						});
+					},
+					getViews: function(eccairsNumber, responsibleEntity, viewActionType) {
+						return invokeMethod("getViews", {
+							"eccairsNumber": eccairsNumber,
+							"responsibleEntity": responsibleEntity,
+							"userToken": _userToken,
+							"viewActionType": viewActionType
+						});
+					},
+					getViewsByKey: function(occurrenceKey, viewActionType) {
+						return invokeMethod("getViewsByKey", {
+							"occurrenceKey": occurrenceKey,
+							"userToken": _userToken,
+							"viewActionType": viewActionType
+						});
+					},
+					isValidQueryResult: function(operationID) {
+						return invokeMethod("isValidQueryResult", {
+							"operationID": operationID,
+							"userToken": _userToken
+						});
+					},
+					isValidToken: function() {
+						if (_userToken && _userToken.length) {
+							return invokeMethod("isValidToken", {
+								"userToken": _userToken
+							});
+						}
+						return $.Deferred().reject().promise();
+					},
+					login: function(repository, username, password, language) {
+						return invokeMethod("login", {
+							"language": language,
+							"repository": repository,
+							"username": username,
+							"password": password
+						}, true, undefined, true).then(function(result) {
+							return result.UserToken;
+						});
+					},
+					loginByInfo: function(loginInfo) {
+						return invokeMethod("loginByInfo", {
+							"loginInfo": loginInfo
+						}, true, undefined, true).then(function(result) {
+							return result.UserToken;
+						});
+					},
+					logout: function() {
+						return invokeMethod("logout", {
+							"userToken": _userToken
+						}, true, undefined, true).then(function(result) {
+							return result.UserToken;
+						});
+					},
+					releaseQueryResult: function(operationID) {
+						return invokeMethod("releaseQueryResult", {
+							"operationID": operationID,
+							"userToken": _userToken
+						});
+					},
+					saveUserInfo: function(user) {
+						if ($.isPlainObject(user)) {
+							user = window.JSON.stringify(user);
+						}
+						return invokeMethod("saveUser", {
+							"user": user,
+							"userToken": _userToken
+						}, undefined, true);
+					},
+
+					/* Dictionary related interface: */
+					getAttribute: function(attributeID, options) {
+						return invokeMethod("getAttribute", {
+							"attributeID": attributeID,
+							"serializationOption": options,
+							"userToken": _userToken
+						});
+					},
+					getAttributes: function(parentEntityID, options) {
+						return invokeMethod("getAttributes", {
+							"parentEntityID": parentEntityID,
+							"serializationOption": options,
+							"userToken": _userToken
+						});
+					},
+					getAttributeValue: function(attributeID, valueData, options) {
+						return invokeMethod("getAttributeValue", {
+							"attributeID": attributeID,
+							"serializationOption": options,
+							"valueData": valueData
+						});
+					},
+					getEntities: function(parentEntityID, options) {
+						return invokeMethod("getEntities", {
+							"parentEntityID": parentEntityID,
+							"serializationOption": options,
+							"userToken": _userToken
+						});
+					},
+					getEntity: function(entityID, options) {
+						return invokeMethod("getEntity", {
+							"entityID": entityID,
+							"serializationOption": options,
+							"userToken": _userToken
+						});
+					},
+					getLexiconText: function(textID) {
+						return invokeMethod("getLexiconText", {
+							"textID": textID,
+							"userToken": _userToken
+						});
+					},
+					getLinkedEntities: function(parentEntityID, options) {
+						return invokeMethod("getLinkedEntities", {
+							"parentEntityID": parentEntityID,
+							"serializationOption": options,
+							"userToken": _userToken
+						});
+					},
+					getUnits: function(attributeID, options) {
+						return invokeMethod("getUnits", {
+							"attributeID": attributeID,
+							"serializationOption": options,
+							"userToken": _userToken
+						});
+					},
+					getValuePath: function(attributeID, value, options) {
+						return invokeMethod("getValuePath", {
+							"attributeID": attributeID,
+							"serializationOption": options,
+							"userToken": _userToken,
+							"value": value
+						});
+					},
+					getValues: function(attributeID, parentValue, filter, extendedFilter, lastLevel, showDeletedValues, options) {
+						return invokeMethod("getValues", {
+							"attributeID": attributeID,
+							"extendedFilter": extendedFilter,
+							"filter": filter,
+							"lastLevel": lastLevel,
+							"parentValue": parentValue,
+							"serializationOption": options,
+							"showDeletedValues": showDeletedValues,
+							"userToken": _userToken
+						});
+					},
+					setUnit: function(attributeID, unit) {
+						return invokeMethod("setAttributeUnit", {
+							"attributeID": attributeID,
+							"unitID": unit,
+							"userToken": _userToken
+						});
+					},
+
+					/* User management related interface: */
+					createUser: function() {
+						return invokeMethod("createUser", {
+							"userManagerToken": _userToken
+						});
+					},
+					deleteUser: function(username) {
+						return invokeMethod("deleteUser", {
+							"userManagerToken": _userToken,
+							"username": username
+						});
+					},
+					getUser: function(username) {
+						return invokeMethod("getUser", {
+							"userManagerToken": _userToken,
+							"username": username
+						});
+					},
+					getUsers: function() {
+						return invokeMethod("getUsers", {
+							"userManagerToken": _userToken
+						});
+					},
+					saveUser: function(user) {
+						if ($.isPlainObject(user)) {
+							user = window.JSON.stringify(user);
+						}
+						return invokeMethod("saveUser", {
+							"user": user,
+							"userManagerToken": _userToken
+						}, undefined, true);
+					},
+					userManagerLogin: function(repository, username, password) {
+						return invokeMethod("userManagerLogin", {
+							"repository": repository,
+							"username": username,
+							"password": password
+						}, true, undefined, true).then(function(result) {
+							return result.UserToken;
+						});
+					},
+					userManagerLoginByInfo: function(loginInfo) {
+						return invokeMethod("userManagerLoginByInfo", {
+							"loginInfo": loginInfo
+						}, true, undefined, true).then(function(result) {
+							return result.UserToken;
+						});
+					},
+
+					/* User impersonation related interface: */
+					getImpersonatedUserCredentials: function(repository, username, language, validityMilliseconds) {
+						return invokeMethod("getImpersonatedUserCredentials", {
+							"language": language,
+							"repository": repository,
+							"userManagerToken": _userToken,
+							"username": username,
+							"validityMilliseconds": validityMilliseconds
+						}, true).then(function(result) {
+							return result.Data;
+						});
+					}
+				};
+			}
+
+			$().ready(function() {
+				/* * Tests **************************************************************************** */
+				{
+					/* * User management test ********************************************************* */
+
+					var userManagementTest = function() {
+						var testRepository = "AVIATION 1.3.0.8";
+							testAdminPassword = "",
+							testUserManager = "DAVIDE",
+							testUser = "LETTORE",
+							testProperty = "Country",
+							testPropertyValue = new Date().toTimeString(),
+							testURL = "http://eccairs-eval.softeco.it/eccairs5webapi/webapi.svc";
+
+						/* testRepository = "AVIATION";
+						testAdminPassword = "admin";
+						testUserManager = "ROBERTO";
+						testUser = "WRITER";
+						testURL = "";
+						testPropertyValue = "Общественная палата оценила антикоррупционную деятельность губернатора Волгоградской области Эйнарс Граудиньш: " +
+							"ОБСЕ выполняет на Украине политический заказ Запада"; */
+
+						/* testURL = "http://172.16.1.32:8748/eccairs5/webapi"; */
+						/* testURL = "http://eccairs-eval.softeco.it:19566/eccairs5/webapi"; */
+
+						var testAPI = new webAPI(testURL);
+
+						testAPI.userManagerLogin(testRepository, "ADMIN", testAdminPassword).then(function() {
+							testAPI.getImpersonatedUserCredentials(testRepository, testUserManager, "", 120000).then(function(credentials) {
+								testAPI.logout().then(function() {
+									testAPI.userManagerLoginByInfo(credentials).then(function() {
+										testAPI.getUsers().then(function(users) {
+											$(users).each(function(i) {
+												if (this.Name === testUser) {
+													$(this.Properties).each(function(j) {
+														if (this.Name === testProperty) {
+															this.Value = testPropertyValue;
+														}
+														return false;
+													});
+													testAPI.saveUser(this).then(function() {
+														debugger;
+													});
+													return false;
+												}
+											});
+										});
+									});
+								});
+							});
+						});
+					};
+
+					/* userManagementTest(); */
+
+					/* ******************************************************************************** */
+
+					/* * Create User test ************************************************************* */
+
+					var createUserTest = function() {
+						var testRepository = "AVIATION 2.4.0.0\\R1";
+
+						var testAPI = new webAPI();
+
+						testAPI.userManagerLogin(testRepository, "ADMIN").then(function() {
+							testAPI.createUser().then(function(user) {
+								debugger;
+								testAPI.logout();
+							});
+						});
+					};
+
+					/* createUserTest(); */
+
+					/* ******************************************************************************** */
+
+					/* * Miscellaneous tests ********************************************************** */
+
+					var miscTest = function() {
+						var a = new webAPI(SERVICE_URL);
+
+						a.login("AVIATION 2.5.0.0", "S").then(function() {
+							var occKey = "05FBD62AC94C4AA89D0C8C8E9440E952",
+								respEnt = 1024;
+
+							$(document.createElement("input"))
+								.attr({
+									"accept": ".json",
+									"type": "file"
+								})
+								.on({
+									"change": function(e) {
+										var reader = new FileReader();
+
+										$(reader).on({
+											"load": function(e) {
+												a.executeQueryObject($(e.target).attr("result"))
+													.then(function(r) {
+														debugger;
+														return a.releaseQueryResult(r.OperationID);
+													}).always(a.logout);
+											}
+										});
+										reader.readAsText(e.target.files[0]);
+									}
+								})
+								.appendTo(document.body);
+						});
+					};
+
+					/* miscTest(); */
+
+					/* ******************************************************************************** */
+				}
+
+				var api;
+
+				var addLoaderTo = function(selector, left) {
+					var loader = $("#loader"),
+						stackCount = loader.data("stackCount");
+
+					if (stackCount === 0) {
+						loader.dialog({
+							"dialogClass": "no-title",
+							"height": 72,
+							"modal": true,
+							"width": "auto"
+						});
+					}
+					loader.data("stackCount", ++stackCount);
+				};
+
+				var createAccordionItem = function(accordion, name, detail, data, headerIcon, headerClasses, contentClasses) {
+					var header = $(document.createElement("h3"));
+
+					createIconAndText(header, headerIcon, name);
+
+					var content = $(document.createElement("div"))
+						.html(detail);
+
+					if (headerClasses && headerClasses.length) {
+						for (var i = 0; i < headerClasses.length; i++) {
+							header.addClass(headerClasses[i]);
+						}
+					}
+
+					if (contentClasses && contentClasses.length) {
+						for (var i = 0; i < contentClasses.length; i++) {
+							content.addClass(contentClasses[i]);
+						}
+					}
+
+					if (data) {
+						content.data(data);
+					}
+
+					accordion
+						.append(header)
+						.append(content);
+				};
+
+				var createAttachmentElement = function(attachmentsElement, attachment) {
+					var text = attachment.Name;
+
+					if (attachment.Description && attachment.Description.length) {
+						text += " (" + attachment.Description + ")";
+					}
+					text += " (" + attachment.SizeDescription + ")";
+
+					var a = $(document.createElement("a"))
+						.addClass("ui-state-highlight")
+						.attr({
+							"href": "#",
+							"target": "_blank"
+						});
+
+					if (!api.supports.StreamDetails) {
+						a.attr({
+							"download": attachment.Name,
+						});
+					}
+
+					createIconAndText(a, "ui-icon-document-b", text);
+					a.appendTo(attachmentsElement);
+
+					api.attachmentExists(attachment.Key)
+						.then(function() {
+							a.attr({
+								"href": api.getAttachment(attachment.Key)
+							});
+						}, function(e) {
+							a.addClass("ui-state-error")
+								.on({
+									"click": function(ev) {
+										ev.preventDefault();
+										if (e && e.length) {
+											showAlert(e);
+										}
+									}
+								});
+						})
+						.always(function() {
+							a.removeClass("ui-state-highlight");
+						});
+					return a;
+				};
+
+				var createIconAndText = function(container, icon, text) {
+					container.append($(document.createElement("span"))
+						.addClass("ui-icon")
+						.addClass(icon)
+						.css({
+							"display": "inline-block",
+							"vertical-align": "middle"
+						}))
+						.append($(document.createElement("span"))
+							.addClass("text")
+							.css({
+								"display": "inline-block",
+								"vertical-align": "middle"
+							})
+							.text(text));
+				}
+
+				var createOccurrenceDetails = function(occurrenceKey) {
+					var dialogElement = $(".occurrenceDetails").clone(),
+						result = $.Deferred();
+
+					api.getOccurrenceByKey(occurrenceKey).then(function(occurrenceData) {
+						dialogElement
+							.attr({
+								"title": occurrenceData.ECCAIRSNumber + " - " +
+									occurrenceData.ResponsibleEntityDescription
+							})
+							.data("occurrenceData", occurrenceData);
+
+						dialogElement.find(".eccairsNumber").text(occurrenceData.ECCAIRSNumber);
+						dialogElement.find(".responsibleEntity").text(occurrenceData.ResponsibleEntityDescription);
+						dialogElement.find(".lastModifiedOn").text(new Date(occurrenceData.LastModificationDate).toLocaleString());
+						dialogElement.find(".createdOn").text(new Date(occurrenceData.CreationDate).toLocaleString());
+
+						var attachmentsElement = dialogElement.find(".attachments");
+
+						api.getAttachmentsDetailsByKey(occurrenceKey).then(function(attachments) {
+							if (attachments && attachments.length) {
+								$(attachments).each(function(i) {
+									createAttachmentElement(attachmentsElement, this);
+									$(document.createElement("br"))
+										.appendTo(attachmentsElement);
+								});
+							} else {
+								dialogElement.find(".attachmentsLabel").closest("tr").hide();
+								attachmentsElement.closest("tr").hide();
+							}
+						}, function(e) {
+							attachmentsElement.addClass("ui-state-error")
+								.text(e);
+						}).always(function() {
+							result.resolve(dialogElement);
+						});
+
+						var pdfElement = dialogElement.find(".pdf");
+
+						$(occurrenceData.Views_View).each(function(i) {
+							if (this.IsPrintable) {
+								var a = $(document.createElement("a"))
+									.attr({
+										"href": api.getOccurrenceAsPDFByKey(occurrenceData.Key, this.Name),
+										"target": "_blank"
+									})
+									.appendTo(pdfElement);
+
+								if (api.supports.StreamDetails) {
+									a.append($(document.createElement("img"))
+										.attr({
+											"src": api.getViewImage(this.Name)
+										}))
+										.append($(document.createTextNode(this.Name)));
+								} else {
+									a.attr({
+										"download": _format("{0} - {1} - {2}.pdf",
+											occurrenceData.ECCAIRSNumber,
+											occurrenceData.ResponsibleEntityDescription,
+											this.Name)
+									});
+									createIconAndText(a, "ui-icon-document-b", this.Name);
+								}
+
+								$(document.createElement("br"))
+									.appendTo(pdfElement);
+							}
+						});
+						if (pdfElement.find("a").length == 0) {
+							dialogElement.find(".pdfLabel").closest("tr").hide();
+							pdfElement.closest("tr").hide();
+						}
+
+						if (occurrenceData.Views_View.length) {
+							$.when(api.getOccurrencePrintingTemplates()).then(function(templates) {
+								var templatesElement = dialogElement.find(".templates");
+
+								$(templates).each(function(i) {
+									var a;
+
+									createIconAndText(a = $(document.createElement("a"))
+										.attr({
+											"href": api.formatOccurrenceWithTemplateByKey(occurrenceData.Key, this.Name),
+											"target": "_blank"
+										})
+										.appendTo(templatesElement), "ui-icon-document-b", this.Name);
+
+									if (!api.supports.StreamDetails) {
+										a.attr({
+											"download": _format("{0} - {1} - {2}",
+												occurrenceData.ECCAIRSNumber,
+												occurrenceData.ResponsibleEntityDescription,
+												this.FileName)
+										});
+									}
+
+									$(document.createElement("br"))
+										.appendTo(templatesElement);
+								});
+								if (templatesElement.find("a").length == 0) {
+									dialogElement.find(".templatesLabel").closest("tr").hide();
+									templatesElement.closest("tr").hide();
+								}
+							});
+						} else {
+							dialogElement.find(".templatesLabel").closest("tr").hide();
+							templatesElement.closest("tr").hide();
+						}
+					}, function(e) {
+						showAlert(e);
+						result.reject();
+					});
+					return result.promise();
+				};
+
+				var executeQuery = function(button, library, query, count, isObject) {
+					var loaderElement = button.find(".ui-button-text");
+
+					addLoaderTo(loaderElement, true);
+
+					((count) ?
+						((isObject) ?
+							api.executeQueryObjectCount(query) :
+							api.executeQueryCount(library.Name, query.Name)) :
+						((isObject) ?
+							api.executeQueryObject(query, undefined, (ALLROWS) ? 2 : 1) :
+							api.executeQuery(library.Name, query.Name, undefined, (ALLROWS) ? 2 : 1)))
+								.then(function(data) {
+									button.removeClass("ui-state-error");
+									if (count) {
+										button.button("option", "label", _format("Count ({0})", data.Count));
+									} else if (api.supports.EmptyQueryResults || data.TotalRows > 0) {
+										button.button("option", "label", "Execute");
+										return showQueryResult(query, data);
+									} else {
+										button.button("option", "label", _format("Execute ({0})", data.TotalRows));
+										if (data.operationID) {
+											api.releaseQueryResult(data.OperationID);
+										}
+									}
+								}, function(e) {
+									button.addClass("ui-state-error")
+										.button("option", "label", ((count) ?
+											"Count" : "Execute") + " (" + e + ")");
+								}).always(function() {
+									removeLoaderFrom(loaderElement);
+								});
+				};
+
+				var formatJSON = function(o) {
+					return window.JSON.stringify(o, null, "\t")
+						.replace(/\n/g, "<br/>")
+						.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;");
+				};
+
+				var loadLanguages = function() {
+					var languagesSelect = $("#language")
+						.empty();
+
+					var repositories = $("#repository").data("repositories"),
+						value = $("#repository").val();
+
+					if (repositories && repositories.length && value) {
+						$(repositories).each(function(i) {
+							if (this.Name === value) {
+								$(this.Languages).each(function(j) {
+									$(document.createElement("option"))
+										.val(this.Code)
+										.text(this.Name)
+										.appendTo(languagesSelect);
+								});
+							}
+						});
+						languagesSelect.val(_getLocalSetting("language"));
+						if (!languagesSelect.val()) {
+							languagesSelect.val(languagesSelect.find("option").first().val());
+						}
+					}
+				};
+
+				var loadPage = function() {
+					api.onError = function(e) {
+						/* window.alert(e); */
+					};
+
+					$(".pageContent").children("div").hide();
+					$("#mainLoader").show();
+					api.isLoggedIn().then(function() {
+						$("#mainLoader").hide();
+						$.when(api.about()).then(function() {
+							if (api.supports.Dictionary) {
+								$("#dictionary").css({
+									"display": "inline-block"
+								});
+							} else {
+								$("#dictionary").hide();
+							}
+						}, $("#dictionary").hide);
+						$("#logout").css({
+							"display": "inline-block"
+						});
+						showLibraries();
+					}, function() {
+						$("#mainLoader").hide();
+						$("#librariesList").empty();
+						$("#libraries").hide();
+						$("#notLoggedIn").show();
+						$("#dictionary").hide();
+						$("#logout").hide();
+					});
+				};
+
+				var loadQueries = function(container) {
+					var library = container.data("library");
+
+					if (library) {
+						var loaderElement = container.prev().find(".text");
+
+						container.removeData("library");
+						addLoaderTo(loaderElement, true);
+						$.when(($.isArray(library.Queries)) ?
+							library.Queries :
+							api.getQueries(library.Name))
+							.then(function(queries) {
+								var list = $(document.createElement("div"))
+
+								$(queries).each(function(i) {
+									var headerClasses, icon;
+
+									if (!(this.IsValid && !this.ExecutionDenied)) {
+										headerClasses = [ "ui-state-error", "invalid" ];
+										icon = "ui-icon-circle-close";
+									} else if (this.HasParameters) {
+										headerClasses = [ "withWarning" ];
+										icon = "ui-icon-alert";
+									} else {
+										headerClasses = [ ];
+										icon = "ui-icon-check";
+									}
+									createAccordionItem(list, this.Name, this.Explanation
+										.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;"), {
+											"library": library,
+											"query": this
+										}, icon, headerClasses, [ "explanation" ]);
+								});
+								container.empty().append(list);
+								list.accordion({
+									"heightStyle": "content"
+								});
+								list.find(".ui-accordion-content").each(function(i) {
+									var content = $(this),
+										header = content.prev();
+
+									if (!header.hasClass("invalid")) {
+										var library = content.data("library"),
+											query = content.data("query");
+
+										content.append($(document.createElement("br")));
+										content.append($(document.createElement("br")));
+
+										if (!header.hasClass("withWarning")) {
+											$(document.createElement("a"))
+												.attr({
+													"href": "#"
+												})
+												.data({
+													"library": library,
+													"query": query
+												})
+												.text("Count")
+												.button({
+													"icons": {
+														"primary": "ui-icon-notice"
+													}
+												})
+												.on({
+													"click": function(e) {
+														e.preventDefault();
+
+														var link = $(e.target).closest("a");
+
+														executeQuery(link, link.data("library"),
+															link.data("query"), true);
+													}
+												})
+												.appendTo(content);
+
+											$(document.createElement("a"))
+												.attr({
+													"href": "#"
+												})
+												.data({
+													"library": library,
+													"query": query
+												})
+												.text("Execute")
+												.button({
+													"icons": {
+														"primary": "ui-icon-gear"
+													}
+												})
+												.on({
+													"click": function(e) {
+														e.preventDefault();
+
+														var link = $(e.target).closest("a");
+
+														executeQuery(link, link.data("library"),
+															link.data("query"));
+													}
+												})
+												.appendTo(content);
+										}
+										if (api.supports.QueryObject) {
+											$(document.createElement("a"))
+												.attr({
+													"href": "#"
+												})
+												.data({
+													"library": library,
+													"query": query
+												})
+												.text("View Query JSON")
+												.button({
+													"icons": {
+														"primary": "ui-icon-script"
+													}
+												})
+												.on({
+													"click": function(e) {
+														e.preventDefault();
+
+														var link = $(e.target).closest("a");
+
+														addLoaderTo(link);
+														((link.data("query").IsQueryByExample) ?
+															api.getQueryByExampleObject(link.data("query").Name) :
+															api.getQueryObject(link.data("library").Name,
+																link.data("query").Name))
+																.then(function(queryObject) {
+																	showQueryObject(queryObject);
+																})
+																.always(function() {
+																	removeLoaderFrom(link);
+																});
+													}
+												})
+												.appendTo(content);
+										}
+									}
+								});
+						}, function(e) {
+							container.addClass("ui-state-error").text(e);
+						}).always(function() {
+							removeLoaderFrom(loaderElement);
+						});
+					}
+				};
+
+				var loadRepositories = function() {
+					addLoaderTo("#repository");
+					return api.getRepositories().then(function(repositories) {
+						var repositoriesSelect = $("#repository");
+
+						if (repositories.length) {
+							repositoriesSelect.data("repositories", repositories);
+
+							$(repositories).each(function(i) {
+								$(document.createElement("option"))
+									.val(this.Name)
+									.text(this.Description)
+									.appendTo(repositoriesSelect);
+							});
+						} else {
+							repositoriesSelect
+								.removeData("repositories");
+
+							$(document.createElement("option"))
+								.val(-1)
+								.text("No repository available.")
+								.appendTo(repositoriesSelect);
+						}
+					}).always(function() {
+						removeLoaderFrom("#repository");
+					});
+				};
+
+				var removeLoaderFrom = function(selector) {
+					var loader = $("#loader"),
+						stackCount = loader.data("stackCount");
+
+					if (--stackCount === 0) {
+						loader.dialog("close");
+					}
+					loader.data("stackCount", stackCount);
+				};
+
+				var setupPage = function() {
+					var userToken;
+
+					if (window.sessionStorage) {
+						userToken = window.sessionStorage.getItem(STORAGE_USERTOKEN);
+					}
+					api = new webAPI(SERVICE_URL, userToken);
+
+					$.when(api.about()).then(function(data) {
+						_toHTML($("#aboutDialog")/*.attr({
+							"title": api.getServiceURL()
+						})*/, $.extend({
+							"Address": api.getServiceURL()
+						}, data));
+						if (api.supports.BatchSize) {
+							api.batchSize = BATCH_SIZE;
+							api.pageSize = PAGE_SIZE;
+						}
+						if (api.supports.Dictionary) {
+							$("#taxonomyDialog").dialog("option", "title",
+								_getLocalSetting("repository"));
+						}
+						if (api.supports.QueryObject) {
+							var fileInput = $("#queryUpload")
+								.find("input[type=file]")
+								.first()
+								.on({
+									"change": function(e) {
+										if (fileInput.val()) {
+											try {
+												var reader = new FileReader();
+
+												$(reader).on({
+													"error": function(e) {
+														showAlert(e.message);
+													},
+													"load": function(e) {
+														try {
+															showQueryObject($.parseJSON(reader.result));
+														} catch (ex) {
+															showAlert(ex.message);
+														}
+													}
+												});
+												try {
+													reader.readAsText(fileInput[0].files[0]);
+												} finally {
+													fileInput.val("");
+												}
+											} catch (e) {
+												showAlert(e.message);
+											}
+										}
+									}
+								});
+							$("#queryChooseButton").on({
+								"click": function(e) {
+									fileInput.click();
+								}
+							}).button();
+						} else {
+							$("#queryUpload").hide();
+						}
+						$("#aboutDialog")
+							.dialog({
+								"autoOpen": false,
+								"create": function(e, ui) {
+									$("#aboutDialog")
+										.closest(".ui-dialog")
+										.find(".ui-dialog-title")
+										.css({
+											/*"overflow": "initial",
+											"text-overflow": "initial",
+											"white-space": "initial"*/
+										});
+									$("#aboutDialog")
+										.closest(".ui-dialog")
+										.find(".ui-dialog-buttonpane")
+										.css("text-align", "center")
+										.find(".ui-dialog-buttonset")
+										.css("float", "none");
+								},
+								"buttons": [{
+									"click": function(e) {
+										$("#aboutDialog").dialog("close");
+									},
+									"text": "OK"
+								}],
+								"modal": true,
+								"width": "auto"
+							});
+						$("#about")
+							.button({
+								"icons": {
+									"primary": "ui-icon-info"
+								},
+								"text": false
+							})
+							.on({
+								"click": function(e) {
+									e.preventDefault();
+									$("#aboutDialog").dialog("open");
+								}
+							});
+					}, function() {
+						$("#about").hide();
+					});
+					$("#executedQuery")
+						.dialog({
+							"autoOpen": false,
+							"create": function(e, ui) {
+								$("#executedQuery")
+									.closest(".ui-dialog")
+									.find(".ui-dialog-buttonpane")
+									.css("text-align", "center")
+									.find(".ui-dialog-buttonset")
+									.css("float", "none");
+							},
+							"buttons": [{
+								"click": function(e) {
+									$("#executedQuery").dialog("close");
+								},
+								"text": "OK"
+							}],
+							"modal": true,
+							"width": "auto"
+						});
+					$("#dictionary").button({
+						"icons": {
+							"primary": "ui-icon-note"
+						},
+						text: false
+					});
+					$("#logout").button({
+						"icons": {
+							"primary": "ui-icon-power"
+						},
+						text: false
+					});
+					$("#username").val(_getLocalSetting("username") || $("#username").val());
+					$("#showLogin").button();
+					$("#login").button();
+
+					$("#mainProgressBar").progressbar({
+						"value": false
+					});
+					$("#loader")
+						.css({
+							"margin": "1em"
+						})
+						.data("stackCount", 0);
+					$("#loaderProgressBar").progressbar({
+						"value": false
+					});
+
+					var parseQueryObject = function() {
+						var token = /\xA0/g;
+
+						var text = $("#queryObject").find("div[contenteditable]").text();
+
+						while (text.match(token)) {
+							text = text.replace(token, "");
+						}
+						try {
+							return $.parseJSON(text);
+						} catch (ex) {
+							showAlert(ex.message);
+						}
+					};
+
+					$("#queryObject")
+						.dialog({
+							"autoOpen": false,
+							"buttons": [{
+								"click": function(e) {
+									e.preventDefault();
+
+									var queryObject = parseQueryObject();
+
+									if (queryObject) {
+										$("#queryObject").find("div[contenteditable]")
+											.html(formatJSON(queryObject));
+									}
+								},
+								"icons": {
+									"primary": "ui-icon-grip-diagonal-se"
+								},
+								"text": "Format"
+							}, {
+								"click": function(e) {
+									e.preventDefault();
+
+									var queryObject = parseQueryObject();
+
+									if (queryObject) {
+										executeQuery($(e.target).closest("button"), undefined,
+											queryObject, true, true);
+									}
+								},
+								"icons": {
+									"primary": "ui-icon-notice"
+								},
+								"text": "Count"
+							}, {
+								"click": function(e) {
+									e.preventDefault();
+
+									var queryObject = parseQueryObject();
+
+									if (queryObject) {
+									 	executeQuery($(e.target).closest("button"), undefined,
+											queryObject, false, true);
+									}
+								},
+								"icons": {
+									"primary": "ui-icon-gear"
+								},
+								"text": "Execute"
+							}, {
+								"click": function(e) {
+									e.preventDefault();
+									$("#queryObject").dialog("close");
+								},
+								"text": "Close"
+							}],
+							"maxHeight": $(window).height() * 0.9,
+							"maxWidth": $(window).width() * 0.9,
+							"modal": true,
+							"open": function(e, ui) {
+								var buttons = $("#queryObject")
+									.closest(".ui-dialog")
+									.find(".ui-dialog-buttonpane")
+									.find("button");
+
+								buttons.eq(1)
+									.removeClass("ui-state-error")
+									.button("option", "label", "Count");
+								buttons.eq(2)
+									.removeClass("ui-state-error")
+									.button("option", "label", "Execute");
+								if (!api.supports.CORS) {
+									buttons.eq(1).add(buttons.eq(2))
+										.button("option", "disabled", true);
+								}
+							},
+							"width": $(window).width() * 0.8
+						});
+					$("#showLogin").on({
+						"click": function(e) {
+							e.preventDefault();
+							showLogin();
+						}
+					});
+					$("#repository").on({
+						"change": function(e) {
+							loadLanguages();
+						}
+					});
+					$("#loginForm").on({
+						"submit": function(e) {
+							var loaderElement = $(e.target).closest(".ui-dialog");
+
+							e.preventDefault();
+							addLoaderTo(loaderElement);
+
+							var repository = $("#repository").val(),
+								username = $("#username").val(),
+								language = $("#language").val();
+
+							api.login(repository, username, $("#password").val(), language).then(function(userToken) {
+								if (window.sessionStorage) {
+									window.sessionStorage.setItem(STORAGE_USERTOKEN, userToken);
+								}
+								_setLocalSetting({
+									"repository": repository,
+									"username": username,
+									"language": language
+								});
+								$("#loginDialog").dialog("close");
+								loadPage();
+							}, function(e) {
+								showAlert(e || "Invalid username / password");
+							}).always(function() {
+								removeLoaderFrom(loaderElement);
+							});
+						}
+					});
+					$("#taxonomyDialog")
+						.dialog({
+							"autoOpen": false,
+							"maxHeight": $(window).height() * 0.9,
+							"maxWidth": $(window).width() * 0.9,
+							"modal": true,
+							"open": function(e, ui) {
+								var target = $(this)
+									.empty();
+
+								api.getEntities().then(function(entities) {
+									// TODO: load taxonomy structure
+									debugger;
+								}, function(e) {
+									target.text(e);
+								});
+							},
+							"width": $(window).width() * 0.9
+						});
+					$("#dictionary").on({
+						click: function(e) {
+							e.preventDefault();
+							$("#taxonomyDialog").dialog("open");
+						}
+					});
+					$("#logout").on({
+						"click": function(e) {
+							e.preventDefault();
+							addLoaderTo("#logout");
+							api.logout().always(function() {
+								if (window.sessionStorage) {
+									window.sessionStorage.removeItem(STORAGE_USERTOKEN);
+								}
+								removeLoaderFrom("#logout");
+								loadPage();
+							});
+						}
+					});
+				};
+
+				var showAlert = function(text) {
+					$("#alert")
+						.attr({
+							"title": $(".header")
+								.first()
+								.contents()
+								.eq(2)
+								.text()
+						})
+						.html(text)
+						.dialog({
+							"buttons": [{
+								"click": function(e) {
+									$(this).dialog("close");
+								},
+								"text": "OK"
+							}],
+							"modal": true
+						});
+				};
+
+				var showLibraries = function() {
+					var loaderElement = $("#libraries").find("div").first().children().first();
+
+					$("#libraries").show();
+					addLoaderTo(loaderElement, true);
+					api.getLibraries().then(function(libraries) {
+						var queriesByExample;
+
+						if (api.supports.QueryByExample) {
+							queriesByExample = api.getQueriesByExample();
+						}
+
+						return $.when(queriesByExample).then(function(libraryByExample) {
+							if (libraryByExample && libraryByExample.Queries.length) {
+								libraries.push(libraryByExample);
+							}
+
+							var list = $("#librariesList");
+
+							if (list.hasClass("ui-accordion")) {
+								list.accordion("destroy");
+							}
+							list.empty();
+
+							$(libraries).each(function(i) {
+								createAccordionItem(list, _format("{0} ({1})",
+									this.Name, ($.isArray(this.Queries)) ? this.Queries.length : this.Queries),
+									"Loading queries...", {
+										"library": this
+									}, "ui-icon-folder-collapsed");
+							});
+
+							list.accordion({
+								"beforeActivate": function(event, ui) {
+									loadQueries(ui.newPanel);
+								},
+								"heightStyle": "content"
+							});
+							loadQueries(list.find(".ui-accordion-content").first());
+						});
+					}).always(function() {
+						removeLoaderFrom(loaderElement);
+					});
+				};
+
+				var showLogin = function() {
+					$("#loginDialog").dialog({
+						/*"buttons": [{
+							"class": "ui-priority-primary",
+							"text": "Login",
+							"type": "submit"
+						}],*/
+						"create": function() {
+							var dialog = $(this).closest(".ui-dialog"),
+								form = $(this).find("form");
+
+							if (!dialog.find("[type=submit]").length) {
+								form.children().appendTo(this);
+								form.appendTo(dialog);
+								dialog.find(".ui-dialog-content").appendTo(form);
+								dialog.find(".ui-dialog-buttonpane").appendTo(form);
+								$(this).css({
+									"overflow": "hidden"
+								});
+							}
+						},
+						"modal": true,
+						"open": function() {
+							var select = $("#repository");
+							if (select.find("option").length == 0) {
+								window.setTimeout(function() {
+									$.when(loadRepositories()).then(function() {
+										select.val(_getLocalSetting("repository"));
+										if (!select.val()) {
+											select.val(select.find("option").first().val());
+										}
+										loadLanguages();
+									});
+								}, 1);
+							}
+						}
+					});
+				};
+
+				var showQueryObject = function(queryObject) {
+					$("#queryObject")
+						.find("div[contenteditable]")
+						.html(formatJSON(queryObject));
+					$("#queryObject")
+						.dialog("option", "title", queryObject.Name)
+						.dialog("open");
+				};
+
+				var showQueryResult = function(query, queryResult) {
+					var dialogElement = $(".queryResult").clone();
+
+					var currentPage,
+						pageCount,
+						totalRows;
+
+					var refreshButtons = function() {
+						var button,
+							dialog = dialogElement.closest(".ui-dialog");
+
+						button = dialog.find(".firstPage");
+						if (currentPage > 0) {
+							button.button("enable");
+						} else {
+							button.button("disable");
+						}
+
+						button = dialog.find(".previousPage");
+						if (currentPage > 0) {
+							button.button("enable");
+						} else {
+							button.button("disable");
+						}
+
+						button = dialog.find(".nextPage");
+						if (pageCount < 0 || currentPage < pageCount - 1) {
+							button.button("enable");
+						} else {
+							button.button("disable");
+						}
+
+						button = dialog.find(".lastPage");
+						if (pageCount > 0 && currentPage < pageCount - 1) {
+							button.button("enable");
+						} else {
+							button.button("disable");
+						}
+
+						dialog.find(".queryResultPages")
+							.text((currentPage + 1).toString() + " / " +
+							Math.abs(pageCount).toString() +
+							((pageCount < 0) ? "+" : ""));
+						if (dialogElement.data("ui-dialog")) {
+							dialogElement.dialog("option", "title",
+								query.Name + " (" + totalRows + ((pageCount < 0) ? "+" : "") + " rows)");
+						}
+					}
+
+					var loadQueryResultPage = function(page, order) {
+						var loaderElement = dialogElement
+							.closest(".ui-dialog")
+							.find(".ui-dialog-title");
+
+						if (!page) {
+							page = 0;
+						}
+						if (!order) {
+							order = "";
+						}
+
+						addLoaderTo(loaderElement, true);
+						return api.isValidQueryResult(queryResult.OperationID).then(function() {
+							return api.getQueryResult(queryResult.OperationID, page, order).then(function(data) {
+								var table = dialogElement.find(".queryResultTable")
+									.data("order", order)
+									.empty();
+
+								var thead = $(document.createElement("thead"))
+									.appendTo(table);
+
+								var hasID = false;
+
+								$(data.Columns).each(function(i) {
+									if (this.Name === "KEY") {
+										hasID = true;
+									}
+									if (this.Visible) {
+										var th = $(document.createElement("th"))
+											.addClass("ui-state-default")
+											.data({
+												"sortIndex": this.SortIndex
+											})
+											.on({
+												"click": function(e) {
+													var header = $(e.target);
+
+													var index = header.data("sortIndex"),
+														newOrder,
+														previousOrder = table.data("order");
+
+													if (previousOrder && previousOrder.length) {
+														var parts = previousOrder.split(":");
+
+														if (parseInt(parts[0]) === index &&
+															parts[1] === "A") {
+
+															newOrder = index.toString() + ":D";
+														}
+													}
+													if (!newOrder) {
+														newOrder = index.toString() + ":A";
+													}
+													loadQueryResultPage(0, newOrder);
+												}
+											})
+											.text(this.Caption.replace(/\(D\)/g, ""))
+											.appendTo(thead);
+
+										if (order && order.length) {
+											var parts = order.split(":");
+
+											if (parseInt(parts[0]) === this.SortIndex) {
+												$(document.createElement("span"))
+													.addClass("ui-icon")
+													.addClass((parts[1] === "D") ?
+														"ui-icon-carat-1-s" :
+														"ui-icon-carat-1-n")
+													.css({
+														"display": "inline-block",
+														"vertical-align": "middle"
+													})
+													.appendTo(th);
+											}
+										}
+									}
+								});
+								$(data.Rows).each(function(i) {
+									var row = $(document.createElement("tr"))
+										.on({
+											"click": function(e) {
+												$(this)
+													.closest("table")
+													.find("td")
+													.removeClass("ui-state-highlight");
+												$(this)
+													.children("td")
+													.addClass("ui-state-highlight");
+											},
+											"mouseenter": function(e) {
+												$(this).children("td").addClass("ui-state-hover");
+											},
+											"mouseleave": function(e) {
+												$(this).children("td").removeClass("ui-state-hover");
+											}
+										})
+										.appendTo(table);
+
+									var cell,
+										cellHREF,
+										cellHyperlinkElement,
+										cellText,
+										isHyperlink,
+										key;
+
+									for (var j = 0; j < this.length; j++) {
+										if (data.Columns[j].Name === "KEY") {
+											key = this[j];
+										}
+										if (data.Columns[j].Visible) {
+											cell = $(document.createElement("td"))
+												.addClass("ui-widget-content")
+												.appendTo(row);
+											cellText = this[j];
+											isHyperlink = false;
+											if (cellText && cellText.length) {
+												switch (data.Columns[j].DataType) {
+													case "Alphanumeric":
+														if (cellText && cellText.length) {
+															cellText = $.trim(cellText);
+
+															if (cellText.length > "<a/>".length) {
+																if (cellText.substr(0, "<a ".length).toLowerCase() === "<a ") {
+																	if (cellText.substr(cellText.length - "</a>".length).toLowerCase() === "</a>") {
+																		cellHyperlinkElement = $(cellText);
+
+																		if (cellHyperlinkElement.length === 1 &&
+																			cellHyperlinkElement[0].tagName.toLowerCase() === "a") {
+
+																			cellHREF = cellHyperlinkElement.attr("href");
+																			if (cellHREF && cellHREF.length > 0) {
+																				cellHyperlinkElement.attr("target", "_blank");
+																				cellText = $(document.createElement("div"))
+																					.append(cellHyperlinkElement)
+																					.html();
+																				isHyperlink = true;
+																			}
+																		}
+																	}
+																}
+															}
+														}
+														break;
+													case "Date":
+														cellText = new Date(cellText).toDateString();
+														break;
+													case "Time":
+														cellText = new Date(cellText).toTimeString();
+														break;
+												}
+											}
+											if (hasID && key) {
+												cell.attr({
+														"title": _format("Row #{0}", (i + 1).toLocaleString())
+													})
+													.data("key", key)
+													.css({
+														"cursor": "pointer"
+													})
+													.on({
+														"click": function(e) {
+															var occurrenceLoaderElement = $(e.target)
+																.closest(".ui-dialog")
+																.find(".ui-dialog-title");
+
+															occurrenceLoaderElement = $(e.target).closest("td").find(".text");
+
+															addLoaderTo(occurrenceLoaderElement);
+															createOccurrenceDetails($(e.target).closest("td").data("key"))
+																.then(function(occurrenceDetailsElement) {
+
+																occurrenceDetailsElement.dialog({
+																	"buttons": [{
+																		"click": function(e) {
+																			occurrenceDetailsElement.dialog("close");
+																		},
+																		"text": "Close"
+																	}],
+																	"close": function() {
+																		occurrenceDetailsElement.remove();
+																	},
+																	create: function() {
+																		$(this).css({
+																				"maxWidth": $(window).width() * 0.8
+																		});
+																	},
+																	"modal": true,
+																	"width": "auto"
+																});
+															}).always(function() {
+																removeLoaderFrom(occurrenceLoaderElement);
+															});
+														}
+													});
+												if (isHyperlink) {
+													cellText = "";
+												}
+												createIconAndText(cell, "ui-icon-document", cellText);
+												if (isHyperlink) {
+													cell.find(".text").html(this[j]);
+												}
+												key = undefined;
+											} else if (isHyperlink) {
+												cell.html(cellText);
+											} else {
+												cell.text(cellText);
+											}
+										}
+									}
+								});
+								pageCount = Math.ceil(data.TotalRows / data.PageSize);
+								totalRows = data.TotalRows;
+								if (api.supports.BatchSize && !data.IsComplete) {
+									pageCount = -pageCount;
+								}
+								currentPage = page;
+								refreshButtons();
+								return data;
+							}, function(error) {
+								api.releaseQueryResult(queryResult.OperationID);
+								showAlert(error);
+							});
+						}).always(function() {
+							removeLoaderFrom(loaderElement);
+						});
+					};
+
+					return loadQueryResultPage().then(function(pageData) {
+						var buttons = [ ];
+
+						if (pageCount < 0 || Math.abs(pageCount) > 1) {
+							var table = dialogElement.find(".queryResultTable");
+
+							buttons.push({
+								"class": "firstPage",
+								"click": function(e) {
+									loadQueryResultPage(0, table.data("order"));
+								},
+								"icons": {
+									"primary": "ui-icon-seek-first"
+								}
+							});
+							buttons.push({
+								"class": "previousPage",
+								"click": function(e) {
+									loadQueryResultPage(currentPage - 1, table.data("order"));
+								},
+								"icons": {
+									"primary": "ui-icon-seek-prev"
+								}
+							});
+							buttons.push({
+								"class": "nextPage",
+								"click": function(e) {
+									loadQueryResultPage(currentPage + 1, table.data("order"));
+								},
+								"icons": {
+									"primary": "ui-icon-seek-next"
+								}
+							});
+							buttons.push({
+								"class": "lastPage",
+								"click": function(e) {
+									loadQueryResultPage(pageCount - 1, table.data("order"));
+								},
+								"icons": {
+									"primary": "ui-icon-seek-end"
+								}
+							});
+						}
+						if (api.supports.GetExecutedQuery) {
+							buttons.push({
+								"click": function(e) {
+									var loaderElement = dialogElement
+										.closest(".ui-dialog")
+										.find(".ui-dialog-title");
+
+									addLoaderTo(loaderElement);
+									api.getExecutedQuery(queryResult.OperationID).then(function(executedQuery) {
+										_toHTML($("#executedQuery").empty(), $.extend({ }, executedQuery, {
+											"Explanation": executedQuery.Explanation
+												.replace(/\n/g, "<br/>")
+												.replace(/ /g, "&nbsp;")
+										}));
+										$("#executedQuery")
+											.dialog("option", "title", executedQuery.Name)
+											.dialog("open");
+									})
+									.always(function() {
+										removeLoaderFrom(loaderElement);
+									});
+								},
+								"text": "Query"
+							});
+						}
+						buttons.push({
+							"click": function(e) {
+								dialogElement.dialog("close");
+							},
+							"text": "Close"
+						});
+						dialogElement
+							.attr({
+								"title": query.Name + " (" + pageData.TotalRows + " rows)"
+							})
+							.dialog({
+								"buttons": buttons,
+								"close": function() {
+									if (queryResult.OperationID) {
+										api.releaseQueryResult(queryResult.OperationID);
+									}
+									dialogElement.remove();
+								},
+								"modal": true,
+								"open": function() {
+									dialogElement.closest(".ui-dialog").find(".nextPage")
+										.before($(document.createElement("span"))
+											.addClass("ui-widget")
+											.addClass("ui-state-default")
+											.addClass("queryResultPages")
+											.css({
+												"background": "transparent",
+												"margin-right": "0.4em"
+											}));
+									refreshButtons();
+								},
+								"width": $(window).width() * 0.95
+							});
+					});
+				};
+
+				setupPage();
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				font-family: Tahoma;
+				font-size: 0.625em !important;
+			}
+
+			.header {
+				font-size: 2.5em;
+				font-weight: bold;
+				padding: 0.5em;
+				text-align: center;
+			}
+
+			.header a {
+				height: 1em;
+				width: 1em;
+			}
+
+			#about {
+				float: left;
+			}
+
+			#dictionary,
+			#logout {
+				display: none;
+				float: right;
+			}
+
+			.pageContent {
+				margin: 1em 0;
+			}
+
+			.pageContent > div {
+				display: none;
+			}
+
+			#mainLoader,
+			#notLoggedIn {
+				text-align: center;
+				padding: 0.5em;
+			}
+
+			#loaderProgressBar,
+			#mainProgressBar {
+				display: table;
+				height: 1em;
+				margin: 0 auto;
+			}
+
+			#mainProgressBar {
+				width: 16em;
+			}
+
+			#loaderProgressBar {
+				width: 6em;
+			}
+
+			#loaderProgressBar .ui-progressbar-value,
+			#mainProgressBar .ui-progressbar-value {
+				height: 1em;
+			}
+
+			#loader {
+				overflow: visible;
+			}
+
+			.queryUploader {
+				padding: 1em;
+			}
+
+			.queryObject {
+				overflow: auto;
+			}
+
+			#loginDialog {
+				padding: 0;
+			}
+
+			#loginDialog .fields {
+				padding: 0.25em 1em;
+			}
+
+			#loginDialog input[type=text],
+			#loginDialog input[type=password],
+			#loginDialog select {
+				border: 1px solid silver;
+				box-sizing: border-box;
+				clear: both;
+				font-family: inherit;
+				font-size: inherit;
+				width: 100%;
+			}
+
+			#loginDialog input[type=submit] {
+				float: right;
+				margin-right: 1em;
+			}
+
+			.invalid .text {
+				color: red;
+				font-weight: bold;
+			}
+
+			.withWarning .text {
+				color: orange;
+				font-weight: bold;
+			}
+
+			.explanation {
+				color: green;
+				font-size: smaller;
+				padding-bottom: 0.3em;
+				padding-top: 0.3em;
+			}
+
+			.explanation a {
+				color: blue;
+				margin-right: 0.5em;
+				margin-top: 0.5em;
+			}
+
+			.ui-dialog .queryResult {
+				padding-left: 0;
+				padding-right: 0;
+			}
+
+			.ui-dialog .queryResult .queryResultTable {
+				border-collapse: collapse;
+				font-size: x-small;
+			}
+
+			.ui-dialog .queryResult .queryResultTable th {
+				cursor: pointer;
+				padding-bottom: 2px;
+				padding-top: 2px;
+			}
+
+			.ui-dialog .queryResult .queryResultTable th,
+			.ui-dialog .queryResult .queryResultTable td {
+				padding-left: 2px;
+				padding-right: 2px;
+				white-space: nowrap;
+			}
+
+			.ui-dialog .occurrenceDetails {
+				padding: 0.5em;
+			}
+
+			.ui-dialog .occurrenceDetails .occurrenceDetailsTable td {
+				padding: 0.5em;
+				/*white-space: nowrap;*/
+			}
+
+			.ui-dialog .occurrenceDetails .occurrenceDetailsTable .label {
+				font-weight: bold;
+			}
+
+			.ui-dialog .occurrenceDetails .occurrenceDetailsTable .attachments div,
+			.ui-dialog .occurrenceDetails .occurrenceDetailsTable .pdf div,
+			.ui-dialog .occurrenceDetails .occurrenceDetailsTable .templates div {
+				padding: 0.5em;
+			}
+
+			.ui-dialog .occurrenceDetails .occurrenceDetailsTable .pdf a,
+			.ui-dialog .occurrenceDetails .occurrenceDetailsTable .templates a {
+				margin-top: 0.5em;
+			}
+
+			.no-title .ui-dialog-titlebar,
+			.no-close .ui-dialog-titlebar-close {
+				display: none;
+			}
+
+			@media (min-width: 56em), (min-height: 36em) {
+				body {
+					font-size: 0.875em !important;
+					margin: 0;
+					padding: 0;
+				}
+
+				.header {
+					left: 0;
+					position: fixed;
+					right: 0;
+					top: 0;
+					z-index: 1;
+				}
+
+				.pageContent {
+					margin: 7em 0.5em 0.5em;
+				}
+			}
+
+			@media (min-height: 26em) {
+			}
+		</style>
+	</head>
+	<body>
+		<div class="header ui-widget-header">
+			<a href="#" id="about" title="About"></a>
+			ECCAIRS 5 Web
+			<a href="#" id="logout" title="Logout"></a>
+			<a href="#" id="dictionary" title="Taxonomy"></a>
+		</div>
+		<div class="pageContent">
+			<div id="mainLoader"><div id="mainProgressBar"></div></div>
+			<div id="notLoggedIn" class="ui-state-default">
+				<div><h3>You are not currently logged in.</h3></div>
+				<a href="#" id="showLogin">Login</a>
+			</div>
+			<div id="libraries">
+				<div id="queryUpload">
+					<div><h3>Load query from JSON:</h3></div>
+					<div class="ui-corner-all ui-state-active queryUploader">
+						<label>Please select a query JSON file:</label><input type="file" accept=".json" style="display: none;"/>
+						<input id="queryChooseButton" type="button" value="Choose"/>
+					</div>
+				</div>
+				<div><h3>Query libraries:</h3></div>
+				<div id="librariesList"></div>
+			</div>
+			<div id="loginDialog" class="ui-widget-content" title="Login">
+				<form id="loginForm" action="#">
+					<div class="fields">
+						<label id="repositoryLabel" for="repository">Repository:</label>
+						<select id="repository" class="ui-corner-all"></select>
+						<label for="username">Username:</label>
+						<input type="text" id="username" class="ui-corner-all" placeholder="Enter the username" value=""/>
+						<label for="username">Password:</label>
+						<input type="password" id="password" class="ui-corner-all" placeholder="Enter the password" value=""/>
+						<label for="username">Language:</label>
+						<select id="language" class="ui-corner-all"></select>
+					</div>
+					<hr/>
+					<input type="submit" id="login" value="Login"/>
+				</form>
+			</div>
+			<div class="queryResult ui-widget-content">
+				<table class="queryResultTable"></table>
+			</div>
+			<div class="occurrenceDetails ui-widget-content">
+				<table class="occurrenceDetailsTable">
+					<tr>
+						<td class="label">ECCAIRS number:</td>
+						<td class="eccairsNumber"></td>
+					</tr>
+					<tr>
+						<td class="label">Responsible entity:</td>
+						<td class="responsibleEntity"></td>
+					</tr>
+					<tr>
+						<td class="label">Last modified on:</td>
+						<td class="lastModifiedOn"></td>
+					</tr>
+					<tr>
+						<td class="label">Created on:</td>
+						<td class="createdOn"></td>
+					</tr>
+					<tr>
+						<td colspan="2" class="label attachmentsLabel">Attachments:</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="attachments"><div></div></td>
+					</tr>
+					<tr>
+						<td colspan="2" class="label pdfLabel">PDF:</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="pdf">
+							<!--<select></select>
+							<br/>
+							<a href="#">Download</a>-->
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="label templatesLabel">Generate:</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="templates">
+							<!--<select></select>
+							<br/>
+							<a href="#">Download</a>-->
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div id="alert"></div>
+			<div id="loader"><div id="loaderProgressBar"></div></div>
+			<div id="aboutDialog" title="About"></div>
+			<div id="queryObject"><div class="queryObject" contenteditable></div></div>
+			<div id="executedQuery"></div>
+			<div id="taxonomyDialog"></div>
+		</div>
+	</body>
+</html>

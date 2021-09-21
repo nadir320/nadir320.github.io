@@ -1,0 +1,63 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="./images/readLater.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="./images/readLater.png" type="image/png"/>
+		<title>Read Later</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-database.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-auth.js"></script>
+		<script type="text/javascript" src="./js/add.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
+		<script type="text/javascript" src="./js/app.min.js"></script>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<div class="ui-widget-header ui-corner-top title">
+			<span class="title-text">Read later links</span>
+			<button type="button" class="email ui-state-highlight"></button>
+		</div>
+		<div class="ui-widget-content ui-corner-bottom">
+			<div id="list"></div>
+			<div class="no-link centered">No link to read later</div>
+			<div class="centered"><button type="button" class="refresh">Refresh</button></div>
+		</div>
+		<div class="dialog loaderDialog">
+			<div class="loadingProgress"></div>
+			<div class="loadingMessage"></div>
+			<button type="button" class="loadingCancelButton"></button>
+		</div>
+		<div class="dialog loginDialog" title="Login">
+			<form>
+				<div class="centered">
+					<label for="username">Email address</label>
+				</div>
+				<input type="email" id="username" class="ui-corner-all"/>
+				<br/>
+				<div class="centered">
+					<label for="password">Password</label>
+				</div>
+				<div class="passwordContainer">
+					<input type="password" id="password" class="ui-corner-all"/>
+				</div>
+				<div class="centered">
+					<label><input id="rememberMe" type="checkbox">Remember me</label>
+				</div>
+				<hr/>
+				<div class="centered">
+					<button type="submit" class="loginButton">Login</button>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

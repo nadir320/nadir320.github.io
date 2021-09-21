@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta id="themeColor" name="theme-color" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/brush.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/brush.png" type="image/png"/>
+		<title>Canvas</title>
+		<script type="text/javascript" src="../../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/blitzer/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
+		<script type="text/javascript">
+			var _randomColor = function(randomAlpha) {
+				return (randomAlpha) ?
+					"rgba({0}, {1}, {2}, {3})".format(Math.floor(Math.random() * 255),
+						Math.floor(Math.random() * 255),
+						Math.floor(Math.random() * 255),
+						Math.random() * 0.5 + 0.5) :
+					"#" + ((1 << 24) * (Math.random() + 1) | 0).toString(16).substr(1);
+			};
+
+			window.Stroke = function(startX, startY) {
+				var color = "gray",
+					instance,
+					points = [ ],
+
+				instance = {
+					"draw": function(context) {
+						var i, length = points.length, p,
+							start = points[0],
+							w = instance.lineWidth / 2;
+
+						if (start) {
+							context.beginPath();
+							if (length > 1) {
+								context.strokeStyle = this.strokeStyle;
+								context.lineCap = this.lineCap;
+								context.lineWidth = this.lineWidth;
+								context.beginPath();
+								context.moveTo(start.x - w, start.y - w);
+								/* Lines: */
+								for (i = 1; i < length; i++) {
+									context.lineTo((p = points[i]).x - w, p.y - w);
+								}
+								context.stroke();
+							} else {
+								context.arc(start.x - w, start.y - w, w, 0, 2 * Math.PI);
+								context.fillStyle = this.strokeStyle;
+								context.fill();
+							}
+						}
+					},
+					"lineCap": "round",
+					"lineWidth": 16,
+					"moveTo": function(x, y) {
+						points.push({
+							"x": x,
+							"y": y
+						});
+					},
+					"strokeStyle": _randomColor(true)
+				};
+				if (startX !== undefined && startY !== undefined) {
+					instance.moveTo(startX, startY);
+				}
+				return instance;
+			};
+		</script>
+		<script type="text/javascript">
+			var MARGIN = 24;
+
+			$().ready(function() {
+				var _activeStrokes,
+					_canvas = $("canvas"),
+					_completedStrokes,
+					_mouseID,
+					_undone;
+
+				var _clear = function() {
+					_activeStrokes = { };
+					_completedStrokes = [ ];
+					_draw(),
+					_undone = [ ];
+				};
+
+				var _completeStroke = function(identifier) {
+					var stroke = _activeStrokes[identifier];
+
+					delete _activeStrokes[identifier];
+					_completedStrokes.push(stroke);
+					_undone = [ ];
+					_draw();
+				};
+
+				var _draw = function() {
+					var context = _canvas[0].getContext("2d"), i, name;
+
+					context.clearRect(0, 0, _canvas.width(),
+						_canvas.height());
+					for (i = 0; i < _completedStrokes.length; i++) {
+						_completedStrokes[i].draw(context);
+					}
+					for (name in _activeStrokes) {
+						_activeStrokes[name].draw(context);
+					}
+				};
+
+				var _redo = function() {
+					if (_undone.length) {
+						_completedStrokes.push(_undone.pop());
+						_draw();
+					}
+				};
+
+				var _undo = function() {
+					if (_completedStrokes.length) {
+						_undone.push(_completedStrokes.pop());
+						_draw();
+					}
+				};
+
+				_canvas.on({
+					"mousedown": function(e) {
+						if (e.which === 1) {
+							_activeStrokes[_mouseID = window.guid()] = new Stroke(e.originalEvent.clientX,
+								e.originalEvent.clientY);
+						}
+					},
+					"mousemove": function(e) {
+						if (e.which === 1) {
+							try {
+								_activeStrokes[_mouseID].moveTo(e.originalEvent.clientX,
+									e.originalEvent.clientY);
+							} catch (e2) { }
+							_draw();
+						}
+					},
+					"mouseup": function(e) {
+						if (e.which === 1) {
+							_completeStroke(_mouseID);
+							_draw();
+						}
+					},
+					"touchstart": function(e) {
+						$.each(e.originalEvent.changedTouches, function(i, item) {
+							_activeStrokes[item.identifier] = new Stroke(item.clientX,
+								item.clientY);
+						});
+						return e.preventAll();
+					},
+					"touchmove": function(e) {
+						$.each(e.originalEvent.changedTouches, function(i, item) {
+							try {
+								_activeStrokes[item.identifier].moveTo(item.clientX,
+									item.clientY);
+							} catch (e2) { }
+						});
+						_draw();
+					},
+					"touchend": function(e) {
+						$.each(e.originalEvent.changedTouches, function(i, item) {
+							_completeStroke(item.identifier);
+						});
+						_draw();
+					}
+				});
+				$("#toolbar").find("button").button({
+					"text": false
+				});
+				$("#undoButton")
+					.button({
+						"icons": {
+							"primary": "ui-icon-arrowreturnthick-1-w"
+						},
+						"text": false
+					})
+					.on({
+						"click": function(e) {
+							_undo();
+						}
+					});
+				$("#redoButton")
+					.button({
+						"icons": {
+							"primary": "ui-icon-arrowreturnthick-1-e"
+						},
+						"text": false
+					})
+					.on({
+						"click": function(e) {
+							_redo();
+						}
+					});
+				$("#clearButton")
+					.button({
+						"icons": {
+							"primary": "ui-icon-trash"
+						},
+						"text": false
+					})
+					.on({
+						"click": function(e) {
+							_clear();
+						}
+					});
+				$("#saveButton")
+					.button({
+						"icons": {
+							"primary": "ui-icon-disk"
+						},
+						"text": false
+					})
+					.on({
+						"click": function(e) {
+							var now = new Date();
+
+							$("#downloadLink")
+								.attr({
+									"download": "{0}-{1}-{2} {3}.{4}.{5}.png"
+										.format(now.getFullYear().toString().zeroPad(4),
+										(now.getMonth() + 1).toString().zeroPad(2),
+										now.getDate().toString().zeroPad(2),
+										now.getHours().toString().zeroPad(2),
+										now.getMinutes().toString().zeroPad(2),
+										now.getSeconds().toString().zeroPad(2)),
+									"href": _canvas[0].toDataURL()
+								})[0].click();
+						}
+					});
+				_clear();
+				$(window).on({
+					"resize": function(e) {
+						var size = {
+							"width": window.innerWidth - MARGIN,
+							"height": window.innerHeight - MARGIN
+						};
+
+						_canvas
+							.css(size)
+							.attr(size);
+						_draw();
+					}
+				}).trigger("resize");
+			});
+		</script>
+		<style type="text/css">
+			body {
+				background-color: whitesmoke;
+			}
+
+			canvas {
+				background-color: white;
+				border: 1px solid silver;
+				box-sizing: content-box;
+			}
+
+			#toolbar {
+				position: absolute;
+				right: 0;
+				text-align: center;
+				top: 0;
+			}
+
+			#toolbar button,
+			#toolbar input {
+				height: 2.2em;
+				margin: 0.25em;
+				width: 2.2em;
+			}
+
+			#lineColor {
+				aborder;
+			}
+
+			#downloadLink {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="toolbar" class="ui-corner-all ui-header">
+			<input type="color" id="lineColor" class="ui-corner-all ui-state-default"/>
+			<br/>
+			<button type="button" id="undoButton">Undo</button>
+			<br/>
+			<button type="button" id="redoButton">Redo</button>
+			<br/>
+			<button type="button" id="clearButton">Clear</button>
+			<br/>
+			<button type="button" id="saveButton">Save</button>
+			<a id="downloadLink"></a>
+		</div>
+		<canvas class="ui-corner-all"></canvas>
+	</body>
+</html>

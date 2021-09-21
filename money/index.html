@@ -1,0 +1,82 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="images/euro.png">
+		<title>Soldi (&#x03B1;)</title>
+		<script type="text/javascript" src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons"/>
+		<link rel="stylesheet" type="text/css" media="screen,projection" href="//cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<noscript>
+			<style type="text/css">
+				.hideNoScript {
+					display: none !important;
+				}
+			</style>
+			<div class="noScript">No Javascript!</div>
+		</noscript>
+		<div class="hideNoScript">
+			<a href="#" data-target="slide-out" class="btn-floating sidenav-trigger blue button-menu"><i class="material-icons">menu</i></a>
+			<ul id="slide-out" class="sidenav collapsible">
+				<li>
+					<div class="user-view">
+						<div class="user-row">
+							<i class="material-icons face">&#xE853;</i>
+							<a href="#">
+								<span class="current-user T" data-text="no-user"></span>
+								<span class="user-email"></span>
+							</a>
+							<a href="#" class="btn-floating purple lighten-4 login-logout"><i class="material-icons">&#xE0DA;</i></a>
+						</div>
+						<div>
+							<a href="#" class="last-access T" data-text="no-access"></a>
+						</div>
+					</div>
+				</li>
+				<li>
+					<a href="#" class="sidenav-close all"><i class="material-icons">&#xE88A;</i><span class="T" data-text="all"></span></a>
+				</li>
+				<li>
+					<a href="#" class="summary disabled"><i class="material-icons">&#xE24B;</i><span class="T" data-text="summary"></span></a>
+				</li>
+				<li>
+					<div class="divider"></div>
+				</li>
+				<li class="categories">
+					<div class="collapsible-header"><i class="material-icons">&#xE8EF;</i><span class="T" data-text="categories"></span></div>
+					<div class="collapsible-body"></div>
+				</li>
+				<li class="tags">
+					<div class="collapsible-header"><i class="material-icons">&#xE41D;</i><span class="T" data-text="tags"></span></div>
+					<div class="collapsible-body"></div>
+				</li>
+			</ul>
+			<div class="fixed-action-btn">
+				<a href="#" class="btn-floating btn-large blue button-action disabled"><i class="material-icons large">grade</i></a>
+				<ul>
+					<li>
+						<a href="#" class="btn-floating btn-large blue button-add"><i class="material-icons large">add</i></a>
+						<a href="#" class="btn-floating btn-large blue darken-3 button-quick-add"><i class="material-icons large">&#xE03B;</i></a>
+					</li>
+				</ul>
+			</div>
+			<div class="contentContainer"></div>
+		</div>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.js"></script>
+
+		<!-- Firebase 3.6.2 -->
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+		<!-- Firebase 5.2.0 -->
+		<!-- <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-app.js"></script> -->
+		<!-- <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-auth.js"></script> -->
+		<!-- <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-database.js"></script> -->
+
+		<script type="text/javascript" src="js/app.js"></script>
+	</body>
+</html>

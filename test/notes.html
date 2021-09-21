@@ -1,0 +1,202 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/notes.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/notes.png" type="image/png"/>
+		<title>My notes</title>
+		<script type="text/javascript" src="../js/pancake.min.js"></script>
+		<script type="text/javascript" src="../js/000webhost.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-3.1.1.min.js"></script>
+		<!-- <script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"/>
+		<script type="text/javascript" src="../cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script> -->
+		<script type="text/javascript" src="../js/base.min.js"></script>
+		<!-- <link rel="stylesheet" type="text/css" href="../css/base.min.css"/> -->
+
+		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons"/>
+		<link rel="stylesheet" type="text/css" media="screen,projection" href="../cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css"/>
+		<script type="text/javascript" src="../cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+
+  		<script type="text/javascript">
+			"use strict";
+
+			$().ready(function() {
+				var DATABASE_NAME = "notes-c1693",
+					FIREBASE_API_KEY = "AIzaSyACMozEbS4TFL8tmNPwIefbEE5-zHn5GLc",
+					TOAST_TIMEOUT = 800;
+
+				var _i = 0;
+
+				var addCard = function(header, content) {
+					if (!(header && header.length && content && content.length)) {
+						_i++;
+						header = header || "Test #{0}".format(_i);
+						content = content || "Content #{0}".format(_i);
+					}
+					$(".collapsible")
+						.append($(document.createElement("li"))
+							.addClass("card-panel")
+							.append($(document.createElement("div"))
+								.addClass("blue-text")
+								.addClass("text-darken-2")
+								.addClass("collapsible-header")
+								.text(header)
+								.append($(document.createElement("a"))
+									.addClass("material-icons")
+									.addClass("right")
+									.text("close")
+									.attr({
+										"href": "#"
+									}).on({
+										"click": function(e) {
+											$(e.target).closest(".card-panel")
+												.fadeOut(function() {
+													var container = $(".contentContainer");
+
+													$(this).off().remove();
+													if (!container.find(".card-panel").length) {
+														container.fadeOut(function() {
+															$(this).hide();
+														});
+													}
+												});
+											return e.preventAll();
+										}
+									}))
+								.append($(document.createElement("a"))
+									.addClass("material-icons")
+									.addClass("right")
+									.text("edit")
+									.attr({
+										"href": "#"
+									}).on({
+										"click": function(e) {
+											toast("Edit");
+											return e.preventAll();
+										}
+									})))
+							.append($(document.createElement("div"))
+								.addClass("collapsible-body")
+								.text(content))
+							.hide()
+							.fadeIn())
+					.collapsible()
+					.closest(".contentContainer")
+					.fadeIn(function() {
+						//$(this).show();
+					});
+				};
+
+				var firebaseInit = function() {
+					firebase.initializeApp({
+						  "apiKey": FIREBASE_API_KEY
+						, "authDomain": "{0}.firebaseapp.com".format(DATABASE_NAME)
+						, "databaseURL": "https://{0}.firebaseio.com".format(DATABASE_NAME)
+						//, "storageBucket": "{0}.appspot.com".format(DATABASE_NAME)
+						//, "messagingSenderId": 986132366936
+					});
+				};
+
+				var loadNavigationBar = function() {
+					var container = $(".side-nav").find(".collapsible-body");
+
+					for (var i = 0; i < 10; i++) {
+						$(document.createElement("a"))
+							.addClass("waves-effect")
+							.attr({
+								"href": "#"
+							})
+							.text("Item #{0}".format(i + 1))
+							.on({
+								"click": function(e) {
+									e.preventDefault();
+									$(e.target)
+										.parent()
+										.find(".active")
+										.removeClass("active");
+									$(e.target)
+										.addClass("active");
+								}
+							})
+							.appendTo(container);
+					}
+				};
+
+				var loadPage = function() {
+					$(".button-menu").on({
+						"click": function(e) {
+							e.preventDefault();
+						}
+					}).sideNav({
+						"draggable": true
+					});
+					$(".button-add").on({
+						"click": function(e) {
+							e.preventDefault();
+							addCard();
+						}
+					});
+					loadNavigationBar();
+					loadPageContent();
+				};
+
+				var loadPageContent = function() {
+					var container = $(document.createElement("ul"))
+						.addClass("collapsible")
+						.data({
+							"collapsible": "expandable"
+						})
+						.appendTo($(".contentContainer").hide());
+				};
+
+				var toast = function(text) {
+					Materialize.toast(text, TOAST_TIMEOUT);
+				};
+
+				loadPage();
+			});
+		</script>
+		<style type="text/css">
+			body {
+				margin-top: 0.5em;
+			}
+
+			.btn-floating {
+				margin-left: 0.5em;
+				position: fixed;
+			}
+
+			.button-add {
+				margin-top: 3em;
+			}
+
+			.contentContainer {
+				margin-left: 4em;
+				margin-right: 0.5em;
+			}
+		</style>
+	</head>
+	<body class="ui-widget large-on-large-screens">
+		<a href="#" data-activates="slide-out" class="btn-floating waves-effect blue z-depth-2 button-menu"><i class="material-icons">menu</i></a>
+		<a href="#" class="btn-floating waves-effect blue z-depth-2 button-add"><i class="material-icons">add</i></a>
+		<ul id="slide-out" class="side-nav collapsible" data-collapsible="expandable">
+			<li>
+				<div class="collapsible-header"><i class="material-icons">attachment</i>First</div>
+				<div class="collapsible-body">
+				<div>
+			</li>
+			<li>
+				<div class="collapsible-header"><i class="material-icons">add</i>Second</div>
+				<div class="collapsible-body">
+				<div>
+			</li>
+		</ul>
+		<div class="contentContainer"></div>
+	</body>
+</html>

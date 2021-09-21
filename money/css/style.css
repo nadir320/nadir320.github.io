@@ -1,0 +1,118 @@
+﻿body {
+	background-color: whitesmoke;
+	/* margin-top: 0.5em; */
+}
+
+.noScript {
+	background-color: black;
+	bottom: 0;
+	color: red;
+	font-size: 12pt;
+	font-weight: bold;
+	position: absolute;
+	opacity: 0.9;
+	left: 0;
+	padding: 2em 0 0;
+	right: 0;
+	text-align: center;
+	top: 0;
+}
+
+body>.loader {
+	margin: 0 !important;
+	position: fixed;
+	top: 0 !important;
+}
+
+.error-toast {
+	background-color: red;
+}
+
+.sidenav .user-view {
+	background-image: url("../images/backgrounds/blue.png");
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	padding: 1em;
+}
+
+.sidenav .user-view a {
+	color: black;
+	text-shadow: 0 0 0.5em gray;
+}
+
+.sidenav .user-view .user-row {
+	margin-bottom: -1.2em;
+}
+
+.sidenav .user-view a,
+.sidenav .user-view span {
+	vertical-align: top;
+}
+
+.sidenav .user-view .face {
+	font-size: 36pt;
+}
+
+.sidenav .user-view .user-email {
+	font-size: 65%;
+	margin-left: 0.5em;
+}
+
+.sidenav .login-logout {
+	float: right;
+}
+
+.button-menu {
+	margin: 23px 0 0 23px;
+	position: fixed !important;
+}
+
+.contentContainer {
+	margin: 1em 0 0;
+}
+
+.contentContainer .row:not(:first-child) {
+	margin-bottom: 0;
+	margin-top: 0;
+}
+
+.contentContainer .row .card {
+	line-height: 1.2em;
+	margin-bottom: 0.25em;
+	margin-top: 0;
+}
+
+.contentContainer .row .card .card-content {
+	padding-bottom: 0.25em;
+	padding-top: 0.25em;
+}
+
+.contentContainer .row .card .cost,
+.contentContainer .row .card .description {
+	font-weight: 600;
+}
+
+.contentContainer .row .card .category,
+.contentContainer .row .card .tag {
+	cursor: pointer;
+}
+
+.contentContainer .row .card .date {
+	font-size: 85%;
+}
+
+.contentContainer .row .card .cost {
+	font-size: 125%;
+	font-weight: bold;
+	margin-top: -1.5em;
+}
+
+.contentContainer .row .card .edit-entry {
+	position: absolute;
+	right: 1em;
+	zoom: 0.75;
+}
+
+.contentContainer .row .card.total .cost {
+	margin-top: -1em;
+}
