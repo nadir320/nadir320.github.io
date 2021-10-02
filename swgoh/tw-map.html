@@ -635,7 +635,8 @@
 					OffenseMaxBannersPerGroundSquad = 20,
 					OffenseMaxBannersPerFleetSquad = 22;
 
-				const MaxSquadsPerTerritory = 50;
+				const MinSquadsPerTerritory = 25, /* ? */
+					MaxSquadsPerTerritory = 50;
 
 				const StorageKey = "swgoh_tw_map";
 
@@ -701,6 +702,8 @@
 					get guild2() { return guild2; },
 					get maximumBanners() { return maximumBanners; },
 					get maximumOffenseBanners() { return maximumOffenseBanners; },
+					get maximumSquadsPerTerritory() { return MaxSquadsPerTerritory; },
+					get minimumSquadsPerTerritory() { return MinSquadsPerTerritory; },
 					get territories() { return _territories },
 					refresh: function() {
 						const margin = 16;
@@ -998,14 +1001,14 @@
 
 			_tw = new tw();
 			document.getElementById("newTW").addEventListener("click", () => {
-				ask("Squads per territory?", _tw ? _tw.squadsPerTerritory : 25, (r) => {
+				ask("Squads per territory?", _tw.squadsPerTerritory, (r) => {
 					let myGuild;
 
-					if (_tw && _tw.guild1) {
+					if (_tw.guild1) {
 						myGuild = _tw.guild1.name;
 					}
 					_tw = new tw(myGuild, "", r);
-				}, 12, 25);
+				}, _tw.minimumSquadsPerTerritory, _tw.maximumSquadsPerTerritory);
 			});
 
 			window.addEventListener("resize", () => {
