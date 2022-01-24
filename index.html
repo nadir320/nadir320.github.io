@@ -177,7 +177,7 @@
 										}
 									}
 								});
-								$(window).on("unload", function() {
+								$(window).on("beforeunload", function() {
 									if (loading) {
 										window.hideLoader();
 									}
@@ -185,7 +185,7 @@
 							}
 							return contentContainer.fadeIn();
 						});
-					}, "Caricamento pagine... §§");
+					}, "Caricamento pagine...");
 				};
 
 				loadPage();
