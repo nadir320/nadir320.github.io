@@ -93,7 +93,7 @@
 														var link = $(e.target)
 															.closest("a");
 
-														$.when(showLoader("Caricamento di '{0}'... ^"
+														$.when(showLoader("Caricamento di '{0}'..."
 															.format(link.text()))).done(function() {
 
 															window.setTimeout(function() {
@@ -177,7 +177,7 @@
 										}
 									}
 								});
-								$(window).on("beforeunload", function() {
+								$(window).on("unload", function() {
 									if (loading) {
 										window.hideLoader();
 									}
@@ -185,7 +185,7 @@
 							}
 							return contentContainer.fadeIn();
 						});
-					}, "Caricamento pagine... §");
+					}, "Caricamento pagine... §§");
 				};
 
 				loadPage();
