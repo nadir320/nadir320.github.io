@@ -98,6 +98,7 @@
 
 															window.setTimeout(function() {
 																/* window.location.replace(link.attr("href")); */
+																loading = true;
 																window.location.href = link.attr("href");
 															}, 1);
 														});
@@ -110,6 +111,7 @@
 												.attr("src", info.icon || $("#favicon").attr("href")))
 											.append($(document.createTextNode(info.text))));
 								},
+								loading,
 								merged,
 								mergedSubPages,
 								subPages;
@@ -173,6 +175,11 @@
 										} else {
 											createLink(this).appendTo(content);
 										}
+									}
+								});
+								$(window).on("beforeunload", function() {
+									if (loading) {
+										window.hideLoader();
 									}
 								});
 							}
