@@ -50,6 +50,10 @@
 	padding: 0;
 }
 
+#list .row {
+	flex-wrap: wrap;
+}
+
 #list li>.title {
 	flex-direction: column;
 }
@@ -74,13 +78,17 @@
 
 #list li .link {
 	font-size: smaller;
-	max-width: calc(100% - 16rem);
+	margin: 0 0.25rem 0.25rem 0;
 	word-break: break-word;
 }
 #list .category,
 #list .buttons {
 	margin-left: auto;
 	font-size: small;
+}
+
+#list .buttons {
+	display: flex;
 }
 
 #list .category {
