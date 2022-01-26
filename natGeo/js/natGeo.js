@@ -19,6 +19,7 @@ window.photoOfTheDay = {
 	  "bodyWidgetClass": "header"
 	, "favicon": "natGeo"
 	, "jsonURL": "https://api.allorigins.win/get?url=https://photography.nationalgeographic.com/photography/photo-of-the-day/"
+	, "jsonURL1": "http://localhost/home/dropbox/web/cors/proxy.aspx?route=https://photography.nationalgeographic.com/photography/photo-of-the-day/"
 	, "pageURL": "https://photography.nationalgeographic.com/photography/photo-of-the-day/"
 	, "siteURL": "https://www.nationalgeographic.com/"
 	, "theme": "Dot LUV"

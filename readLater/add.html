@@ -6,7 +6,7 @@
 		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
 		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/5.8.4/firebase-database.js"></script>
 		<script type="text/javascript" src="../js/base.min.js"></script>
-		<script type="text/javascript" src="js/add.min.js"></script>
+		<script type="text/javascript" src="./js/add.min.js"></script>
 		<script type="text/javascript">
 			"use strict";
 
@@ -33,7 +33,7 @@
 						if (newTitle && newTitle.length) {
 							title = newTitle;
 						}
-						window.nadir.addToReadLater(uid, href, title, closeWindow);
+						window.nadir.readLater.add(uid, href, title, closeWindow, window.location.get("category"));
 					} else {
 						done();
 					}

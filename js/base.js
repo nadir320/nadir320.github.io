@@ -1296,8 +1296,27 @@ if (window.jQuery) {
 					})
 					.append(document.createTextNode(text))
 					.append(document.createElement("br"))
-					.append(input = $(document.createElement("input"))
-						.val(value))
+
+					/* Previous, non form version: */
+					/* .append(input = $(document.createElement("input"))
+						.val(value)) */
+					/* end of previous, non form version */
+
+					/* Version with form: */
+					.append($(document.createElement("form"))
+						.append(input = $(document.createElement("input"))
+							.val(value))
+						.on("submit", function(e) {
+							input
+								.closest(".ui-dialog")
+								.find(".ui-dialog-buttonpane")
+								.find(".ui-button")
+								.first()
+								.click();
+							return false;
+						}))
+					/* end of version with form */
+
 					.appendTo(document.body)
 					.dialog({
 						"buttons": [{

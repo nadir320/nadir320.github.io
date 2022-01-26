@@ -19,8 +19,8 @@
 			}
 		})(source, "uid");
 	}
-	if (window.nadir && window.nadir.addToReadLater) {
-		window.nadir.addToReadLater(uid, window.location.href, window.document.title);
+	if (window.nadir && window.nadir.readLater && window.nadir.readLater.add) {
+		window.nadir.readLater.add(uid, window.location.href, window.document.title);
 	} else {
 		(function() {
 			var Firebase_Base = "https://www.gstatic.com/firebasejs/5.8.4/",
@@ -49,8 +49,8 @@
 
 			requireScript(window.firebase, Firebase_App, function() {
 				requireScript(window.firebase.database, Firebase_Database, function() {
-					requireScript(window.nadir && window.nadir.addToReadLater, add, function() {
-						window.nadir.addToReadLater(uid, window.location.href, window.document.title);
+					requireScript(window.nadir && window.nadir.readLater && window.nadir.readLater.add, add, function() {
+						window.nadir.readLater.add(uid, window.location.href, window.document.title);
 					});
 				});
 			});

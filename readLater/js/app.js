@@ -1,20 +1,15 @@
 ﻿"use strict"
 
 $().ready(function() {
-	var _email,
-		_officeMode = window.location.get("officeMode"),
+	var _app = window.nadir.readLater,
+		_email,
 		_storageName = "readLater",
 		_uid;
-
-	var app = window.firebase.initializeApp({
-		"apiKey": "AIzaSyA58csfwsnx3CIFhx73ecGlP0dY9-s8BS4",
-		"databaseURL": "https://readlater-274ac.firebaseio.com"
-	}, $.now().toString());
 
 	var load = function() {
 		return window.loading(function() {
 			return $.Deferred(function(deferred) {
-				app.database().ref(_uid).once("value").then(function(snapshot) {
+				_app.database.database().ref(_uid).once("value").then(function(snapshot) {
 					var entries,
 						list = $("#list").empty(),
 						values = snapshot.val();
@@ -25,7 +20,7 @@ $().ready(function() {
 						entries = [ ];
 						$(values).eachProp(function(name, value) {
 							var entry = $.extend({ }, value);
-							
+
 							entry.date = new Date(entry.date);
 							entry.id = name;
 							if (!(entry.title && entry.title.length)) {
@@ -38,7 +33,7 @@ $().ready(function() {
 						});
 						entries.sort(function(a, b) {
 							var x, y;
-							
+
 							if (a.date.getTime) {
 								if (isNaN(x = a.date.getTime())) {
 									x = a.title;
@@ -57,66 +52,128 @@ $().ready(function() {
 						});
 						$(entries).each(function(i, value) {
 							$(document.createElement("li"))
-								.append($(document.createElement("img"))
-									.addClass("favicon")
-									.on({
-										"error": function(e) {
-											$(this).hide();
-										}
-									})
-									.attr({
-										"src": (!_officeMode || !value.url.match(/porn/i)) ? value.url.split(":")[0] + "://" + value.url
-											.substring(value.url.indexOf(":") + 3).split("/")[0] + "/favicon.ico" : null
-									}))
-								.append($(document.createElement("span"))
-									.text(((value.title && value.title.length) ? "{0} ({1}):" : "{1}:")
-										.format(value.title, value.date.toLocaleString())))
-								.append($(document.createElement("br")))
-								.append($(document.createElement("a"))
-									.attr({
-										"href": value.url,
-										"target": "_blank"
-									})
-									.text(value.url))
-								.append($(document.createElement("button"))
-									.addClass("ui-state-error")
-									.addClass("remove")
-									.attr({
-										"type": "button"
-									})
-									.button({
-										"icons": {
-											"primary": "ui-icon-closethick"
-										},
-										"label": "Remove"
-									})
-									.data({
-										"id": value.id,
-										"title": value.title,
-										"url": value.url
-									})
-									.on({
-										"click": function(e) {
-											var button = $(this).closest("button"),
-												data = button.data();
+								.append($(document.createElement("div"))
+									.addClass("title")
+									.append($(document.createElement("div"))
+										.addClass("title")
+										.append($(document.createElement("img"))
+											.addClass("favicon")
+											.data({
+												"url": value.url
+											}))
+										.append($(document.createElement("div"))
+											.addClass("title")
+											.text(value.title))
+										.append((value.category && value.category.length) ?
+											$(document.createElement("div"))
+												.addClass("category")
+												.addClass("ui-state-default")
+												.text(value.category) :
+											undefined))
+									.append($(document.createElement("div"))
+										.addClass("date")
+										.text(value.date.toLocaleString())))
+								.append($(document.createElement("div"))
+									.addClass("row")
+									.append($(document.createElement("div"))
+										.addClass("link")
+										.append($(document.createElement("a"))
+											.attr({
+												"href": value.url,
+												"target": "_blank"
+											})
+											.text(value.url)))
+									.append($(document.createElement("div"))
+										.addClass("buttons")
+										.append($(document.createElement("button"))
+											.addClass("ui-state-default")
+											.addClass("rename")
+											.attr({
+												"type": "button"
+											})
+											.button({
+												"icons": {
+													"primary": "ui-icon-pencil"
+												},
+												"label": "Rename"
+											})
+											.data({
+												"id": value.id,
+												"title": value.title,
+												"url": value.url
+											})
+											.on({
+												"click": function(e) {
+													var button = $(this).closest("button"),
+														data = button.data();
 
-											$.confirm("Are you sure you want to remove '{0}'?"
-												.format((data.title && data.title.length) ? data.title : data.url)).then(function() {
-
-												app.database().ref(_uid + "/" + data.id).set(null).then(function() {
-													button.closest("li").fadeOut(function() {
-														$(this).remove();
-														refreshTitle();
+													$.prompt("Rename '{0}':".format(data.title), data.title).then(function(value) {
+														if (value && value.length) {
+															window.loading(function() {
+																return $.Deferred(function(deferred) {
+																	_app.database.database().ref(_uid + "/" + data.id + "/title").set(value).then(function() {
+																		button.closest("li").find(".title .title .title").text(value);
+																		button.data({
+																			"title": value
+																		});
+																		deferred.resolve();
+																	}).catch(function(e) {
+																		deferred.reject();
+																		$.alert(e);
+																	});
+																});
+															});
+														}
 													});
-												}).catch(function(e) {
-													$.alert(e);
-												});
-											});
-										}
-									}))
+												}
+											}))
+										.append($(document.createElement("button"))
+											.addClass("ui-state-error")
+											.addClass("remove")
+											.attr({
+												"type": "button"
+											})
+											.button({
+												"icons": {
+													"primary": "ui-icon-closethick"
+												},
+												"label": "Remove"
+											})
+											.data({
+												"id": value.id,
+												"title": value.title,
+												"url": value.url
+											})
+											.on({
+												"click": function(e) {
+													var button = $(this).closest("button"),
+														data = button.data();
+
+													$.confirm("Are you sure you want to remove '{0}'?"
+														.format((data.title && data.title.length) ? data.title : data.url)).then(function() {
+
+														window.loading(function() {
+															return $.Deferred(function(deferred) {
+																_app.database.database().ref(_uid + "/" + data.id).set(null).then(function() {
+																	button.closest("li").fadeOut(function() {
+																		$(this).remove();
+																		refreshTitle();
+																	});
+																	deferred.resolve();
+																}).catch(function(e) {
+																	deferred.reject();
+																	$.alert(e);
+																});
+															});
+														});
+													});
+												}
+											}))))
 								.appendTo(list);
 						});
-						if (!list.find("li").length) {
+						if (list.find("li").length) {
+							_app.loadFavicons(list);
+						} else {
 							list.remove();
 						}
 					}
@@ -133,7 +190,7 @@ $().ready(function() {
 	var loginAndLoad = function(username, password, rememberMe, successCallback, errorCallback) {
 		window.loader.message("Logging in...");
 		window.loader.show();
-		app.auth().signInWithEmailAndPassword(username, password).then(function(auth) {
+		_app.database.auth().signInWithEmailAndPassword(username, password).then(function(auth) {
 			if (rememberMe) {
 				window.localStorage.setItem(_storageName, window.JSON.stringify({
 					"username": username,
