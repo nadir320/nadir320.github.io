@@ -94,6 +94,12 @@ window.Object.asArray = function() {
 	return a;
 };
 
+if (window.RegExp) {
+	window.escapeRegExp = window.RegExp.escape = function(pattern) {
+		return pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+	};
+}
+
 window.String.empty = "";
 
 window.String.format = function(format) {

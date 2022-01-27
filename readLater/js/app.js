@@ -3,19 +3,18 @@
 $().ready(function() {
 	var _app = window.nadir.readLater,
 		_email,
-		_storageName = "readLater",
-		_uid;
+		_storageName = "readLater";
 
 	var load = function() {
 		return window.loading(function() {
 			return $.Deferred(function(deferred) {
-				_app.database.database().ref(_uid).once("value").then(function(snapshot) {
+				_app.database.database().ref(_app.uid).once("value").then(function(snapshot) {
 					var entries,
 						list = $("#list").empty(),
 						values = snapshot.val();
 
 					if (values) {
-						list.append(list = $(document.createElement("ul")));
+						list = $(document.createElement("ul")).appendTo(list);
 
 						entries = [ ];
 						$(values).eachProp(function(name, value) {
@@ -50,126 +49,11 @@ $().ready(function() {
 							}
 							return (x < y) ? 1 : (x > y) ? -1 : 0;
 						});
+
+						var buttons = [ "rename", { "id": "remove", "click": refreshTitle }];
+
 						$(entries).each(function(i, value) {
-							$(document.createElement("li"))
-								.append($(document.createElement("div"))
-									.addClass("title")
-									.append($(document.createElement("div"))
-										.addClass("title")
-										.append($(document.createElement("img"))
-											.addClass("favicon")
-											.data({
-												"url": value.url
-											}))
-										.append($(document.createElement("div"))
-											.addClass("title")
-											.text(value.title))
-										.append((value.category && value.category.length) ?
-											$(document.createElement("div"))
-												.addClass("category")
-												.addClass("ui-state-default")
-												.text(value.category) :
-											undefined))
-									.append($(document.createElement("div"))
-										.addClass("date")
-										.text(value.date.toLocaleString())))
-								.append($(document.createElement("div"))
-									.addClass("row")
-									.append($(document.createElement("div"))
-										.addClass("link")
-										.append($(document.createElement("a"))
-											.attr({
-												"href": value.url,
-												"target": "_blank"
-											})
-											.text(value.url)))
-									.append($(document.createElement("div"))
-										.addClass("buttons")
-										.append($(document.createElement("button"))
-											.addClass("ui-state-default")
-											.addClass("rename")
-											.attr({
-												"type": "button"
-											})
-											.button({
-												"icons": {
-													"primary": "ui-icon-pencil"
-												},
-												"label": "Rename"
-											})
-											.data({
-												"id": value.id,
-												"title": value.title,
-												"url": value.url
-											})
-											.on({
-												"click": function(e) {
-													var button = $(this).closest("button"),
-														data = button.data();
-
-													$.prompt("Rename '{0}':".format(data.title), data.title).then(function(value) {
-														if (value && value.length) {
-															window.loading(function() {
-																return $.Deferred(function(deferred) {
-																	_app.database.database().ref(_uid + "/" + data.id + "/title").set(value).then(function() {
-																		button.closest("li").find(".title .title .title").text(value);
-																		button.data({
-																			"title": value
-																		});
-																		deferred.resolve();
-																	}).catch(function(e) {
-																		deferred.reject();
-																		$.alert(e);
-																	});
-																});
-															});
-														}
-													});
-												}
-											}))
-										.append($(document.createElement("button"))
-											.addClass("ui-state-error")
-											.addClass("remove")
-											.attr({
-												"type": "button"
-											})
-											.button({
-												"icons": {
-													"primary": "ui-icon-closethick"
-												},
-												"label": "Remove"
-											})
-											.data({
-												"id": value.id,
-												"title": value.title,
-												"url": value.url
-											})
-											.on({
-												"click": function(e) {
-													var button = $(this).closest("button"),
-														data = button.data();
-
-													$.confirm("Are you sure you want to remove '{0}'?"
-														.format((data.title && data.title.length) ? data.title : data.url)).then(function() {
-
-														window.loading(function() {
-															return $.Deferred(function(deferred) {
-																_app.database.database().ref(_uid + "/" + data.id).set(null).then(function() {
-																	button.closest("li").fadeOut(function() {
-																		$(this).remove();
-																		refreshTitle();
-																	});
-																	deferred.resolve();
-																}).catch(function(e) {
-																	deferred.reject();
-																	$.alert(e);
-																});
-															});
-														});
-													});
-												}
-											}))))
-								.appendTo(list);
+							window.nadir.readLater.createLink(list, value, buttons);
 						});
 						if (list.find("li").length) {
 							_app.loadFavicons(list);
@@ -202,7 +86,7 @@ $().ready(function() {
 			}
 			$(".email").button("option", "label", _email = auth.user.email).fadeIn();
 			$(".refresh").fadeIn();
-			_uid = auth.user.uid;
+			_app.uid = auth.user.uid;
 			if (successCallback) {
 				successCallback();
 			}

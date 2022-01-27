@@ -69,6 +69,7 @@
 #list li .favicon {
 	height: 2rem;
 	margin-right: 0.25rem;
+	object-fit: scale-down;
 	width: 2rem;
 }
 
