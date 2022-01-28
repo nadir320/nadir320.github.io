@@ -23,15 +23,15 @@
 		<script type="text/javascript" src="./js/app.min.js"></script>
 	</head>
 	<body class="ui-widget large-on-large-screens">
-		<div class="ui-widget-header ui-corner-top title">
-			<span class="title-text">Read later links</span>
-			<button type="button" class="email ui-state-highlight"></button>
+		<div class="ui-widget-header ui-corner-top header">
+			<div><span class="header-text">Read later links</span></div>
+			<div class="centered"><button type="button" class="refresh">Refresh</button></div>
+			<div><button type="button" class="email ui-state-highlight"></button></div>
 		</div>
 		<div class="ui-widget-content ui-corner-bottom">
-			<!-- <div class="centered"><button type="button" class="refresh">Refresh</button></div> -->
 			<div id="list"></div>
-			<div class="no-link centered">No link to read later</div>
-			<div class="centered"><button type="button" class="refresh">Refresh</button></div>
+			<div class="row centered no-link">No link to read later</div>
+			<div class="row centered"><button type="button" class="refresh">Refresh</button></div>
 		</div>
 		<div class="dialog loaderDialog">
 			<div class="loadingProgress"></div>

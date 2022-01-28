@@ -543,6 +543,19 @@ window.location.set = function(newParameters, parametersToRemove) {
 	window.scrollbars.width = dimensions1.width - dimensions2.width;
 })();
 
+window.moveCaretToStart = function(input) {
+	try {
+		if (input.createTextRange) {
+			var range = input.createTextRange();
+
+			range.move("character", 0);
+			range.select();
+		} else if (input.setSelectionRange) {
+			input.setSelectionRange(0, 0);
+		}
+	} catch (ex) { }
+};
+
 window.parseColor = function(color) {
 	var element = document.createElement("div"),
 		i,
@@ -1300,27 +1313,30 @@ if (window.jQuery) {
 					.attr({
 						"title": title || document.title
 					})
-					.append(document.createTextNode(text))
-					.append(document.createElement("br"))
 
 					/* Previous, non form version: */
-					/* .append(input = $(document.createElement("input"))
+					/* .append(document.createTextNode(text))
+					.append(document.createElement("br"))
+					.append(input = $(document.createElement("input"))
 						.val(value)) */
 					/* end of previous, non form version */
 
 					/* Version with form: */
 					.append($(document.createElement("form"))
-						.append(input = $(document.createElement("input"))
-							.val(value))
-						.on("submit", function(e) {
-							input
-								.closest(".ui-dialog")
-								.find(".ui-dialog-buttonpane")
-								.find(".ui-button")
-								.first()
-								.click();
-							return false;
-						}))
+						.append($(document.createElement("label"))
+							.text(text)
+							.append(document.createElement("br"))
+							.append(input = $(document.createElement("input"))
+								.val(value))
+							.on("submit", function(e) {
+								input
+									.closest(".ui-dialog")
+									.find(".ui-dialog-buttonpane")
+									.find(".ui-button")
+									.first()
+									.click();
+								return false;
+							})))
 					/* end of version with form */
 
 					.appendTo(document.body)
@@ -1354,6 +1370,7 @@ if (window.jQuery) {
 						"hide": true,
 						"maxHeight": "98%",
 						"modal": true,
+						/* "open": function(e, ui) { moveCaretToStart(input[0]); }, */
 						"resizable": false,
 						"show": true,
 						"width": "auto"

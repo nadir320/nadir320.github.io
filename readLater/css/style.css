@@ -1,36 +1,68 @@
-﻿.centered {
-	text-align: center;
+﻿.header {
+	display: flex;
+	align-items: center;
+	padding: 1rem;
 }
 
-.title {
-	border-bottom-width: 0px;
+.header > * {
+	display: flex;
+	flex: 1;
+}
+
+.header .ui-button {
+	white-space: nowrap;
+}
+
+.header > *:first-child > * {
+	margin-right: auto;
+}
+
+.header > *:last-child  > * {
+	margin-left: auto;
+}
+
+.header .centered {
+	justify-content: center;
 }
 
 .email {
 	display: none;
-	font-size: 50% !important;
-	position: absolute;
-	right: 1.5rem;
-	top: 1.5rem;
+	font-size: small !important;
 }
 
 .refresh {
 	display: none;
-	margin: 1rem;
+	font-size: smaller !important;
 }
 
 .no-link {
 	display: none;
 }
 
-.title,
-.no-link {
-	padding: 1rem;
-}
-
 #list ul {
 	list-style-type: disclosure-closed;
+	margin: 1rem 0 0;
 	padding-left: 1.5rem;
+}
+
+.header .ui-button > .ui-button-icon-space,
+.header .ui-button > *:last-child {
+	display: none;
+}
+
+.header .centered {
+	flex: 0;
+}
+
+@media all and (min-width: 560px) {
+	.header .ui-button > .ui-button-icon-space,
+	.header .ui-button > *:last-child {
+		display: inline-block;
+	}
+
+	.header .centered {
+		flex: 1;
+	}
 }
 
 @media all and (min-width: 920px) {
@@ -54,45 +86,39 @@
 	padding-bottom: 0;
 }
 
-#list li .title,
 #list .row {
-	align-items: baseline;
 	display: flex;
+	flex-wrap: wrap;
 	padding: 0;
 }
 
-#list .row {
-	flex-wrap: wrap;
-}
-
-#list li>.title {
+#list .row.title {
 	flex-direction: column;
+	flex-wrap: nowrap;
 }
 
-#list li>.title>.title {
+#list .title-row {
 	align-self: normal;
+	display: flex;
 }
 
-#list li .title .title .title {
-	align-self: center;
-}
-
-#list li .favicon {
+#list .favicon {
 	height: 2rem;
 	margin-right: 0.25rem;
 	object-fit: scale-down;
 	width: 2rem;
 }
 
-#list li .date {
+#list .date {
 	font-size: small;
 }
 
-#list li .link {
+#list .link {
 	font-size: smaller;
 	margin: 0 0.25rem 0.25rem 0;
 	word-break: break-word;
 }
+
 #list .category,
 #list .buttons {
 	margin-left: auto;
@@ -111,11 +137,20 @@
 	opacity: 0.5;
 }
 
+.row.centered {
+	padding: 1rem;
+	text-align: center;
+}
+
 .loginDialog {
 	margin-left: 0 !important;
 	margin-right: 0 !important;
 	padding-left: 0 !important;
 	padding-right: 0 !important;
+}
+
+.loginDialog .centered {
+	text-align: center;
 }
 
 .loginDialog input[type=email],

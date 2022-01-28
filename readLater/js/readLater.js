@@ -120,130 +120,168 @@ if (window.jQuery) {
 	if (!window.nadir.readLater.createLink) {
 		window.nadir.readLater.createLink = function(container, link, buttons) {
 			return $(document.createElement("li"))
-				.addClass((link.error) ? "ui-state-error" : undefined)
 				.append($(document.createElement("div"))
-					.addClass("title")
+					.addClass((link.error) ? "ui-state-error" : undefined)
 					.append($(document.createElement("div"))
 						.addClass("title")
-						.append($(document.createElement("img"))
-							.addClass("favicon")
-							.data({
-								"url": link.url
-							}))
+						.addClass("row")
 						.append($(document.createElement("div"))
-							.addClass("title")
-							.text(link.title))
-						.append((link.category && link.category.length) ?
-							$(document.createElement("div"))
-								.addClass("category")
-								.addClass("ui-state-default")
-								.text(link.category) :
-							undefined))
-					.append((link.date) ? $(document.createElement("div"))
-						.addClass("date")
-						.text(link.date.toLocaleString()) : undefined))
-				.append($(document.createElement("div"))
-					.addClass("row")
-					.append($(document.createElement("div"))
-						.addClass("link")
-						.append($(document.createElement("a"))
-							.attr({
-								"href": link.url,
-								"target": "_blank"
-							})
-							.text(link.url)))
-					.append($(document.createElement("div"))
-						.addClass("buttons")
-						.append((link.error) ? undefined : $(buttons || []).map(function() {
-							var item = this,
-								id = ((typeof item === "object") ? item.id : item).toLowerCase(),
-								icon,
-								label,
-								state;
-
-							switch (id) {
-								case "add":
-									icon = "disk";
-									label = "Add to Read Later";
-									state = "highlight";
-									break;
-								case "rename":
-									icon = "pencil";
-									label = "Rename";
-									state = "default";
-									break;
-								case "remove":
-									icon = "closethick";
-									label = "Remove";
-									state = "error";
-									break;
-							}
-							return $(document.createElement("button"))
-								.addClass("ui-state-" + state)
-								.addClass(id)
-								.attr({
-									"type": "button"
-								})
-								.button({
-									"icons": {
-										"primary": "ui-icon-" + icon
-									},
-									"label": label
-								})
+							.addClass("title-row")
+							.append($(document.createElement("img"))
+								.addClass("favicon")
 								.data({
-									"id": id,
-									"link": link
+									"url": link.url
+								}))
+							.append($(document.createElement("div"))
+								.addClass("title-title")
+								.text(link.title))
+							.append((link.category && link.category.length) ?
+								$(document.createElement("div"))
+									.addClass("category")
+									.addClass("ui-state-default")
+									.text(link.category) :
+								undefined))
+						.append((link.date) ? $(document.createElement("div"))
+							.addClass("date")
+							.text(link.date.toLocaleString()) : undefined))
+					.append($(document.createElement("div"))
+						.addClass("row")
+						.append($(document.createElement("div"))
+							.addClass("link")
+							.append($(document.createElement("a"))
+								.attr({
+									"href": link.url,
+									"target": "_blank"
 								})
-								.on({
-									"click": function(e) {
-										var button = $(this).closest("button"),
-											data = button.data();
+								.text(link.url)))
+						.append($(document.createElement("div"))
+							.addClass("buttons")
+							.append((link.error) ? undefined : $(buttons || []).map(function() {
+								var item = this,
+									id = ((typeof item === "object") ? item.id : item).toLowerCase(),
+									icon,
+									label,
+									state;
 
-										switch (data.id) {
-											case "add":
-												$.confirm("Are you sure you want to add '{0}'?"
-													.format((data.link.title && data.link.title.length) ? data.link.title : data.link.url)).then(function() {
+								switch (id) {
+									case "add":
+										icon = "disk";
+										label = "Add to Read Later";
+										state = "highlight";
+										break;
+									case "go":
+										icon = "extlink";
+										label = "Go";
+										state = "default";
+										break;
+									case "rename":
+										icon = "pencil";
+										label = "Rename";
+										state = "default";
+										break;
+									case "remove":
+										icon = "closethick";
+										label = "Remove";
+										state = "error";
+										break;
+								}
+								return $(document.createElement("button"))
+									.addClass("ui-state-" + state)
+									.addClass(id)
+									.attr({
+										"type": "button"
+									})
+									.button({
+										"icons": {
+											"primary": "ui-icon-" + icon
+										},
+										"label": label
+									})
+									.data({
+										"id": id,
+										"link": link
+									})
+									.on({
+										"click": function(e) {
+											var button = $(this).closest("button"),
+												data = button.data();
 
-														window.loading(function() {
-															return $.Deferred(function(deferred) {
-																window.nadir.readLater.add({
-																	"uid": window.nadir.readLater.uid,
-																	"href": data.link.url,
-																	"title": data.link.title,
-																	"category": data.link.category,
-																	"callback": function(e) {
-																		if (e) {
+											switch (data.id) {
+												case "add":
+													$.confirm("Are you sure you want to add '{0}'?"
+														.format((data.link.title && data.link.title.length) ? data.link.title : data.link.url)).then(function() {
+
+															window.loading(function() {
+																return $.Deferred(function(deferred) {
+																	window.nadir.readLater.add({
+																		"uid": window.nadir.readLater.uid,
+																		"href": data.link.url,
+																		"title": data.link.title,
+																		"category": data.link.category,
+																		"callback": function(e) {
+																			if (e) {
+																				deferred.reject();
+																				if (item.click) {
+																					item.click(e);
+																				} else {
+																					$.alert(e);
+																				}
+																			} else {
+																				deferred.resolve();
+																				if (item.click) {
+																					item.click();
+																				}
+																			}
+																		}
+																	});
+																});
+															}, "Adding...");
+													});
+													break;
+												case "go":
+													window.open(item.url || data.link.url);
+													break;
+												case "rename":
+													$.prompt("Rename '{0}':".format(data.link.title), data.link.title).then(function(name) {
+														if (name && name.length) {
+															window.loading(function() {
+																return $.Deferred(function(deferred) {
+																	window.nadir.readLater.database.database()
+																		.ref(window.nadir.readLater.uid + "/" + data.link.id + "/title").set(name).then(function() {
+																			button.closest("li").find(".title-title").text(name);
+																			data.link.title = name;
+																			deferred.resolve();
+																			if (item.click) {
+																				item.click();
+																			}
+																		}).catch(function(e) {
 																			deferred.reject();
 																			if (item.click) {
 																				item.click(e);
 																			} else {
 																				$.alert(e);
 																			}
-																		} else {
+																		});
+																});
+															}, "Renaming...");
+														}
+													});
+													break;
+												case "remove":
+													$.confirm("Are you sure you want to remove '{0}'?".format((data.link.title && data.link.title.length) ?
+														data.link.title : data.link.url)).then(function() {
+
+														window.loading(function() {
+															return $.Deferred(function(deferred) {
+																window.nadir.readLater.database.database()
+																	.ref(window.nadir.readLater.uid + "/" + data.link.id).set(null).then(function() {
+																		button.closest("li").fadeOut(function() {
+																			$(this).remove();
 																			deferred.resolve();
 																			if (item.click) {
 																				item.click();
 																			}
-																		}
-																	}
-																});
-															});
-														}, "Adding...");
-												});
-												break;
-											case "rename":
-												$.prompt("Rename '{0}':".format(data.link.title), data.link.title).then(function(name) {
-													if (name && name.length) {
-														window.loading(function() {
-															return $.Deferred(function(deferred) {
-																window.nadir.readLater.database.database()
-																	.ref(window.nadir.readLater.uid + "/" + data.link.id + "/title").set(name).then(function() {
-																		button.closest("li").find(".title .title .title").text(name);
-																		data.link.title = name;
-																		deferred.resolve();
-																		if (item.click) {
-																			item.click();
-																		}
+																		});
 																	}).catch(function(e) {
 																		deferred.reject();
 																		if (item.click) {
@@ -252,42 +290,14 @@ if (window.jQuery) {
 																			$.alert(e);
 																		}
 																	});
-															});
-														}, "Renaming...");
-													}
-												});
-												break;
-											case "remove":
-												$.confirm("Are you sure you want to remove '{0}'?".format((data.link.title && data.link.title.length) ?
-													data.link.title : data.link.url)).then(function() {
-
-													window.loading(function() {
-														return $.Deferred(function(deferred) {
-															window.nadir.readLater.database.database()
-																.ref(window.nadir.readLater.uid + "/" + data.link.id).set(null).then(function() {
-																	button.closest("li").fadeOut(function() {
-																		$(this).remove();
-																		deferred.resolve();
-																		if (item.click) {
-																			item.click();
-																		}
-																	});
-																}).catch(function(e) {
-																	deferred.reject();
-																	if (item.click) {
-																		item.click(e);
-																	} else {
-																		$.alert(e);
-																	}
-																});
-														}, "Removing...");
+															}, "Removing...");
+														});
 													});
-												});
-												break;
+													break;
+											}
 										}
-									}
-								})
-						}).toArray())))
+									})
+							}).toArray()))))
 				.appendTo(container);
 		};
 	}

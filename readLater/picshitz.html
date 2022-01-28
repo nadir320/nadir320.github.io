@@ -23,14 +23,20 @@
 		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
 		<script type="text/javascript" src="./js/readLater.min.js"></script>
 		<script type="text/javascript" src="./js/picshitz.min.js"></script>
+		<style type="text/css">
+			#list li:last-of-type {
+				padding-bottom: 0.5rem;
+			}
+		</style>
 	</head>
 	<body class="ui-widget large-on-large-screens">
-		<div class="ui-widget-header ui-corner-top title">
-			<span class="title-text">Picshitz links</span>
+		<div class="ui-widget-header ui-corner-top header">
+			<span class="header-title">Picshitz links</span>
 		</div>
 		<div class="ui-widget-content ui-corner-bottom">
-			<div id="list"><ul></ul></div>
+			<div id="list"></div>
 		</div>
+		<div class="row centered"></div>
 		<div class="dialog loaderDialog">
 			<div class="loadingProgress"></div>
 			<div class="loadingMessage"></div>

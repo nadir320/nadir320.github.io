@@ -34,12 +34,16 @@ if (!window.nadir.readLater.add) {
 					"databaseURL": "https://readlater-274ac.firebaseio.com"
 				}, time);
 
-				app.database().ref(uid + "/" + time).set({
-					"category": category,
+				var value = {
 					"date": now.toISOString(),
 					"title": title,
 					"url": href
-				}).then(function() {
+				};
+
+				if (category && category.length) {
+					value.category = category;
+				}
+				app.database().ref(uid + "/" + time).set(value).then(function() {
 					if (callback) {
 						callback();
 					} else {

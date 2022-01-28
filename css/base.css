@@ -112,7 +112,8 @@ body {
 	/* margin: 1em; */
 }
 
-.ui-dialog .promptDialog input {
+.ui-dialog.promptDialog input {
+	margin-top: 0.25em;
 	width: 100%;
 }
 

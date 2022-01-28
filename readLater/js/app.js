@@ -5,6 +5,13 @@ $().ready(function() {
 		_email,
 		_storageName = "readLater";
 
+	var inSpan = function(text) {
+		return $(document.createElement("div"))
+			.append($(document.createElement("span"))
+				.text(text))
+			.html();
+	};
+
 	var load = function() {
 		return window.loading(function() {
 			return $.Deferred(function(deferred) {
@@ -84,7 +91,7 @@ $().ready(function() {
 			} else {
 				window.localStorage.removeItem(_storageName);
 			}
-			$(".email").button("option", "label", _email = auth.user.email).fadeIn();
+			$(".email").button("option", "label", inSpan(_email = auth.user.email)).fadeIn();
 			$(".refresh").fadeIn();
 			_app.uid = auth.user.uid;
 			if (successCallback) {
@@ -101,7 +108,7 @@ $().ready(function() {
 	var refreshTitle = function() {
 		var count = $("#list").find("li").length;
 
-		$(".title-text").text(("Read later links" + ((count) ?
+		$(".header-text").text(("Read later links" + ((count) ?
 			" ({0})" :
 			String.empty)).format(count.toLocaleString()));
 		$(".no-link")[(!count) ? "fadeIn" : "fadeOut"]();
@@ -153,7 +160,8 @@ $().ready(function() {
 	$(".refresh").button({
 		"icons": {
 			"primary": "ui-icon-refresh"
-		}
+		},
+		"label": inSpan("Refresh")
 	}).on({
 		"click": function(e) {
 			load();
