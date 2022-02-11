@@ -770,7 +770,7 @@
 			_bindClickByClassName(status, "newGame", askNewGame);
 			_bindClickByClassName(status, "hint", nextHint);
 			_bindClickByClassName(status, "restart", restart);
-			_bindClickByClassName(status, "undo", undo);
+			_bindClickByClassName(status, "undo", function() { undo(); });
 
 			document.getElementById("messageBackdrop").addEventListener("click", function(e) {
 				hideMessage();
