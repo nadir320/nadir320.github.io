@@ -2,17 +2,17 @@
 
 (function() {
 	var _ = {
-		  depth: 6
-		, height: 40
-		, padding: 4
-		, width: 30
+		  depth: 6		// Depth of tiles
+		, height: 40	// Tile image height - FIXED (depends on PNG)
+		, padding: 4	// Padding around image in tiles (depends on PNG)
+		, width: 30		// Tile image width - FIXED (depends on PNG)
 	};
 
 	var _array = function(list) {
-		var a = [ ], e, i, l;
+		var a = [ ], i, l;
 
-		for (i = 0, l = list.length; i < l, e = list[i]; i++) {
-			a.push(e);
+		for (i = 0, l = list.length; i < l; i++) {
+			a.push(list[i]);
 		}
 		return a;
 	}
@@ -714,15 +714,15 @@
 				matching = _array(_board.getElementsByClassName("matching"));
 
 			if (tile.classList.contains("free") || _game.end) {
-				if (!_game.start) {
-					_game.start = Date.now();
-				}
 				matching.forEach(function(match, i) {
 					match.classList.remove("matching");
 				});
 				if (clicked.length === 1 && clicked[0] !== tile &&
 					clicked[0].dataset.type === tile.dataset.type) {
 
+					if (!_game.start) {
+						_game.start = Date.now();
+					}
 					clicked[0].classList.add("hidden");
 					tile.classList.add("hidden");
 					clicked[0].classList.remove("clicked");
