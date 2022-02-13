@@ -1,14 +1,6 @@
 ﻿"use strict";
 
 (function() {
-	var _palette;
-
-	(function() {
-		var thisScript = Array.prototype.slice.call(window.document.getElementsByTagName("script")).pop();
-
-		_palette = thisScript.getAttribute("palette");
-	})();
-
 	var _bindClicks = function(elements, callback) {
 		Array.from((typeof elements.length !== "undefined") ? elements : [ elements ]).forEach(function(item) {
 			item.addEventListener("click", callback);
@@ -49,6 +41,26 @@
 			}
 		}
 		return value;
+	};
+
+	var _params = function(url) {
+		var i = url.indexOf("?"),
+			params = { },
+			values;
+
+		if (i >= 0) {
+			url = url.substr(i + 1);
+			i = url.indexOf("#");
+			if (i >= 0) {
+				url = url.substr(0, i);
+			}
+			url.split("&").forEach(function(param) {
+				var j = param.indexOf("=");
+
+				params[param.substr(0, j)] = window.decodeURIComponent(param.substr(j + 1));
+			});
+		}
+		return params;
 	};
 
 	var _setStyle = function(css, id) {
@@ -214,7 +226,11 @@
 					_setStyle(rules.join("\n"));
 					callback();
 				}
-				palette.src = _palette;
+
+				var thisScript = Array.prototype.slice.call(window.document.getElementsByTagName("script")).pop(),
+					src = thisScript.getAttribute("palette") || _params(thisScript.getAttribute("src")).palette;
+
+				palette.src = src;
 			},
 			loadFaces = function(map) {
 				var x1 = _min(map.map(function(item) { return item.x; })),
@@ -681,6 +697,10 @@
 			}
 		};
 
+		var askRestart = function() {
+			showMessage(document.getElementById("restartMessage").value);
+		};
+
 		var checkGame = function() {
 			if (refreshTime) {
 				refreshTime();
@@ -748,7 +768,7 @@
 		};
 
 		var restart = function() {
-			showMessage(document.getElementById("restartMessage").value);
+			undo(true);
 		};
 
 		var showMessage = function(messageText, type) {
@@ -769,7 +789,7 @@
 
 			_bindClickByClassName(status, "newGame", askNewGame);
 			_bindClickByClassName(status, "hint", nextHint);
-			_bindClickByClassName(status, "restart", restart);
+			_bindClickByClassName(status, "restart", askRestart);
 			_bindClickByClassName(status, "undo", function() { undo(); });
 
 			document.getElementById("messageBackdrop").addEventListener("click", function(e) {
