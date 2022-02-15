@@ -29,10 +29,6 @@ body {
 	justify-content: center;
 }
 
-form {
-	display: none;
-}
-
 button:focus {
 	outline: 0 solid transparent;
 }
@@ -119,6 +115,17 @@ button:focus {
 	width: 7em;
 }
 
+.message ul {
+    list-style-type: none;
+    margin: 0 auto;
+	text-align: left;
+    width: 75%;
+}
+
+.message ul li {
+	margin: 0.5em 0;
+}
+
 .tile {
 	background-color: ivory;
 	color: gray;
@@ -202,15 +209,39 @@ button:focus {
 
 	.status button.newGame { background-image: url("../images/new.png"); }
 
-	.status button.askRestart { background-image: url("../images/restart.png"); }
+	.status button.hint { background-image: url("../images/hint.png"); }
 
 	.status button.undo { background-image: url("../images/undo.png"); }
 
-	.status button.hint { background-image: url("../images/hint.png"); }
+	.status button.askRestart { background-image: url("../images/restart.png"); }
+
+	.status button.map { background-image: url("../images/map.png"); }
 }
 
-/* @media (min-width: 56em), (min-height: 36em) { */
-	body:not(.no-media) .fade {
+@-ms-keyframes pulse-contrast { from { -ms-filter: contrast(0); } to { -ms-filter: contrast(500%); } }
+@-moz-keyframes pulse-contrast { from { -moz-filter: contrast(0); } to { -moz-filter: contrast(500%); } }
+@-o-keyframes pulse-contrast { from { -o-filter: contrast(0); } to { -o-filter: contrast(500%); } }
+@-webkit-keyframes pulse-contrast { from { -webkit-filter: contrast(0); } to { -webkit-filter: contrast(500%); } }
+@keyframes pulse-contrast { from { filter: contrast(0); } to { filter: contrast(500%); } }
+
+.animate .fade {
+	-ms-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+	-moz-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+	-o-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+	-webkit-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+	transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+}
+
+.animate .tile.free.all .face {
+	-ms-animation: pulse-contrast 1s linear infinite alternate;
+	-moz-animation: pulse-contrast 1s linear infinite alternate;
+	-o-animation: pulse-contrast 1s linear infinite alternate;
+	-webkit-animation: pulse-contrast 1s linear infinite alternate;
+	animation: pulse-contrast 1s linear infinite alternate;
+}
+
+@media (min-width: 56em), (min-height: 36em) {
+	.fade {
 		-ms-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
 		-moz-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
 		-o-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
@@ -218,17 +249,11 @@ button:focus {
 		transition: opacity 0.5s, background-color 0.2s, color 0.2s;
 	}
 
-	@-ms-keyframes pulse-contrast { from { -ms-filter: contrast(0); } to { -ms-filter: contrast(500%); } }
-	@-moz-keyframes pulse-contrast { from { -moz-filter: contrast(0); } to { -moz-filter: contrast(500%); } }
-	@-o-keyframes pulse-contrast { from { -o-filter: contrast(0); } to { -o-filter: contrast(500%); } }
-	@-webkit-keyframes pulse-contrast { from { -webkit-filter: contrast(0); } to { -webkit-filter: contrast(500%); } }
-	@keyframes pulse-contrast { from { filter: contrast(0); } to { filter: contrast(500%); } }
-
-	body:not(.no-media) .tile.free.all .face {
+	.tile.free.all .face {
 		-ms-animation: pulse-contrast 1s linear infinite alternate;
 		-moz-animation: pulse-contrast 1s linear infinite alternate;
 		-o-animation: pulse-contrast 1s linear infinite alternate;
 		-webkit-animation: pulse-contrast 1s linear infinite alternate;
 		animation: pulse-contrast 1s linear infinite alternate;
 	}
-/* } */
+}

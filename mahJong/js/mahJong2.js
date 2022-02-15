@@ -374,14 +374,16 @@
 
 				_setStyle(styles.join("\n"), "map-style");
 
+				var tilesPerType;
+
 				(function() {
-					var tilesPerType = { };
+					var n, newTiles;
 
 					do {
 						var index, faceSet = faces.slice(), m, n, t = { };
 
+						tilesPerType = { };
 						while (map.length < faceSet.length) {
-							if (!faceSet.length) break;
 							index = Math.floor(Math.random() * faceSet.length);
 							index = faceSet[index].type;
 							m = (t[index]) ? 0 : 2;
@@ -392,16 +394,24 @@
 							});
 						}
 						while (map.length > faceSet.length) {
-							if (!faceSet.length) break;
 							index = Math.floor(Math.random() * faceSet.length);
 							index = faceSet[index].type;
-							index = faceSet.filter(function(item) {
+							n = faceSet.length;
+							newTiles = faceSet.filter(function(item) {
 								return item.type === index;
 							}).slice(0, 2).map(function(item) {
-								return _clone(item);
+								return {
+									background: {
+										x: item.background.x,
+										y: item.background.y
+									},
+									face: item.face,
+									index: n++,
+									type: item.type
+								};
 							});
-							index.splice(0, 0, 0, faceSet.length);
-							faceSet.splice.apply(faceSet, index);
+							newTiles.splice(0, 0, 0, 0);
+							faceSet.splice.apply(faceSet, newTiles);
 						}
 						faceSet.forEach(function(item) {
 							if (typeof tilesPerType[item.type] !== "undefined") {
@@ -452,6 +462,7 @@
 						}
 					})());
 				})();
+				return tilesPerType;
 			},
 			zCover = function(what, cover) {
 				return cover.x <= what.x && cover.x + cover.w >= what.x + what.w &&
@@ -466,7 +477,6 @@
 			};
 
 		Game = function(board, map, ready) {
-
 			var availableMoves = 0,
 				end,
 				hiddenTiles = 0,
@@ -474,7 +484,8 @@
 				hints = [ ],
 				history = [ ],
 				start,
-				tileSet;
+				tileSet,
+				tilesPerType;
 
 			var getMatchingTiles = function(tile, freeOnly) {
 				var type = tile.dataset.type;
@@ -551,7 +562,7 @@
 								return _isVisible(item);
 							});
 
-						tile.classList[(remainingMatches.length > 1) ? "remove" : "add"]("last");
+						tile.classList[(end || remainingMatches.length > 1) ? "remove" : "add"]("last");
 						tile.classList[(remainingMatches.length && remainingMatches.findIndex(function(item) {
 							return !item.classList.contains("free");
 						}) < 0) ? "add" : "remove"]("all");
@@ -623,14 +634,14 @@
 									type,
 									uncovered;
 
-								if (isVisible) {
+								if (isVisible && !end) {
 									overlapping = [ ];
 									nonOverlapping = [ ];
 
 									remainingMatches.forEach(function(item) {
 										((zOverlap(box, getTileBox(item))) ? overlapping : nonOverlapping).push(item);
 									});
-									if (overlapping.length > 1) {
+									if (overlapping.length > tilesPerType[parseInt(tile.dataset.type)] / 2) {
 										fatal = true;
 									} else if (nonOverlapping.length === 0) {
 										fatal = true;
@@ -676,7 +687,7 @@
 										keys[item.dataset.index] = true;
 									});
 									newHints.push(matches);
-									availableMoves += length;
+									availableMoves += 1 + ((length === 1) ? 0 : length);
 								}
 							}
 						});
@@ -703,20 +714,20 @@
 						/* (board.querySelector(".tile.sandwich.last:not(.hidden):not(.uncovered)")) */
 						(board.querySelector(".tile.fatal"))
 						||
-						(!hasMoves && !(!history.length && board.getElementsByClassName("tile").length < tileSet.length))
+						(!hasMoves/* && !(!history.length && board.getElementsByClassName("tile").length < tileSet.length)*/)
 					) {
 
 					if (!end) {
 						end = Date.now();
-						if (start) {
+						/* if (start) { */
 							board.dispatchEvent(new Event("game.lost"));
-						}
+						/* } */
 					}
 				}
 			};
 
 			init(function() {
-				loadFaces(tileSet = map);
+				tilesPerType = loadFaces(tileSet = map);
 
 				Array.from(board.childNodes).forEach(function(node) {
 					node.parentElement.removeChild(node);
@@ -881,6 +892,7 @@
 						if (all && history.length) {
 							history.splice(0, history.length);
 						}
+						hintIndex = undefined;
 						checkStatus();
 					}
 				},
@@ -893,6 +905,7 @@
 
 	(function() {
 		var board = document.querySelector(".board"),
+			menu = document.getElementById("menu"),
 			message = document.getElementById("message"),
 			scaler = document.querySelector(".scaler"),
 			status = document.querySelector(".status");
@@ -900,13 +913,19 @@
 		(function() {
 			if (typeof window.ShadowRoot === "undefined") {
 				message.classList.add("compatible");
+				menu.classList.add("compatible");
 			}
-			if (_param("no-media")) {
-				document.querySelector("body").classList.add("no-media");
+			if (_param("animate")) {
+				document.querySelector("body").classList.add("animate");
 			}
 		})();
 
-		var game, resizer;
+		var game, mapName, resizer;
+
+		var askChangeMap = function() {
+			_show(menu);
+			_show(messageBackdrop);
+		};
 
 		var askNewGame = function() {
 			if (!_isVisible(message)) {
@@ -925,26 +944,35 @@
 			showMessage(document.getElementById("restartMessage").value);
 		};
 
-		var checkGame = function() {
+		var changeMap = function() {
+			mapName = document.getElementById("mapList").querySelector("input[type=radio]:checked").value;
+			try {
+				if (window.sessionStorage && window.sessionStorage.setItem) {
+					window.sessionStorage.setItem("mahJong-map", mapName);
+				}
+			} catch (e) { }
+			newGame();
+		};
+
+		var checkGame = function(e) {
 			if (refreshTime) {
 				refreshTime();
 			}
-			if (game) {
-				Array.from(document.querySelectorAll(".undo, .restart")).forEach(function(item, i) {
-					if (game.history.length) {
-						item.removeAttribute("disabled");
-					} else {
-						item.setAttribute("disabled", "disabled");
-					}
-				});
-				Array.from(document.getElementsByClassName("hint")).forEach(function(item, i) {
-					if (game.end) {
-						item.setAttribute("disabled", "disabled");
-					} else {
-						item.removeAttribute("disabled");
-					}
-				});
-			}
+
+			Array.from(document.querySelectorAll(".undo, .restart")).forEach(function(item, i) {
+				if (game && game.history.length) {
+					item.removeAttribute("disabled");
+				} else {
+					item.setAttribute("disabled", "disabled");
+				}
+			});
+			Array.from(document.getElementsByClassName("hint")).forEach(function(item, i) {
+				if (!game || game.end) {
+					item.setAttribute("disabled", "disabled");
+				} else {
+					item.removeAttribute("disabled");
+				}
+			});
 
 			document.getElementById("tiles").innerText = (game) ? game.visibleTiles.toLocaleString() : "";
 			document.getElementById("availableMoves").innerText = (game) ? game.availableMoves.toLocaleString() : "";
@@ -953,23 +981,23 @@
 
 		var hideMessage = function() {
 			_hide(message);
+			_hide(menu);
 			_hide(document.getElementById("messageBackdrop"));
 		};
 
 		var newGame = function() {
-			var map,
-				maps = window.maps,
-				names;
-
-			if (maps && (names = Object.keys(maps)).length) {
-				if (names.length === 1) {
-					map = new window.maps[names[0]]();
-				} else {
-					// TODO
+			if (mapName) {
+				if (game) {
+					game = undefined;
+					board.removeEventListener("game.changed", checkGame);
 				}
-				game = new Game(board, map, function() {
-					resizer();
-					checkGame();
+
+				game = new Game(board, new window.maps[mapName](), function() {
+					board.addEventListener("game.changed", checkGame);
+					setTimeout(function() {
+						resizer();
+						checkGame();
+					});
 				});
 			}
 		};
@@ -1024,9 +1052,10 @@
 			board.addEventListener("game.lost", function() { showMessage(document.getElementById("lostMessage").value); });
 
 			_bindClickByClassName(status, "newGame", askNewGame);
+			_bindClickByClassName(status, "undo", function() { undo(); });
 			_bindClickByClassName(status, "hint", nextHint);
 			_bindClickByClassName(status, "restart", askRestart);
-			_bindClickByClassName(status, "undo", function() { undo(); });
+			_bindClickByClassName(status, "map", askChangeMap);
 
 			document.getElementById("messageBackdrop").addEventListener("click", function(e) {
 				hideMessage();
@@ -1034,6 +1063,55 @@
 			_bindClickByTagName(message, "button", hideMessage);
 			_bindClickByClassName(message, "newGame", newGame);
 			_bindClickByClassName(message, "restart", restart);
+
+			_bindClickByTagName(menu, "button", hideMessage);
+			_bindClickByClassName(menu, "accept", changeMap);
+
+			(function() {
+				var allMaps, list, names;
+
+				if ((allMaps = window.maps) && (names = Object.keys(allMaps)).length) {
+					try {
+						if (window.sessionStorage && window.sessionStorage.getItem) {
+							mapName = window.sessionStorage.getItem("mahJong-map");
+						}
+					} catch (e) { }
+					if (mapName && names.indexOf(mapName) < 0) {
+						mapName = undefined;
+					}
+					mapName = mapName || names[0];
+				}
+				if (names && names.length > 1) {
+					list = document.getElementById("mapList");
+					Array.from(list.childNodes).forEach(function(node) {
+						node.parentElement.removeChild(node);
+					});
+					names.forEach(function(name) {
+						var item = document.createElement("li"),
+							label = document.createElement("label"),
+							radio = document.createElement("input"),
+							text = document.createTextNode(allMaps[name].displayName);
+
+						label.addEventListener("dblclick", function(e) {
+							if (e.which === 1) {
+								menu.querySelector(".accept").click();
+							}
+						});
+						radio.setAttribute("name", "map");
+						radio.setAttribute("type", "radio");
+						radio.value = name;
+						if (name === mapName) {
+							radio.setAttribute("checked", "checked");
+						}
+						label.appendChild(radio);
+						label.appendChild(text);
+						item.appendChild(label);
+						list.appendChild(item);
+					});
+				} else {
+					status.querySelector(".map").style.display = "none";
+				}
+			})();
 		})();
 
 		document.addEventListener("keydown", function(e) {

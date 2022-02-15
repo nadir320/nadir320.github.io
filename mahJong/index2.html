@@ -20,6 +20,15 @@
 			<button class="restart">Ricomincia</button>
 			<button class="cancel">Annulla</button>
 		</div>
+		<div id="menu" class="message fade hidden">
+			<span>Scegli la mappa:</span>
+			<br/>
+			<form>
+				<ul id="mapList"></ul>
+			</form>
+			<button class="accept">OK</button>
+			<button class="cancel">Annulla</button>
+		</div>
 		<div class="status">
 			<div>Tempo: <span id="time"></span></div>
 			<div>Rimanenti: <span id="tiles"></span></div>
@@ -30,6 +39,8 @@
 			<button class="undo">Annulla</button>
 			<br/>
 			<button class="hint">Suggerimento</button>
+			<br/>
+			<button class="map">Mappa</button>
 		</div>
 		<div class="scaler">
 			<div class="board"></div>
@@ -40,7 +51,8 @@
 			<input type="hidden" id="askNewMessage" value="Iniziare una nuova partita?"/>
 			<input type="hidden" id="restartMessage" value="Riiniziare la partita?"/>
 		</form>
-		<script type="text/javascript" src="js/dragon.min.js"></script>
+		<script type="text/javascript" src="js/maps/dragon.min.js"></script>
+		<script type="text/javascript" src="js/maps/pinnacles.min.js"></script>
 		<script type="text/javascript" src="js/mahJong2.min.js" palette="./images/tiles-padded.png"></script>
 		<!-- <script type="text/javascript" src="js/mahJong2.min.js?palette=.%2Fimages%2Ftiles-padded.png"></script> -->
 		<!-- <script type="text/javascript" src="js/mahJong2.min.js" palette="./images/tiles60x78.png"></script> -->
