@@ -248,12 +248,4 @@ button:focus {
 		-webkit-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
 		transition: opacity 0.5s, background-color 0.2s, color 0.2s;
 	}
-
-	.tile.free.all .face {
-		-ms-animation: pulse-contrast 1s linear infinite alternate;
-		-moz-animation: pulse-contrast 1s linear infinite alternate;
-		-o-animation: pulse-contrast 1s linear infinite alternate;
-		-webkit-animation: pulse-contrast 1s linear infinite alternate;
-		animation: pulse-contrast 1s linear infinite alternate;
-	}
 }
