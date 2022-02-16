@@ -1,6 +1,8 @@
 ﻿"use strict";
 
 (function() {
+	var _thisScript = Array.prototype.slice.call(window.document.getElementsByTagName("script")).pop();
+
 	(function() {
 		if (!Array.prototype.findIndex) {
 			Array.prototype.findIndex = function(predicate) {
@@ -263,8 +265,9 @@
 					callback();
 				}
 
-				var thisScript = Array.prototype.slice.call(window.document.getElementsByTagName("script")).pop(),
-					src = thisScript.getAttribute("palette") || _params(thisScript.getAttribute("src")).palette;
+				var src = _thisScript.getAttribute("palette") ||
+					_params(_thisScript.getAttribute("src")).palette ||
+					_params(window.location.href).palette;
 
 				palette.src = src;
 			},
