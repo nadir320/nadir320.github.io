@@ -690,7 +690,11 @@
 										keys[item.dataset.index] = true;
 									});
 									newHints.push(matches);
-									availableMoves += 1 + ((length === 1) ? 0 : length);
+									// Combinations:
+									// availableMoves += 1 + ((length === 1) ? 0 : length);
+
+									// Moves:
+									availableMoves += Math.floor((length + 1) / 2);
 								}
 							}
 						});
