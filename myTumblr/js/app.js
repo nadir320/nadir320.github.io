@@ -1253,9 +1253,11 @@ $().ready(function() {
 					});
 				});
 
-				var newImageElements = $(),
-					imageElements = pageElement
-						.find("[has-src]")
+				var newImageElements = $();
+				var imageElements = pageElement
+					.find("[has-src]");
+
+				imageElements = imageElements
 						.filter(function(i, item) {
 							var image = $(item);
 
@@ -1816,7 +1818,7 @@ $().ready(function() {
 			n = parseInt(n),
 			setIcon = function(loading) {
 				var icons = $("#favicon").add("#shortcutIcon");
-				
+
 				icons.attr("href", (loading) ? "../images/loader.gif" : icons.data("icon"));
 			};
 
@@ -3111,7 +3113,8 @@ $().ready(function() {
 							}
 						}
 						window.setTimeout(function() {
-							var hasAnOldPost;
+							var hasAnOldPost,
+								waitFors = [];
 
 							window.sessionStorage.setItem("blogPage", blog.page = pageIndex);
 							$(".pageIndex").find(".newImage").remove();
@@ -3129,7 +3132,7 @@ $().ready(function() {
 							postsElement = $(document.createElement("div")).appendTo(pageElement);
 
 							$(stickyPosts).each(function(i, post) {
-								loadPost(blog, postsElement, post, pageIndex, info.postsDifference, newPosts, posts.length);
+								waitFors.push(loadPost(blog, postsElement, post, pageIndex, info.postsDifference, newPosts, posts.length));
 							});
 							$(posts).each(function(i, post) {
 								if (!post.isNewPost) {
@@ -3142,9 +3145,14 @@ $().ready(function() {
 									}
 								}
 
-								loadPost(blog, postsElement, post, pageIndex, info.postsDifference, newPosts, posts.length);
+								waitFors.push(loadPost(blog, postsElement, post, pageIndex, info.postsDifference, newPosts, posts.length));
 								wasNewPost = post.isNewPost;
 							});
+
+							///
+							$.when.apply(this, $(waitFors).filter(function(item) { return !!item; }).toArray()).always(function() {
+							///
+
 							$.when(applyBlogPageOptions()).then(function() {
 								var buttons = $(".nextPage"),
 									restoreButtons = function(icon) {
@@ -3227,6 +3235,10 @@ $().ready(function() {
 								}
 								deferred.resolve();
 							});
+
+							///
+							});
+							///
 						}, DEFAULT_TIMEOUT);
 					}, DEFAULT_TIMEOUT);
 				}).promise();
@@ -5077,7 +5089,8 @@ $().ready(function() {
 			postText,
 			postTitleElement,
 			textElement = $(document.createElement("div")),
-			videoElement;
+			videoElement,
+			waitFor;
 
 		postElement = $(document.createElement("div"))
 			.addClass("ui-corner-all")
@@ -5672,9 +5685,21 @@ $().ready(function() {
 				});
 			}
 			textElement.find("a").each(function(i, item) {
-				if (!(item = $(item)).hasClass("photo-2")) {
-					embedLink(item);
-					createLinkMenu(item);
+				var processResult = processLink(item = $(item));
+
+				var complete = function() {
+					if (!item.hasClass("photo-2")) {
+						embedLink(item);
+						createLinkMenu(item);
+					}
+				};
+
+				if (processResult) {
+					waitFor = $.Deferred(function(deferred) {
+						$.when(processResult).then(deferred.resolve, deferred.reject).always(complete);
+					});
+				} else {
+					complete();
 				}
 			});
 		}
@@ -5709,6 +5734,7 @@ $().ready(function() {
 						}
 					}));
 		}
+		return waitFor;
 	};
 
 	var loadTheme = function() {
@@ -6049,6 +6075,40 @@ $().ready(function() {
 			}
 		} else if (photoIndex > 0) {
 			showFullScreen(post, photoIndex - 1, true);
+		}
+	};
+
+	var processLink = function(link) {
+		var href = (link = $(link)).attr("href"),
+			proxied = function(url) {
+				return window.location.sameProtocol(getProxy().url.format(window.location.noProtocol(url)));
+			};
+
+		if (href && href.length) {
+			if (href.match("iglive\.picshitz\.com")) {
+				return $.Deferred(function(deferred) {
+					$.ajax({
+						error: deferred.reject,
+						success: function(data) {
+							var hasLinks = false;
+
+							$(sameSource(data)).find(".postBody img").each(function(i, image) {
+								link.before($(document.createElement("img")).attr({
+									"has-src": String.empty
+								}).data({
+									"src": proxied($(image).data("src"))
+								}));
+								hasLinks = true;
+							});
+							if (hasLinks) {
+								link.before($(document.createElement("br")));
+							}
+							deferred.resolve();
+						},
+						url: proxied(href)
+					});
+				});
+			}
 		}
 	};
 
@@ -8173,10 +8233,15 @@ $().ready(function() {
 						return $.when(blogInfo.blog.getPosts(pageIndex + 1, undefined, undefined,
 							_options.postsPerPage, window.sessionStorage.getItem("blogTag")))
 							.then(function(posts) {
-								var newPosts = 0;
+								var newPosts = 0,
+									pinCount = 0;
 
 								posts = $(posts).filter(function(i, post) {
-									return !post.is_pinned;
+									if (post.is_pinned) {
+										pinCount++;
+										return false;
+									}
+									return true;
 								});
 								if (posts.length) {
 									if (!window.loader.isCanceled()) {
@@ -8203,7 +8268,7 @@ $().ready(function() {
 												"pageIndex": pageIndex
 											});
 										}
-										if (posts.length === _options.postsPerPage &&
+										if (posts.length + pinCount === _options.postsPerPage &&
 											(newPosts === posts.length ||
 											(newPosts === 0 && !startedFromNew))) {
 
