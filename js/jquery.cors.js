@@ -58,7 +58,7 @@ if (window.jQuery) {
 			, "active": true
 			, "name": "CORS Anywhere"
 			, "noProtocol": true
-			, "priority": 2
+			, "priority": 11
 			, "supports": {
 				  "CORS": true
 				, "HTTPS": true
@@ -191,6 +191,28 @@ if (window.jQuery) {
 				, "nonJSON": true
 			}
 			, "url": "http://whateverorigin.org/get?url={0}"
+		},
+		{
+			  "about": "https://allorigins.win"
+			, "active": false
+			, "converter": function(data, type, textStatus, jqXHR) {
+				if (!window.jQuery.isPlainObject(data.contents)) {
+					try {
+						data.contents = window.jQuery.parseJSON(data.contents);
+					} catch (e) { }
+				}
+				return data.contents;
+			}
+			, "name": "allOrigins"
+			, "noProtocol": false
+			, "priority": 2
+			, "supports": {
+				  "CORS": true
+				, "HTTPS": true
+				, "JSONP": true
+				, "nonJSON": true
+			}
+			, "url": "https://api.allorigins.win/raw?url={0}"
 		}];
 
 	window.jQuery.CORS = window.jQuery.extend(window.jQuery.CORS || { }, {

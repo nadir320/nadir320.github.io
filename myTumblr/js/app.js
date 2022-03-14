@@ -62,7 +62,7 @@ var BLANK_PAGE = "about:blank",
 	PRELOAD_TIMEOUT = parseInt(window.location.get(PARAMETERS.preloadTimeout)) || DEFAULT_TIMEOUT,
 	PROXIES = {
 		"local": "Local CORS Proxy",
-		"remote": "CORS Anywhere"
+		"remote": "allOrigins"
 	},
 	THEME_ID = "pageTheme",
 	THEMECOLOR_ID = "themeColor",
@@ -834,7 +834,7 @@ $().ready(function() {
 								this.progressLabel
 									.html(replaceHTMLNewLines(localizedFormat.apply(this, data)));
 							});
-							request.open("GET", window.location.sameProtocol(getProxy().url.format(window.location.noProtocol(url))));
+							request.open("GET", window.location.sameProtocol(getProxy().url.format(window.location.sameProtocol(url))));
 							request.responseType = "blob";
 							request.progressElement = $(document.createElement("li"))
 								.append(request.linkElement = $(document.createElement("a"))
@@ -2015,7 +2015,7 @@ $().ready(function() {
 		}
 		image.attr({
 			"rel:animated_src": window.location.sameProtocol(getProxy().url
-				.format(window.location.noProtocol(url)))
+				.format(window.location.sameProtocol(url)))
 		});
 		parent.on({
 			"click": function(e) {
@@ -6081,7 +6081,7 @@ $().ready(function() {
 	var processLink = function(link) {
 		var href = (link = $(link)).attr("href"),
 			proxied = function(url) {
-				return window.location.sameProtocol(getProxy().url.format(window.location.noProtocol(url)));
+				return window.location.sameProtocol(getProxy().url.format(window.location.sameProtocol(url)));
 			};
 
 		if (href && href.length) {
