@@ -1,141 +1,952 @@
 ﻿"use strict";
 
 (function() {
-	var _ = {
-		  depth: 6		// Depth of tiles
-		, height: 40	// Tile image height - FIXED (depends on PNG)
-		, padding: 4	// Padding around image in tiles (depends on PNG)
-		, width: 30		// Tile image width - FIXED (depends on PNG)
-	};
-
-	var _array = function(list) {
-		var a = [ ], i, l;
-
-		for (i = 0, l = list.length; i < l; i++) {
-			a.push(list[i]);
-		}
-		return a;
-	}
-
-	var _board = document.getElementsByClassName("board")[0],
-		_message = document.getElementById("message"),
-		_scaler = document.getElementsByClassName("scaler")[0],
-		_status = document.getElementsByClassName("status")[0];
-
-	var _game;
+	var _thisScript = Array.prototype.slice.call(window.document.getElementsByTagName("script")).pop();
 
 	(function() {
-		var askNewGame,
-			checkGame,
-			getFreeTiles,
-			getMatchingTiles,
-			hideMessage,
-			isTileFree,
-			isTileVisible,
-			isTileVisibleByIndex,
-			newGame,
-			nextHint,
-			refreshTime,
-			resizer,
-			showMessage,
-			tileClick,
-			tileSet,
-			undo;
+		if (!Array.prototype.findIndex) {
+			Array.prototype.findIndex = function(predicate) {
+				var t = this;
+
+				for (var i = 0, length = this.length; i < length; i++) {
+					if (predicate.call(t, this[i], i)) {
+						return i;
+					}
+				}
+				return -1;
+			};
+		}
+
+		if (!Array.from) {
+			Array.from = function(arrayLike) {
+				var a = [ ];
+
+				for (var i = 0, length = arrayLike.length; i < length; i++) {
+					a.push(arrayLike[i]);
+				}
+				return a;
+			};
+		}
+	})();
+
+	var _bindClicks = function(elements, callback) {
+		Array.from((typeof elements.length !== "undefined") ? elements : [ elements ]).forEach(function(item) {
+			item.addEventListener("click", callback);
+		});
+	};
+
+	var _bindClickByClassName = function(parent, className, callback) {
+		_bindClicks(parent.querySelectorAll("." + className), callback);
+	};
+
+	var _bindClickByTagName = function(parent, tagName, callback) {
+		_bindClicks(parent.getElementsByTagName(tagName), callback);
+	};
+
+	var _clone = function(o) {
+		var clone = { };
+
+		Object.keys(o).forEach(function(name) {
+			clone[name] = o[name];
+		});
+		return clone;
+	};
+
+	var _hide = function(element) {
+		element.classList.add("hidden");
+	};
+
+	var _isVisible = function(element) {
+		return !element.classList.contains("hidden");
+	};
+
+	var _max = function(values) {
+		var value = undefined, x;
+
+		for (var i = 0, l = values.length; i < l; i++) {
+			x = values[i];
+			if (value === undefined) {
+				value = x;
+			} else {
+				value = Math.max(value, x);
+			}
+		}
+		return value;
+	};
+
+	var _min = function(values) {
+		var value = undefined, x;
+
+		for (var i = 0, l = values.length; i < l; i++) {
+			x = values[i];
+			if (value === undefined) {
+				value = x;
+			} else {
+				value = Math.min(value, x);
+			}
+		}
+		return value;
+	};
+
+	var _param = function(name) {
+		return Object.keys(_params()).findIndex(function(key) {
+			return key.toLowerCase() === name.toLowerCase();
+		}) >= 0;
+	};
+
+	var _params = function(url) {
+		var i = (url = url || window.location.href).indexOf("?"),
+			params = { },
+			values;
+
+		if (i >= 0) {
+			url = url.substr(i + 1);
+			i = url.indexOf("#");
+			if (i >= 0) {
+				url = url.substr(0, i);
+			}
+			url.split("&").forEach(function(param) {
+				var j = param.indexOf("="),
+					name = param.substr(0, j),
+					value = param.substr(j + 1);
+
+				params[name || value] = (name) ? window.decodeURIComponent(value) : undefined;
+			});
+		}
+		return params;
+	};
+
+	var _setStyle = function(css, id) {
+		var cssElement;
+
+		if (id && (cssElement = document.getElementById(id))) {
+			cssElement.innerText = css;
+		} else {
+			cssElement = document.createElement("style");
+			cssElement.setAttribute("type", "text/css");
+			if (id) {
+				cssElement.setAttribute("id", id);
+			}
+			cssElement.innerText = css;
+			document.querySelector("head").appendChild(cssElement);
+		}
+	};
+
+	var _show = function(element) {
+		element.classList.remove("hidden");
+	};
+
+	var _singletonInvoke = function(f, callback) {
+		if (f.completed) {
+			callback();
+		} else if (f.executing) {
+			f.callbacks.push(callback);
+		} else {
+			f.callbacks = [ callback ];
+			f.executing = true;
+			f(function() {
+				f.completed = true;
+				f.executing = false;
+				for (var i = 0, length = f.callbacks.length; i < length; i++) {
+					f.callbacks[i]();
+				}
+			});
+		}
+	};
+
+	var _debug = _param("debug");
+
+	var Game;
+
+	(function() {
+		var constants = {
+				get depth() { return 6; },
+				get padding() { return 8; }
+			},
+			faces,
+			getShadow = function(width, height) {
+				var canvas = document.createElement("canvas"),
+					gradient,
+					w = width + constants.depth,
+					h = height + constants.depth;
+
+				canvas.setAttribute("width", w);
+				canvas.setAttribute("height", h);
+
+				var context = canvas.getContext("2d");
+
+				context.fillStyle = "";
+
+				gradient = context.createLinearGradient(0, height, 0, h);
+				gradient.addColorStop(0, "rgba(0, 0, 0, 0.25)");
+				gradient.addColorStop(1, "rgba(0, 0, 0, 0.75)");
+				context.fillStyle = gradient;
+
+				context.beginPath();
+				context.moveTo(0, height);
+				context.lineTo(constants.depth, h);
+				context.lineTo(w, h);
+				context.lineTo(width, height);
+				context.closePath();
+				context.fill();
+
+				gradient = context.createLinearGradient(width, 0, w, 0);
+				gradient.addColorStop(0, "rgba(0, 0, 0, 0.25)");
+				gradient.addColorStop(1, "rgba(0, 0, 0, 0.75)");
+				context.fillStyle = gradient;
+
+				context.beginPath();
+				context.moveTo(width, 0);
+				context.lineTo(width, height);
+				context.lineTo(w, h);
+				context.lineTo(w, constants.depth);
+				context.closePath();
+				context.fill();
+
+				return canvas.toDataURL();
+			},
+			init = function(callback) {
+				_singletonInvoke(initEngine, callback);
+			},
+			initEngine = function(callback) {
+				var palette = new Image();
+
+				palette.onload = function() {
+					var imageWidth = this.width / 9,
+						imageHeight = this.height / 5,
+						shadowData;
+
+					Object.defineProperty(constants, "width", { get: function() { return imageWidth; } });
+					Object.defineProperty(constants, "height", { get: function() { return imageHeight; } });
+
+					var rules,
+						clipPath = "polygon(" + constants.width + "px 0, 100% " + constants.depth + "px, 100% 100%" +
+							", " + constants.depth + "px 100%, 0 " + constants.height + "px, 0 0)",
+						c, i, j, k, n, p, w, x = 0, y = 0;
+
+					rules = [ ".face { background-image: url(\"" + this.src + "\") !important; " +
+								"width: " + constants.width + "px; height: " + constants.height + "px; }",
+							".tile { width: " + (constants.width + constants.depth) + "px; " +
+								"height: " + (constants.height + constants.depth) + "px; " +
+								"background-image: url(" + getShadow(constants.width, constants.height) + "); " +
+								"background-repeat: no-repeat; " +
+								["", "ms", "moz", "o", "webkit"].map(function(item) { return ((item) ? "-" + item + "-" : "") + "clip-path: " + clipPath; }).join("; ") + "}" ];
+
+					faces = [ ];
+					for (i = 0; i < 5; i++) {
+						c = (i === 3) ? 8 : (i === 4) ? 7 : 9;
+
+						for (j = 0; j < c; j++) {
+							rules.push(".t" + x + "{ background-position: -" +
+								(constants.width * j) + "px -" + (constants.height * i) + "px }");
+
+							n = (i > 2 && j < 4) ? 1 : 4;
+
+							if (n !== 1 || p !== n) {
+								y++;
+							}
+							for (k = 0; k < n; k++) {
+								faces.push({
+									background: {
+										x: -(constants.width * j),
+										y: -(constants.height * i)
+									},
+									face: x,
+									index: faces.length,
+									type: y
+								});
+							}
+							x++;
+							p = n;
+						}
+					}
+
+					_setStyle(rules.join("\n"));
+					callback();
+				}
+
+				var src = _thisScript.getAttribute("palette") ||
+					_params(_thisScript.getAttribute("src")).palette ||
+					_params(window.location.href).palette;
+
+				palette.src = src;
+			},
+			isAreaCovered = function(area, by) {
+				var shards = [ ];
+
+				by.forEach(function(item) {
+					shards.push({ x: item.x, y: area.y, w: item.w, h: area.h });
+					shards.push({ x: area.x, y: item.y, w: area.w, h: item.h });
+				});
+				for (var i = 0, s; s = shards[i]; i++) {
+					for (var j = 0, b; b = by[j]; j++) {
+						if (!zCover(s, b)) {
+							return false;
+						}
+					}
+				}
+				return true;
+			},
+			loadFaces = function(map) {
+				var x1 = _min(map.map(function(item) { return item.x; })),
+					x2 = _max(map.map(function(item) { return item.x + item.w; })),
+					y1 = _min(map.map(function(item) { return item.y; })),
+					y2 = _max(map.map(function(item) { return item.y + item.h; })),
+					z1 = _min(map.map(function(item) { return item.z; })),
+					z2 = _max(map.map(function(item) { return item.z; })),
+					mW = _max(map.map(function(item) { return item.w; })),
+					mH = _max(map.map(function(item) { return item.h; })),
+					w = x2 - x1,
+					h = y2 - y1;
+
+				var excess = map.length % 4;
+
+				if (excess) {
+					(function() {
+						var tiles = map.slice();
+
+						tiles.sort(function(a, b) {
+							return b.z - a.z;
+						});
+						excess = tiles.slice(0, excess);
+
+						var remainder = map.filter(function(item) {
+							return excess.findIndex(function(value) { return value === item; }) < 0;
+						});
+						remainder.splice(0, 0, 0, map.length);
+						map.splice.apply(map, remainder);
+					})();
+					return loadFaces(map);
+				}
+
+				if (x1 !== 0 || y1 !== 0) {
+					map.forEach(function(item) {
+						item.x -= x1;
+						item.y -= y1;
+					});
+				}
+				if (z1 !== 0) {
+					map.forEach(function(item) {
+						item.z -= z1;
+					});
+				}
+
+				w *= constants.width;
+				w += constants.depth;
+				w += 2 * constants.padding;
+
+				map.width = w;
+
+				h *= constants.height;
+				h += constants.depth;
+				h += 2 * constants.padding;
+
+				map.height = h;
+
+				var styles = [
+					".wrapper { max-width: " + w + "px; max-height:" + h + "px; }",
+					".board { width: " + w + "px; height: " + h + "px; }"
+				];
+
+				(function() {
+					var faceRules, rules;
+
+					for (var i = 1; i <= mW; i++) {
+						for (var j = 1; j <= mH; j++) {
+							if (i !== 1 || j !== 1) {
+								rules = [];
+
+								rules.push("background-image: url(\"" + getShadow(constants.width * i, constants.height * j) + "\")");
+								rules.push("width: " + (i * constants.width + constants.depth) + "px");
+								rules.push("height: " + (j * constants.height + constants.depth) + "px");
+								rules.push("clip-path: polygon(" + (i * constants.width) + "px 0, 100% " + constants.depth + "px, 100% 100%, " +
+									constants.depth + "px 100%, 0 " + (j * constants.height) + "px, 0 0)");
+								styles.push(".tile.w-" + i + ".h-" + j + " { " + rules.join("; ") + " }");
+
+								faceRules = [];
+
+								faceRules.push("background-size: " + (constants.width * 9 * i) + "px " + (constants.height * 5 * j) + "px");
+								faceRules.push("width: " + (i * constants.width) + "px");
+								faceRules.push("height: " + (j * constants.height) + "px");
+
+								styles.push(".tile.w-" + i + ".h-" + j + " .face { " + faceRules.join("; ") + " }");
+							}
+						}
+					}
+				})();
+
+				_setStyle(styles.join("\n"), "map-style");
+
+				var tilesPerType;
+
+				(function() {
+					var n, newTiles, variableFaces = map.findIndex(function(tile) {
+						return typeof tile.faceIndex !== "undefined";
+					}) < 0;
+					
+					do {
+						var index, faceSet = faces.slice(), m, n, t = { };
+
+						if (variableFaces) {
+							while (map.length < faceSet.length) {
+								index = Math.floor(Math.random() * faceSet.length);
+								index = faceSet[index].type;
+								m = (t[index]) ? 0 : 2;
+								t[index] = true;
+								n = 0;
+								faceSet = faceSet.filter(function(item) {
+									return item.type !== index || n++ < m;
+								});
+							}
+							while (map.length > faceSet.length) {
+								index = Math.floor(Math.random() * faceSet.length);
+								index = faceSet[index].type;
+								n = faceSet.length;
+								newTiles = faceSet.filter(function(item) {
+									return item.type === index;
+								}).slice(0, 2).map(function(item) {
+									return {
+										background: {
+											x: item.background.x,
+											y: item.background.y
+										},
+										face: item.face,
+										index: n++,
+										type: item.type
+									};
+								});
+								newTiles.splice(0, 0, 0, 0);
+								faceSet.splice.apply(faceSet, newTiles);
+							}
+						}
+
+						tilesPerType = { };
+						faceSet.forEach(function(item) {
+							if (typeof tilesPerType[item.type] !== "undefined") {
+								tilesPerType[item.type]++;
+							} else {
+								tilesPerType[item.type] = 1;
+							}
+						});
+
+						map.forEach(function(tile, i) {
+							tile.index = i;
+
+							var index = (variableFaces) ?
+									Math.floor(Math.random() * faceSet.length) :
+									tile.faceIndex,
+								face = faceSet[index];
+
+							tile.background = face.background;
+							tile.face = face.face;
+							tile.type = face.type;
+							if (variableFaces) {
+								faceSet.splice(index, 1);
+							}
+						});
+					} while ((function() {
+						var i,
+							inColumn,
+							index,
+							length,
+							maxPerColumn,
+							non0ZTiles,
+							tile,
+							z;
+
+						non0ZTiles = map.filter(function(item) {
+							return item.z;
+						});
+
+						for (i = 0, length = non0ZTiles.length; i < length; i++) {
+							tile = non0ZTiles[i];
+							maxPerColumn = tilesPerType[tile.type] / 2;
+
+							inColumn = 0;
+							for (z = z1; z <= z2; z++) {
+								if (z !== tile.z && map.findIndex(function(item) {
+									return item.z === z && item.type === tile.type && zOverlap(non0ZTiles[i], item);
+								}) >= 0) {
+									if (++inColumn >= maxPerColumn) {
+										return true;
+									}
+								}
+							}
+						}
+					})());
+				})();
+				return tilesPerType;
+			},
+			zCover = function(what, cover) {
+				return cover.x <= what.x && cover.x + cover.w >= what.x + what.w &&
+					cover.y <= what.y && cover.y + cover.h >= what.y + what.h;
+			},
+			zOverlap = function(box1, box2) {
+				return box1 !== box2 &&
+					box1.y + box1.h > box2.y && box1.y < box2.y + box2.h
+					&&
+					box1.x + box1.w > box2.x && box1.x < box2.x + box2.w
+					;
+			};
+
+		Game = function(board, map, ready) {
+			var availableMoves = 0,
+				end,
+				hiddenTiles = 0,
+				hintIndex,
+				hints = [ ],
+				history = [ ],
+				start,
+				tileSet,
+				tilesPerType;
+
+			var getMatchingTiles = function(tile, freeOnly) {
+				var type = tile.dataset.type;
+
+				return Array.from(board.getElementsByClassName("tile")).filter(function(item, i) {
+					return item !== tile && item.dataset.type === type &&
+						(!freeOnly || item.classList.contains("free"));
+				});
+			};
+
+			var getTileBox = function(tile) {
+				return {
+					index: parseInt(tile.dataset.index),
+					x: parseFloat(tile.dataset.x),
+					y: parseFloat(tile.dataset.y),
+					z: parseFloat(tile.dataset.z),
+					w: parseFloat(tile.dataset.w),
+					h: parseFloat(tile.dataset.h)
+				};
+			};
+
+			var checkStatus = function() {
+				var hasMoves;
+
+				availableMoves = 0;
+				hiddenTiles = 0;
+				(function() {
+					var tileStatus = Array.from(board.getElementsByClassName("tile")).map(function(tile, i) {
+						var status = getTileBox(tile);
+
+						status.index = parseInt(tile.dataset.index);
+						status.visible = _isVisible(tile);
+						return status;
+					});
+
+					var freeTiles = tileStatus.filter(function(tile) {
+						var row = tileStatus.filter(function(item) {
+							return item.index !== tile.index &&
+								item.visible &&
+								item.z === tile.z &&
+								item.y + item.h > tile.y &&
+								item.y < tile.y + tile.h;
+						});
+
+						if (row.length &&
+							row.filter(function(item) { return item.x + item.w === tile.x }).length &&
+							row.filter(function(item) { return item.x === tile.x + tile.w }).length) {
+
+							return false;
+						}
+
+						if (tileStatus.findIndex(function(item) {
+							return item.visible &&
+								item.z === tile.z + 1 &&
+								zOverlap(item, tile);
+						}) >= 0) {
+							return false;
+						}
+
+						return true;
+					});
+
+					var allTiles = Array.from(board.getElementsByClassName("tile"));
+
+					allTiles.forEach(function(tile, i) {
+						tile.classList[(freeTiles.findIndex(function(item) {
+							return item.visible && item.index === parseInt(tile.dataset.index);
+						}) >= 0) ? "add" : "remove"]("free");
+					});
+					allTiles.forEach(function(tile, i) {
+						var isVisible = _isVisible(tile),
+							box = (isVisible) ? getTileBox(tile) : undefined,
+							remainingMatches = getMatchingTiles(tile).filter(function(item) {
+								return _isVisible(item);
+							});
+
+						tile.classList[(end || remainingMatches.length > 1) ? "remove" : "add"]("last");
+						tile.classList[(remainingMatches.length && remainingMatches.findIndex(function(item) {
+							return !item.classList.contains("free");
+						}) < 0) ? "add" : "remove"]("all");
+
+						(function() {
+							if (isVisible) {
+								var isObscured = true,
+									lastXY,
+									over;
+
+								var obscuring = tileStatus.filter(function(item) {
+									return item.index !== box.index &&
+										item.visible &&
+										item.z === box.z &&
+										item.x === box.x + box.w &&
+										item.y + item.h > box.y &&
+										item.y < box.y + box.h;
+								});
+
+								if (obscuring.length) {
+									obscuring.sort(function(a, b) {
+										return b.y - a.y;
+									});
+									lastXY = obscuring[0].y;
+									obscuring.forEach(function(item, i) {
+										if (isObscured && i > 0 && item.y > lastXY) {
+											isObscured = false;
+										}
+										lastXY = item.y;
+									});
+									if (isObscured) {
+										obscuring = tileStatus.filter(function(item) {
+											return item.index !== box.index &&
+												item.visible &&
+												item.z === box.z &&
+												item.y === box.y + box.h &&
+												item.x + item.w > box.x &&
+												item.x < box.x + box.w;
+										});
+										if (obscuring.length) {
+											obscuring.sort(function(a, b) {
+												return b.x - a.x;
+											});
+											lastXY = obscuring[0].x;
+											obscuring.forEach(function(item, i) {
+												if (isObscured && i > 0 && item.x > lastXY) {
+													isObscured = false;
+												}
+											});
+											if (isObscured) {
+												over = tileStatus.filter(function(item) {
+													return item.visible && item.z === box.z + 1 && zOverlap(item, box);
+												});
+												if (over.length && isAreaCovered(box, over)) {
+													hiddenTiles++;
+												}
+											}
+										}
+									}
+								}
+							}
+						})();
+						if (!end && tile.classList.contains("sandwich")) {
+							(function() {
+								var fatal,
+									nonOverlapping,
+									overlapping,
+									visibleMatches,
+									type,
+									uncovered;
+
+								if (isVisible) {
+									overlapping = [ ];
+									nonOverlapping = [ ];
+
+									remainingMatches.forEach(function(item) {
+										((zOverlap(box, getTileBox(item))) ? overlapping : nonOverlapping).push(item);
+									});
+									if (overlapping.length > tilesPerType[parseInt(tile.dataset.type)] / 2) {
+										fatal = true;
+									} else if (nonOverlapping.length === 0) {
+										fatal = true;
+									}
+									if (!fatal) {
+										type = parseInt(tile.dataset.type);
+										uncovered = history.findIndex(function(item) {
+											return parseInt(item[0].dataset.type) === type;
+										}) >= 0;
+									}
+								}
+								tile.classList[(fatal) ? "add": "remove"]("fatal");
+								tile.classList[(uncovered) ? "add": "remove"]("uncovered");
+							})();
+						}
+					});
+				})();
+
+				(function() {
+					var newHints = [ ],
+						keys = [ ];
+
+					if (!end) {
+						Array.from(board.getElementsByClassName("free")).forEach(function(tile, i) {
+							var isNew = true,
+								j,
+								match,
+								matches = getMatchingTiles(tile, true),
+								length = matches.length;
+
+							if (length) {
+								matches.push(tile);
+								hasMoves = true;
+
+								for (j = 0; i < length, match = matches[j]; j++) {
+									if (keys[match.dataset.index]) {
+										isNew = false;
+										break;
+									}
+								}
+								if (isNew) {
+									matches.forEach(function(item, k) {
+										keys[item.dataset.index] = true;
+									});
+									newHints.push(matches);
+									// Combinations:
+									// availableMoves += 1 + ((length === 1) ? 0 : length);
+
+									// Moves:
+									availableMoves += Math.floor((length + 1) / 2);
+								}
+							}
+						});
+						newHints.sort(function(a, b) {
+							var n = function(i) {
+								var box = getTileBox(i[0]);
+
+								return i.length * 1e9 + box.z * 1e6 + box.y * 1e3 + box.x;
+							}, x = n(a), y = n(b);
+
+							return (x < y) ? 1 : (x > y) ? -1 : 0;
+						});
+					}
+					hints = newHints;
+				})();
+
+				board.dispatchEvent(new Event("game.changed"));
+				if (board.getElementsByClassName("tile").length === board.getElementsByClassName("hidden").length) {
+					if (!end) {
+						end = Date.now();
+						board.dispatchEvent(new Event("game.won"));
+					}
+				} else if (
+						/* (board.querySelector(".tile.sandwich.last:not(.hidden):not(.uncovered)")) */
+						(board.querySelector(".tile.fatal"))
+						||
+						(!hasMoves/* && !(!history.length && board.getElementsByClassName("tile").length < tileSet.length)*/)
+					) {
+
+					if (!end) {
+						end = Date.now();
+						/* if (start) { */
+							board.dispatchEvent(new Event("game.lost"));
+						/* } */
+					}
+				}
+			};
+
+			init(function() {
+				tilesPerType = loadFaces(tileSet = map);
+
+				Array.from(board.childNodes).forEach(function(node) {
+					node.parentElement.removeChild(node);
+				});
+
+				(function() {
+					var z = 0;
+
+					tileSet.forEach(function(item) {
+						var tile = document.createElement("div");
+
+						tile.classList.add("tile");
+						tile.classList.add("fade");
+						if (item.w !== 1 || item.h !== 1) {
+							tile.classList.add("w-" + item.w);
+							tile.classList.add("h-" + item.h);
+						}
+
+						tile.style.left = (item.x * constants.width - item.z * constants.depth + constants.padding) + "px";
+						tile.style.top = (item.y * constants.height - item.z * constants.depth + constants.padding) + "px";
+						tile.style.zIndex = z++;
+
+						tile.dataset.index = item.index;
+						tile.dataset.type = item.type;
+						tile.dataset.x = item.x;
+						tile.dataset.y = item.y;
+						tile.dataset.z = item.z;
+						tile.dataset.w = item.w;
+						tile.dataset.h = item.h;
+
+						tile.addEventListener("click", function(e) {
+							(function(tile) {
+								var clearHints = true,
+									clicked = Array.from(board.getElementsByClassName("clicked")),
+									matching = Array.from(board.getElementsByClassName("matching"));
+
+								if (tile.classList.contains("free") || end) {
+									matching.forEach(function(match, i) {
+										match.classList.remove("matching");
+									});
+									if (clicked.length === 1 && clicked[0] !== tile &&
+										clicked[0].dataset.type === tile.dataset.type) {
+
+										_hide(clicked[0]);
+										_hide(tile);
+										clicked[0].classList.remove("clicked");
+										tile.classList.remove("clicked");
+										history.push([ clicked[0], tile ]);
+										if (!start) {
+											start = Date.now();
+										}
+										checkStatus();
+									} else if (end) {
+										_hide(tile);
+										tile.classList.remove("clicked");
+										history.push([ tile ]);
+										checkStatus();
+									} else {
+										clicked.forEach(function(item, i) {
+											if (item !== tile) {
+												item.classList.remove("clicked");
+											}
+										});
+										tile.classList.toggle("clicked");
+										if (tile.classList.contains("clicked")) {
+											clearHints = !tile.classList.contains("hint");
+											getMatchingTiles(tile).forEach(function(match, i) {
+												match.classList.add("matching");
+											});
+										}
+									}
+									if (clearHints) {
+										hintIndex = undefined;
+										Array.from(board.getElementsByClassName("hint")).forEach(function(item, i) {
+											item.classList.remove("hint");
+										});
+									}
+								}
+							})(this);
+						});
+
+						var face = document.createElement("div");
+
+						face.classList.add("face");
+						face.classList.add("t" + item.face);
+						if (item.w !== 1 || item.h !== 1) {
+							face.style.backgroundPosition = (item.background.x * item.w) + "px " + (item.background.y * item.h) + "px";
+						}
+						if (_debug) {
+							var info = document.createElement("span");
+
+							info.style.color = "red";
+							info.style.fontSize = "7pt";
+							info.style.fontWeight = "bold";
+							info.style.pointerEvents = "none";
+							info.innerText = [item.index, item.x, item.y, item.z].join(", ");
+							face.appendChild(info);
+						}
+						tile.appendChild(face);
+						board.appendChild(tile);
+						item.tile = tile;
+					});
+					(function() {
+						tileSet.forEach(function(item) {
+							getMatchingTiles(item.tile).filter(function(tile) {
+								return zOverlap(getTileBox(tile), item);
+							}).forEach(function(tile) {
+								tile.classList.add("sandwich");
+							});
+						});
+					})();
+					checkStatus();
+				})();
+				if (ready) {
+					ready();
+				}
+			});
+
+			return {
+				get availableMoves() { return availableMoves; },
+				board: {
+					get width() { return (tileSet) ? tileSet.width : 0 },
+					get height() { return (tileSet) ? tileSet.height : 0 }
+				},
+				get constants() { return constants; },
+				get end() { return end; },
+				get hiddenTiles() { return hiddenTiles; },
+				get hints() { return hints },
+				get history() { return history; },
+				nextHint: function() {
+					var index;
+
+					Array.from(board.getElementsByClassName("hint")).forEach(function(hintElement, i) {
+						hintElement.classList.remove("hint");
+					});
+					if (typeof hintIndex !== "undefined" && hintIndex === hints.length - 1) {
+						hintIndex = undefined;
+					}
+					if (hints.length) {
+						index = (typeof hintIndex !== "undefined") ? hintIndex + 1 : 0;
+						hints[index].forEach(function(hintElement, i) {
+							hintElement.classList.add("hint");
+						});
+						hintIndex = index;
+					}
+				},
+				get start() { return start; },
+				undo: function(all) {
+					if (history.length) {
+						Array.from(board.querySelectorAll(".clicked, .matching")).forEach(function(item, i) {
+							item.classList.remove("clicked");
+							item.classList.remove("matching");
+						});
+						if (end && (all || history[history.length - 1].length > 1)) {
+							end = undefined;
+						}
+						((all) ? history : [ history.pop() ]).forEach(function(entry, i) {
+							entry.forEach(function(item, j) {
+								_show(item);
+							});
+						});
+						if (all && history.length) {
+							history.splice(0, history.length);
+						}
+						hintIndex = undefined;
+						checkStatus();
+					}
+				},
+				get visibleTiles() {
+					return board.querySelectorAll(".tile:not(.hidden)").length;
+				}
+			};
+		};
+	})();
+
+	(function() {
+		var board = document.querySelector(".board"),
+			menu = document.getElementById("menu"),
+			message = document.getElementById("message"),
+			scaler = document.querySelector(".scaler"),
+			status = document.querySelector(".status");
 
 		(function() {
 			if (typeof window.ShadowRoot === "undefined") {
-				_message.classList.add("compatible");
+				message.classList.add("compatible");
+				menu.classList.add("compatible");
+			}
+			if (_param("animate")) {
+				document.querySelector("body").classList.add("animate");
 			}
 		})();
 
-		(function() {
-			var b = 2,
-				c,
-				css,
-				i,
-				j,
-				k,
-				n,
-				p,
-				rules,
-				shadow,
-				w,
-				x = 0,
-				y = 0;
+		var game, mapName, resizer;
 
-			if (!!window.location.search.match(/shadow/i)) {
-				shadow = [ ];
-				if ((w = window.location.search.match(/blur(\d+)/i)) && w.length > 1) {
-					b = w[1] || b;
-				}
-				for (i = 0; i < _.depth; i++) {
-					shadow.push(((i === _.depth - 1) ? "black " : "") +
-						(i + 1) + "px " + (i + 1) + "px " + b + "px");
-				}
+		var askChangeMap = function() {
+			_show(menu);
+			_show(messageBackdrop);
+		};
 
-			}
-			tileSet = [ ];
-			tileSet.width = ((_.width + 2 * _.padding) * 15 + _.depth);
-			tileSet.height = ((_.height + 2 * _.padding) * 8 + _.depth);
-
-			tileSet.width += 4 * _.padding;
-			tileSet.height += 4 * _.padding;
-
-			rules = [ /* "body { min-width: " + tileSet.width + "px; min-height: " + tileSet.height + "px; }", */
-				".wrapper { max-width: " + tileSet.width + "px; " +
-					"max-height:" + tileSet.height + "px; }",
-				".board { width: " + tileSet.width + "px; " +
-					"height: " + tileSet.height + "px; }",
-				".face { padding: " + _.padding + "px; width: " +
-					(_.width + 2 * _.padding) + "px; height: " +
-					(_.height + 2 * _.padding) + "px; }" ];
-
-			if (shadow && shadow.length) {
-				rules.push(".tile { box-shadow: " + shadow.join(", ") + "; }");
-			} else {
-				rules.push(".tile { width: " + (_.width + 2 * _.padding + _.depth) + "px; " +
-					"height: " + (_.height + 2 * _.padding + _.depth) + "px; " +
-					"background-image: url(\"images/shadow" + _.width + "x" + _.height + ".png\"); " +
-					"background-position: bottom right; " +
-					"background-repeat: no-repeat; " +
-					"clip-path: polygon(" + (_.width + 2 * _.padding) + "px 0, 100% " + _.depth + "px, 100% 100%" +
-						", " + _.depth + "px 100%, 0 " + (_.height + 2 * _.padding) + "px, 0 0); }");
-			}
-
-			for (i = 0; i < 5; i++) {
-				c = (i === 3) ? 8 : (i === 4) ? 7 : 9;
-
-				for (j = 0; j < c; j++) {
-					rules.push(".t" + x + "{ background-position: -" +
-						(_.width * j) + "px -" + (_.height * i) + "px }");
-
-					n = (i > 2 && j < 4) ? 1 : 4;
-
-					if (n !== 1 || p !== n) {
-						y++;
-					}
-					for (k = 0; k < n; k++) {
-						tileSet.push({
-							face: x,
-							index: tileSet.length,
-							type: y
-						});
-					}
-					x++;
-					p = n;
-				}
-			}
-
-			var css = document.createElement("style");
-
-			css.setAttribute("type", "text/css");
-			css.innerText = rules.join("\n");
-			document.getElementsByTagName("head")[0].appendChild(css);
-		})();
-
-		askNewGame = function() {
-			if (_message.classList.contains("hidden")) {
-				if (_game && _game.history && _game.history.length) {
+		var askNewGame = function() {
+			if (!_isVisible(message)) {
+				if (game.history.length) {
 					showMessage(document.getElementById("askNewMessage").value);
 				} else {
 					newGame();
@@ -146,416 +957,79 @@
 			}
 		};
 
-		checkGame = function() {
-			_status.classList.add("working2");
+		var askRestart = function() {
+			showMessage(document.getElementById("restartMessage").value);
+		};
 
-			var free = 0,
-				hasMoves;
+		var changeMap = function() {
+			mapName = document.getElementById("mapList").querySelector("input[type=radio]:checked").value;
+			try {
+				if (window.sessionStorage && window.sessionStorage.setItem) {
+					window.sessionStorage.setItem("mahJong-map", mapName);
+				}
+			} catch (e) { }
+			newGame();
+		};
 
+		var checkGame = function(e) {
 			if (refreshTime) {
 				refreshTime();
 			}
-			if (_game) {
-				_array(document.querySelectorAll(".undo, .restart")).forEach(function(item, i) {
-					if (_game.history.length) {
-						item.removeAttribute("disabled");
-					} else {
-						item.setAttribute("disabled", "disabled");
-					}
-				});
-				_array(document.getElementsByClassName("hint")).forEach(function(item, i) {
-					if (_game.end) {
-						item.setAttribute("disabled", "disabled");
-					} else {
-						item.removeAttribute("disabled");
-					}
-				});
-			}
 
-			(function() {
-				var isTileFree = function(tile) {
-					var index;
+			Array.from(document.querySelectorAll(".undo, .restart")).forEach(function(item, i) {
+				if (game && game.history.length) {
+					item.removeAttribute("disabled");
+				} else {
+					item.setAttribute("disabled", "disabled");
+				}
+			});
+			Array.from(document.getElementsByClassName("hint")).forEach(function(item, i) {
+				if (!game || game.end) {
+					item.setAttribute("disabled", "disabled");
+				} else {
+					item.removeAttribute("disabled");
+				}
+			});
 
-					if (!tile.classList.contains("hidden")) {
-						switch (index = parseInt(tile.dataset.index)) {
-							case 31:
-								return true;
-							case 32:
-							case 44:
-								if (isTileVisibleByIndex(31)) {
-									if (isTileVisible(parseInt(tile.dataset.x) + 1,
-										tile.dataset.y, tile.dataset.z)) {
+			document.getElementById("tiles").innerText = (game) ? game.visibleTiles.toLocaleString() : "";
+			document.getElementById("availableMoves").innerText = (game) ? game.availableMoves.toLocaleString() : "";
+			document.getElementById("hiddenTiles").innerText = (game) ? game.hiddenTiles.toLocaleString() : "";
+		};
 
-										return false;
-									}
-								}
-								break;
-							case 43:
-							case 55:
-								if (isTileVisibleByIndex(56)) {
-									if (isTileVisible(parseInt(tile.dataset.x) - 1,
-										tile.dataset.y, tile.dataset.z)) {
+		var hideMessage = function() {
+			_hide(message);
+			_hide(menu);
+			_hide(document.getElementById("messageBackdrop"));
+		};
 
-										return false;
-									}
-								}
-								break;
-							case 56:
-								if (isTileVisibleByIndex(43) &&
-									isTileVisibleByIndex(55) &&
-									isTileVisibleByIndex(57)) {
+		var newGame = function() {
+			if (mapName) {
+				if (game) {
+					game = undefined;
+					board.removeEventListener("game.changed", checkGame);
+				}
 
-									return false;
-								}
-								break;
-							case 57:
-								return true;
-							case 140:
-							case 141:
-							case 142:
-							case 143:
-								if (isTileVisibleByIndex(144)) {
-									return false;
-								}
-								break;
-							case 144:
-								return true;
-							default:
-								if (isTileVisible(parseInt(tile.dataset.x) + 1,
-										tile.dataset.y, tile.dataset.z) &&
-									isTileVisible(parseInt(tile.dataset.x) - 1,
-										tile.dataset.y, tile.dataset.z)) {
-
-									return false;
-								} else if (isTileVisible(tile.dataset.x,
-									tile.dataset.y, parseInt(tile.dataset.z) + 1)) {
-
-									return false;
-								}
-								break;
-						}
-						return true;
-					}
-					return false;
-				};
-
-				_array(_board.getElementsByClassName("tile")).forEach(function(tile, i) {
-					tile.classList[(isTileFree(tile)) ? "add" : "remove"]("free");
-				});
-			})();
-
-			(function() {
-				var hints = [ ],
-					keys = [ ];
-
-				if (!_game.end) {
-					getFreeTiles().forEach(function(tile, i) {
-						var isNew = true,
-							j,
-							match,
-							matches = getMatchingTiles(tile, true),
-							length = matches.length;
-
-						if (length) {
-							matches.push(tile);
-							hasMoves = true;
-
-							for (j = 0; i < length, match = matches[j]; j++) {
-								if (keys[match.dataset.index]) {
-									isNew = false;
-									break;
-								}
-							}
-							if (isNew) {
-								matches.forEach(function(item, k) {
-									keys[item.dataset.index] = true;
-								});
-								hints.push(matches);
-								free += length;
-							}
-						}
+				game = new Game(board, new window.maps[mapName](), function() {
+					board.addEventListener("game.changed", checkGame);
+					setTimeout(function() {
+						resizer();
+						checkGame();
 					});
-					hints.sort(function(a, b) {
-						var n = function(data) {
-							var x = parseInt(data.x),
-								y = parseInt(data.y),
-								z = parseInt(data.z);
-
-							return z * 1e6 + y * 1e3 + x;
-						}, x = n(a[0].dataset), y = n(b[0].dataset);
-
-						return (x < y) ? 1 : (x > y) ? -1 : 0;
-					});
-				}
-				_game.hints = hints;
-			})();
-
-			document.getElementById("tiles").innerText = _board
-				.querySelectorAll(".tile:not(.hidden)")
-					.length.toLocaleString();
-			document.getElementById("freeTiles").innerText = free;
-
-			if (_board.getElementsByClassName("tile").length ===
-				_board.getElementsByClassName("hidden").length) {
-
-				if (!_game.end) {
-					showMessage(document.getElementById("wonMessage").value);
-					_game.end = Date.now();
-				}
-			} else {
-				if (!hasMoves && !(!_game.history.length && document
-					.getElementsByClassName("tile").length < tileSet.length)) {
-
-					if (!_game.end) {
-						showMessage(document.getElementById("lostMessage").value);
-						_game.end = Date.now();
-					}
-				}
-			}
-			_status.classList.remove("working2");
-		};
-
-		getFreeTiles = function() {
-			return _array(_board.getElementsByClassName("free"));
-		};
-
-		getMatchingTiles = function(tile, freeOnly) {
-			var type = tile.dataset.type;
-
-			return _array(_board.getElementsByClassName("tile")).filter(function(item, i) {
-				return item !== tile && item.dataset.type === type &&
-					(!freeOnly || item.classList.contains("free"));
-			});
-		};
-
-		hideMessage = function() {
-			_message.classList.add("hidden");
-			document.getElementById("messageBackdrop").classList.add("hidden");
-		};
-
-		isTileVisible = function(x, y, z) {
-			var tile = _game.filter(function(item, i) {
-				return parseInt(item.dataset.x) === parseInt(x) &&
-					parseInt(item.dataset.y) === parseInt(y) &&
-					parseInt(item.dataset.z) === parseInt(z);
-			})[0];
-
-			return tile && !tile.classList.contains("hidden");
-		};
-
-		isTileVisibleByIndex = function(index) {
-			var tiles = _game.filter(function(item, i) {
-				return parseInt(item.dataset.index) === index;
-			});
-
-			if (tiles.length) {
-				return !tiles[0].classList.contains("hidden");
-			}
-		};
-
-		newGame = function() {
-			var face,
-				flag,
-				getTilePosition = function(index) {
-					var x, y, z;
-
-					if (index <= 12) {
-						x = index;
-						y = 0;
-						z = 0;
-					} else if (index <= 20) {
-						x = index - 10;
-						y = 1;
-						z = 0;
-					} else if (index <= 30) {
-						x = index - 19;
-						y = 2;
-						z = 0;
-					} else if (index === 31) {
-						x = 0;
-						y = 3.5;
-						z = 0;
-					} else if (index <= 43) {
-						x = index - 31;
-						y = 3;
-						z = 0;
-					} else if (index <= 55) {
-						x = index - 43;
-						y = 4;
-						z = 0;
-					} else if (index === 56) {
-						x = 13;
-						y = 3.5;
-						z = 0;
-					} else if (index === 57) {
-						x = 14;
-						y = 3.5;
-						z = 0;
-					} else if (index <= 67) {
-						x = index - 56;
-						y = 5;
-						z = 0;
-					} else if (index <= 75) {
-						x = index - 65;
-						y = 6;
-						z = 0;
-					} else if (index <= 87) {
-						x = index - 75;
-						y = 7;
-						z = 0;
-					} else if (index <= 123) {
-						x = 4 + (index % 88) % 6;
-						y = 1 + Math.floor((index - 88) / 6);
-						z = 1;
-					} else if (index <= 139) {
-						x = 5 + (index - 124) % 4
-						y = 2 + Math.floor((index - 124) / 4);
-						z = 2;
-					} else if (index <= 143) {
-						x = 6 + (index - 140) % 2;
-						y = 3 + Math.floor((index - 140) / 2);
-						z = 3;
-					} else {
-						x = 6.5;
-						y = 3.5;
-						z = 4;
-					}
-					return {
-						i: index + 1,
-						x: x,
-						y: y,
-						z: z
-					};
-				},
-				index,
-				lastIndex,
-				max = tileSet.length,
-				nextFreePosition = function() {
-					var found,
-						start;
-
-					if (tiles.length) {
-						while (!found) {
-							start = getTilePosition(parseInt(tiles[Math.floor(Math.random() * tiles.length)].dataset.index));
-
-							switch (Math.floor(Math.random() * 4)) {
-								case 0:		/* N */
-									debugger;
-									break;
-								case 1:		/* E */
-									debugger;
-									break;
-								case 2:		/* S */
-									debugger;
-									break;
-								case 3:		/* W */
-									debugger;
-									break;
-							}
-							found = true;
-						}
-					}
-					return Math.floor(Math.random() * set.length);
-				},
-				position,
-				positionIndex,
-				set = tileSet.slice(0),
-				smart = !!window.location.search.match(/smart/i),
-				tile,
-				tiles = [ ],
-				zIndex = 0;
-
-			if (smart) { max = 2; }
-
-			while (_board.childNodes.length) {
-				_board.removeChild(_board.childNodes[0]);
-			}
-			while (set.length && set.length > tileSet.length - max) {
-				index = (smart && flag) ? lastIndex :
-					Math.floor(Math.random() * set.length);
-
-				if (smart && index % 2) {
-					index--;
-				}
-				lastIndex = index;
-				flag = !flag;
-
-				tile = document.createElement("div");
-				tile.classList.add("tile");
-				tile.classList.add("fade");
-
-				position = getTilePosition(positionIndex = (smart) ?
-					nextFreePosition() :
-					tiles.length + 1);
-
-				tile.style.left = (position.x * (_.width + 2 * _.padding) -
-					(position.z * _.depth) + 2 * _.padding) + "px";
-				tile.style.top = (position.y * (_.height + 2 * _.padding) -
-					(position.z * _.depth) + 2 * _.padding) + "px";
-				tile.style.zIndex = (smart) ?
-					position.i :
-					zIndex++;
-
-				tile.dataset.index = positionIndex;
-				tile.dataset.type = set[index].type;
-				tile.dataset.x = position.x;
-				tile.dataset.y = position.y;
-				tile.dataset.z = position.z;
-
-				tile.addEventListener("click", function(e) {
-					tileClick(this);
 				});
-
-				face = document.createElement("div");
-				face.classList.add("face");
-				face.classList.add("t" + set[index].face);
-
-				/* var x = document.createElement("span");
-
-				x.style.color = "red";
-				x.style.fontSize = "7pt";
-				x.style.fontWeight = "bold";
-				x.innerText = [tiles.length + 1, position.x, position.y, position.z].join(", ");
-				face.appendChild(x); */
-
-				tile.appendChild(face);
-
-				_board.appendChild(tile);
-				tiles.push(tile);
-				set.splice(index, 1);
-			}
-			_game = tiles;
-			_game.history = [ ];
-			checkGame();
-		};
-
-		nextHint = function() {
-			var index;
-
-			_array(_board.getElementsByClassName("hint")).forEach(function(hint, i) {
-				hint.classList.remove("hint");
-			});
-			if (typeof _game.hint !== "undefined" &&
-				_game.hint === _game.hints.length - 1) {
-
-				delete _game.hint;
-			}
-			if (_game.hints && _game.hints.length) {
-				index = (typeof _game.hint !== "undefined") ? _game.hint + 1 : 0;
-				_game.hints[index].forEach(function(hint, i) {
-					hint.classList.add("hint");
-				});
-				_game.hint = index;
 			}
 		};
 
-		refreshTime = function() {
+		var nextHint = function() {
+			game.nextHint();
+		};
+
+		var refreshTime = function() {
 			var elapsed = 0,
 				temp,
 				text = "";
 
-			if (_game && _game.start) {
-				elapsed = (_game.end || Date.now()) - _game.start;
+			if (game && game.start) {
+				elapsed = (game.end || Date.now()) - game.start;
 			}
 			elapsed = Math.floor(elapsed / 1e3);
 			if (elapsed >= 3600) {
@@ -574,78 +1048,88 @@
 			document.getElementById("time").innerText = text + elapsed;
 		};
 
-		showMessage = function(message, type) {
-			document.getElementById("messageText").innerText = message;
-			document.getElementById("messageBackdrop").classList.remove("hidden");
-			_message.classList.remove("hidden");
+		var restart = function() {
+			undo(true);
 		};
 
-		undo = function(all) {
-			var entry;
-
-			if (_game && _game.history && _game.history.length) {
-				_array(_board.getElementsByClassName("clicked")).forEach(function(item, i) {
-					item.classList.remove("clicked");
-				});
-				_array(_board.getElementsByClassName("matching")).forEach(function(item, i) {
-					item.classList.remove("matching");
-				});
-				(entry = _game.history.pop()).forEach(function(item, i) {
-					item.classList.remove("hidden");
-				});
-				_array(_board.getElementsByClassName("last")).forEach(function(item, i) {
-					item.classList.remove("last");
-				});
-				if (entry.length > 1) {
-					delete _game.end;
-				}
-				if (all && _game.history.length) {
-					undo(all);
-				} else {
-					checkGame();
-				}
-			}
+		var showMessage = function(messageText, type) {
+			document.getElementById("messageText").innerText = messageText;
+			_show(document.getElementById("messageBackdrop"));
+			_show(message);
 		};
 
-		_array(_status.getElementsByClassName("newGame")).forEach(function(item, i) {
-			item.addEventListener("click", function(e) {
-				askNewGame();
-			});
-		});
-		_array(_status.getElementsByClassName("restart")).forEach(function(item, i) {
-			item.addEventListener("click", function(e) {
-				showMessage(document.getElementById("restartMessage").value);
-			});
-		});
-		_array(document.getElementsByClassName("undo")).forEach(function(item, i) {
-				item.addEventListener("click", function(e) {
-				undo();
-			});
-		});
-		_array(document.getElementsByClassName("hint")).forEach(function(item, i) {
-			item.addEventListener("click", function(e) {
-				nextHint();
-			});
-		});
+		var undo = function(all) {
+			game.undo(all);
+			checkGame();
+		};
 
-		document.getElementById("messageBackdrop").addEventListener("click", function(e) {
-			hideMessage();
-		});
-		_array(_message.getElementsByTagName("button")).forEach(function(item, i) {
-			item.addEventListener("click", function(e) {
+		(function() {
+			board.addEventListener("game.changed", checkGame);
+			board.addEventListener("game.won", function() { showMessage(document.getElementById("wonMessage").value); });
+			board.addEventListener("game.lost", function() { showMessage(document.getElementById("lostMessage").value); });
+
+			_bindClickByClassName(status, "newGame", askNewGame);
+			_bindClickByClassName(status, "undo", function() { undo(); });
+			_bindClickByClassName(status, "hint", nextHint);
+			_bindClickByClassName(status, "restart", askRestart);
+			_bindClickByClassName(status, "map", askChangeMap);
+
+			document.getElementById("messageBackdrop").addEventListener("click", function(e) {
 				hideMessage();
 			});
-		});
-		_array(_message.getElementsByClassName("newGame")).forEach(function(item, i) {
-			item.addEventListener("click", function(e) {
-				newGame();
-			});
-		});
-		_array(_message.getElementsByClassName("restart")).forEach(function(item, i) {
-			item.addEventListener("click", function(e) {
-				undo(true);
-			});
-		});
+			_bindClickByTagName(message, "button", hideMessage);
+			_bindClickByClassName(message, "newGame", newGame);
+			_bindClickByClassName(message, "restart", restart);
+
+			_bindClickByTagName(menu, "button", hideMessage);
+			_bindClickByClassName(menu, "accept", changeMap);
+
+			(function() {
+				var allMaps, list, names;
+
+				if ((allMaps = window.maps) && (names = Object.keys(allMaps)).length) {
+					try {
+						if (window.sessionStorage && window.sessionStorage.getItem) {
+							mapName = window.sessionStorage.getItem("mahJong-map");
+						}
+					} catch (e) { }
+					if (mapName && names.indexOf(mapName) < 0) {
+						mapName = undefined;
+					}
+					mapName = mapName || names[0];
+				}
+				if (names && names.length > 1) {
+					list = document.getElementById("mapList");
+					Array.from(list.childNodes).forEach(function(node) {
+						node.parentElement.removeChild(node);
+					});
+					names.forEach(function(name) {
+						var item = document.createElement("li"),
+							label = document.createElement("label"),
+							radio = document.createElement("input"),
+							text = document.createTextNode(allMaps[name].displayName);
+
+						label.addEventListener("dblclick", function(e) {
+							if (e.which === 1) {
+								menu.querySelector(".accept").click();
+							}
+						});
+						radio.setAttribute("name", "map");
+						radio.setAttribute("type", "radio");
+						radio.value = name;
+						if (name === mapName) {
+							radio.setAttribute("checked", "checked");
+						}
+						label.appendChild(radio);
+						label.appendChild(text);
+						item.appendChild(label);
+						list.appendChild(item);
+					});
+				} else {
+					status.querySelector(".map").style.display = "none";
+				}
+			})();
+		})();
 
 		document.addEventListener("keydown", function(e) {
 			switch (e.which) {
@@ -677,101 +1161,30 @@
 			}
 		});
 
-		window.addEventListener("resize", resizer = function() {
-			var x = (window.innerWidth - (2 * _.padding + _.depth)) / tileSet.width,
-				y = (window.innerHeight - (2 * _.padding + _.depth)) / tileSet.height,
-				z = 1;
+		(resizer = function() {
+			if (game) {
+				var x = (window.innerWidth - 2 * game.constants.padding) / game.board.width,
+					y = (window.innerHeight - 2 * game.constants.padding) / game.board.height,
+					z = 1;
 
-			if (_board.clientHeight) {
-				if (x < 1 || y < 1) {
-					z = Math.min(x, y);
+				if (board.clientHeight) {
+					if (x < 1 || y < 1) {
+						z = Math.min(x, y);
+					}
+
+					scaler.style["-ms-transform"] =
+						scaler.style["-moz-transform"] =
+						scaler.style["-o-transform"] =
+						scaler.style["-webkit-transform"] =
+						scaler.style.transform = (z < 1) ?
+							"scale(" + z + ")" : "";
 				}
-
-				_scaler.style["-ms-transform"] =
-					_scaler.style["-moz-transform"] =
-					_scaler.style["-o-transform"] =
-					_scaler.style["-webkit-transform"] =
-					_scaler.style.transform = (z < 1) ?
-						"scale(" + z + ")" : "";
-
-				/* x = ((window.innerWidth - (_board.clientWidth + 2 * _.padding + _.depth)) / 2) / z; */
-				/* y = ((window.innerHeight - (_board.clientHeight + 2 * _.padding + _.depth)) / 2) / z; */
-				/* "scale(" + z + ") " + "translateX(" + x + "px)" + "translateY(" + y + "px)"; */
 			}
-		});
-		resizer();
+		})();
+		window.addEventListener("resize", resizer);
 
 		window.setInterval(refreshTime, 100);
 
-		tileClick = function(tile) {
-			_status.classList.add("working");
-			_status.classList.add("working1");
-
-			var clearHints = true,
-				clicked = _array(_board.getElementsByClassName("clicked")),
-				hint = _array(_board.getElementsByClassName("hint")),
-				isLast,
-				matching = _array(_board.getElementsByClassName("matching"));
-
-			if (tile.classList.contains("free") || _game.end) {
-				matching.forEach(function(match, i) {
-					match.classList.remove("matching");
-				});
-				if (clicked.length === 1 && clicked[0] !== tile &&
-					clicked[0].dataset.type === tile.dataset.type) {
-
-					if (!_game.start) {
-						_game.start = Date.now();
-					}
-					clicked[0].classList.add("hidden");
-					tile.classList.add("hidden");
-					clicked[0].classList.remove("clicked");
-					tile.classList.remove("clicked");
-					_game.history.push([ clicked[0], tile ]);
-					checkGame();
-				} else if (_game.end) {
-					tile.classList.add("hidden");
-					tile.classList.remove("clicked");
-					_game.history.push([ tile ]);
-					checkGame();
-				} else {
-					_status.classList.add("working3");
-					clicked.forEach(function(item, i) {
-						if (item !== tile) {
-							item.classList.remove("clicked");
-						}
-					});
-					tile.classList.toggle("clicked");
-					if (tile.classList.contains("clicked")) {
-						clearHints = !tile.classList.contains("hint");
-						if (isLast = _array(_board.getElementsByClassName("hidden"))
-							.filter(function(item, i) {
-								return item.dataset.type === tile.dataset.type;
-							}).length) {
-							tile.classList.add("last");
-						}
-						getMatchingTiles(tile).forEach(function(match, i) {
-							match.classList.add("matching");
-							if (isLast) {
-								match.classList.add("last");
-							}
-						});
-					}
-					_status.classList.remove("working3");
-				}
-				if (clearHints) {
-					_status.classList.add("working4");
-					delete _game.hint;
-					hint.forEach(function(item, i) {
-						item.classList.remove("hint");
-					});
-					_status.classList.remove("working4");
-				}
-			}
-			_status.classList.remove("working1");
-			_status.classList.remove("working");
-		};
-
-		newGame();
+		document.addEventListener("DOMContentLoaded", newGame);
 	})();
 })();

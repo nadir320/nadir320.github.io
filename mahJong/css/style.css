@@ -173,10 +173,13 @@ button:focus {
 
 .tile .face {
 	background-clip: content-box;
-	background-image: url("../images/tiles.png");
 	background-origin: content-box;
 	box-shadow: inset 0 0 0.75em;
 	color: dimGray;
+}
+
+.tile .face1 {
+	background-image: url("../images/tiles-original.png");
 }
 
 .tile.hint .face {
