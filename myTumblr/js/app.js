@@ -834,7 +834,7 @@ $().ready(function() {
 								this.progressLabel
 									.html(replaceHTMLNewLines(localizedFormat.apply(this, data)));
 							});
-							request.open("GET", window.location.sameProtocol(getProxy().url.format(window.location.sameProtocol(url))));
+							request.open("GET", getProxiedURL(url));
 							request.responseType = "blob";
 							request.progressElement = $(document.createElement("li"))
 								.append(request.linkElement = $(document.createElement("a"))
@@ -2014,8 +2014,7 @@ $().ready(function() {
 			});
 		}
 		image.attr({
-			"rel:animated_src": window.location.sameProtocol(getProxy().url
-				.format(window.location.sameProtocol(url)))
+			"rel:animated_src": getProxiedURL(url)
 		});
 		parent.on({
 			"click": function(e) {
@@ -2713,6 +2712,12 @@ $().ready(function() {
 			}
 		}
 		return _options.preloadImages;
+	};
+
+	var getProxiedURL = function(url) {
+		var proxy = getProxy();
+
+		return window.location.sameProtocol(proxy.url.format(window.location[(proxy.noProtocol) ? "noProtocol" : "sameProtocol"](url)));
 	};
 
 	var getProxy = function() {
@@ -6079,25 +6084,25 @@ $().ready(function() {
 	};
 
 	var processLink = function(link) {
-		var href = (link = $(link)).attr("href"),
-			proxied = function(url) {
-				return window.location.sameProtocol(getProxy().url.format(window.location.sameProtocol(url)));
-			};
+		var href = (link = $(link)).attr("href");
 
 		if (href && href.length) {
-			if (href.match("iglive\.picshitz\.com")) {
-				return $.Deferred(function(deferred) {
+			if (href.match("\/iglive\.picshitz\.com\/")) {
+				/* return */ $.Deferred(function(deferred) {
 					$.ajax({
 						error: deferred.reject,
 						success: function(data) {
 							var hasLinks = false;
 
 							$(sameSource(data)).find(".postBody img").each(function(i, image) {
+								var src = $(image).data("src");
+								
 								link.before($(document.createElement("img")).attr({
-									"has-src": String.empty
-								}).data({
-									"src": proxied($(image).data("src"))
-								}));
+									/*"has-src": String.empty*/
+									"src": (_isLocal) ? getProxiedURL(src) : src
+								})/*.data({
+									"src": getProxiedURL($(image).data("src"))
+								})*/);
 								hasLinks = true;
 							});
 							if (hasLinks) {
@@ -6105,7 +6110,7 @@ $().ready(function() {
 							}
 							deferred.resolve();
 						},
-						url: proxied(href)
+						url: getProxiedURL(href)
 					});
 				});
 			}
