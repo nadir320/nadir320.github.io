@@ -1,7 +1,6 @@
 [
 	  { "text": "Codice fiscale", "url": "codiceFiscale/index.html", "icon": "./codiceFiscale/images/code.png" }
 	, { "text": "CORS", "url": "cors/index.html", "icon": "./cors/images/cors.png" }
-	, { "text": "ECCAIRS 5 Web API", "url": "eccairs5", "icon": "./eccairs5/favicon.ico", "forceHTTP": true }
 	, { "text": "Foto del giorno", "url": "natGeo", "icon": "./natGeo/images/natGeo.png" }
 	, { "text": "Foto del giorno (NASA)", "url": "nasa/apod.html", "icon": "./nasa/images/apod.png" }
 	, { "text": "Mediaset", "url": "./mediaset", "pages": [
@@ -13,6 +12,7 @@
 		  { "text": "Calcio a Genova", "url": "calcio.html", "icon": "./images/ball.png" }
 		, { "text": "Download", "url": "download.html", "icon": "./images/download.png" }
 		, { "text": "CryptoJS", "url": "cryptoJS.html", "icon": "./images/padlock.png" }
+		, { "text": "ECCAIRS 5 Web API", "url": "eccairs5", "icon": "./eccairs5/favicon.ico", "forceHTTP": true }
 		, { "text": "Mah Jong", "url": "../mahJong", "icon": "./mahJong/images/greenDragon.png" }
 		, { "text": "Mobile", "url": "mobile.html", "icon": "./images/mobile.png" }
 		, { "text": "Note", "url": "notes.html", "icon": "./images/notes.png" }

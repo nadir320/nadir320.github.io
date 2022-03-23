@@ -10,9 +10,9 @@
 		<title>Targhe</title>
   		<script type="text/javascript" src="../js/pancake.min.js"></script>
 		<script type="text/javascript" src="../js/000webhost.min.js"></script>
-		<script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-		<script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/start/jquery-ui.min.css"/>
+		<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+		<link id="pageTheme" rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.13.1/themes/start/jquery-ui.min.css"/>
 		<script type="text/javascript" src="../js/base.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="../css/base.min.css"/>
 		<script type="text/javascript">
@@ -20,8 +20,7 @@
 
 			$().ready(function() {
 				var CHARS = "abcdefghjklmnprstvwxyz".toLowerCase().split(String.empty),
-					LENGTH = 7,
-					REF = "cw103tx";
+					LENGTH = 7;
 
 				var _tabIndex = 0;
 
@@ -67,7 +66,7 @@
 									.addClass("ui-corner-all")
 									.addClass("plateScore")
 									.attr({
-										"id": name + (i + 1).toString() + "_score"
+										"id": name + (i + 1).toString() + "-score"
 									}) : undefined)
 								.appendTo(appendTo)));
 					}
@@ -77,19 +76,22 @@
 						.addClass("count")
 						.addClass("ui-corner-all")
 						.attr({
-							"id": name + "_count"
+							"id": name + "-count"
 						})
 						.appendTo(appendTo);
 					$(document.createElement("button"))
-						.addClass("resetButton")
+						.addClass("reset-button")
 						.attr({
-							"id": name + "_reset"
+							"id": name + "-reset"
 						})
 						.data({
 							"plates": inputs
 						})
 						.button({
-							"label": "X"
+							"icons": {
+								"primary": "ui-icon-closethick"
+							},
+							"text": false
 						})
 						.on({
 							"click": function(e) {
@@ -106,6 +108,13 @@
 							}
 						})
 						.appendTo(appendTo);
+					$(document.createElement("span"))
+						.addClass("number")
+						.addClass("ui-corner-all")
+						.addClass("ui-state-active")
+						.attr({
+							"id": name + "-number"
+						}).appendTo(appendTo);
 				};
 
 				var getCount = function(value, isNumber) {
@@ -125,6 +134,22 @@
 					return plate;
 				};
 
+				var getPlateNumber = function(plate) {
+					var f = CHARS.length, i, n = 0, v = [0, 1, 5, 6];
+
+					if (plate && plate.length == LENGTH) {
+						n = parseInt(plate.substr(2, 3));
+
+						for (i = 0; i < v.length; i++) {
+							v[i] = getCount(plate[v[i]]) - 1;
+						}
+						for (i = v.length - 1; i >= 0; i--) {
+							n += v[i] * 1000 * Math.pow(f, v.length - i - 1);
+						}
+					}
+					return n + 1;
+				};
+
 				var go = function(element, backward) {
 					var other = $(element).closest(".plateItem")[(backward) ?
 						"prev" :
@@ -137,17 +162,23 @@
 				};
 
 				var loadPage = function() {
-					var ref = window.location.get("ref");
+					var ref = window.location.get("ref"),
+						plate = window.location.get("plate");
 
 					if (!(ref && ref.length)) {
-						ref = REF;
+						ref = window.sessionStorage.getItem("ref");
 					}
-					createPlate("Mia targa", "ref", $("#ref"));
+					if (!(plate && plate.length)) {
+						plate = window.sessionStorage.getItem("plate");
+					}
+					createPlate("Targa", "ref", $("#ref"));
 					setPlate("ref", ref);
 					createPlate("Confronta con", "plate", $("#plate"));
-					setPlate("plate", window.location.get("plate"));
+					setPlate("plate", plate);
 					$("input").on({
 						"change input": function(e) {
+							console.log(e);
+
 							var source = $(e.target),
 								isNumber = source.data("isNumber"),
 								isWrong,
@@ -184,13 +215,47 @@
 							} catch (e2) { }
 						},
 						"keydown": function(e) {
-							if (e.which === 8) {	/* Backspace */
-								$(e.target).val(String.empty);
-								window.setTimeout(function() {
-									go(e.target, true);
-								}, 50);
+							var i,
+								source,
+								value;
+
+							switch (e.which) {
+								case 8: /* Backspace */
+									source = $(e.target).val(String.empty);
+									window.setTimeout(function() {
+										go(source, true);
+									}, 50);
+									break;
+								case 38: /* Up arrow */
+								case 40: /* Down arrow */
+									if (!(source = $(e.target)).data("isNumber")) {
+										if ((value = source.val()) && value.length) {
+											i = $.inArray(value.toLowerCase(), CHARS)
+											if (e.which === 40 && i > 0) {
+												source.val(CHARS[i - 1]);
+												parsePlates();
+											} else if (e.which == 38 && i < CHARS.length - 1) {
+												source.val(CHARS[i + 1]);
+												parsePlates();
+											}
+										}
+									}
+									break;
 							}
 						}
+					});
+					$(".switch-button").button({
+						"icons": {
+							"primary": "ui-icon-arrowthick-2-n-s"
+						},
+						"text": false
+					}).on("click", function(e) {
+						var ref = getPlate("ref"),
+							plate = getPlate("plate");
+
+						setPlate("ref", plate);
+						setPlate("plate", ref);
+						parsePlates();
 					});
 					parsePlates();
 				};
@@ -207,25 +272,46 @@
 				};
 
 				var parsePlates = function() {
+					var setDifference = function(target, a, b) {
+						$(target)
+							[(b > a) ? "addClass" : "removeClass"]("ui-state-error")
+							[(b === a) ? "addClass" : "removeClass"]("ui-state-default")
+							[(b < a) ? "addClass" : "removeClass"]("ui-state-active")
+							.text(((a > b) ? "+" : String.empty) +
+								(a - b).toLocaleString())
+							.show();
+					};
+
 					setCount("ref");
 					setCount("plate");
 
-					var ref = getPlate("ref"),
-						refCount = parsePlate(ref),
-						plate = getPlate("plate"),
-						plateCount = parsePlate(plate);
+					var ref = getPlate("ref"), refCount, refNumber,
+						plate = getPlate("plate"), plateCount, plateNumber;
 
-					if (ref.length === plate.length && ref.length === LENGTH) {
-						$("#difference")
-							[(plateCount > refCount) ? "addClass" : "removeClass"]("ui-state-error")
-							[(plateCount === refCount) ? "addClass" : "removeClass"]("ui-state-default")
-							[(plateCount < refCount) ? "addClass" : "removeClass"]("ui-state-active")
-							.text(((refCount > plateCount) ? "+" : String.empty) +
-								(refCount - plateCount).toLocaleString())
+					if (ref.length === LENGTH) {
+						$("#ref-number")
+							.text((refNumber = getPlateNumber(ref)).toLocaleString())
 							.show();
 					} else {
-						$("#difference").hide();
+						$("#ref-number").hide()
 					}
+					if (plate.length === LENGTH) {
+						$("#plate-number")
+							.text((plateNumber = getPlateNumber(plate)).toLocaleString())
+							.show();
+					} else {
+						$("#plate-number").hide()
+					}
+					if (ref.length === plate.length && ref.length === LENGTH) {
+						refCount = parsePlate(ref);
+						plateCount = parsePlate(plate);
+						setDifference("#difference", refCount, plateCount);
+						setDifference("#plate-difference", refNumber, plateNumber);
+					} else {
+						$("#difference").add($("#plate-difference")).hide();
+					}
+					window.sessionStorage.setItem("ref", ref);
+					window.sessionStorage.setItem("plate", plate);
 				}
 
 				var setCount = function(name) {
@@ -234,18 +320,18 @@
 						score,
 						source;
 
-					$("#" + name + "_count")
+					$("#" + name + "-count")
 						[(count) ? "addClass" : "removeClass"]("ui-state-highlight")
 						.text((count) ? count.toLocaleString() : String.empty);
 					for (var i = 0; i < LENGTH; i++) {
 						source = "#" + name + (i + 1).toString();
 						score = getCount($(source).val(),
 							i === 2 || i === 3 || i === 4);
-						$(source + "_score")
+						$(source + "-score")
 							[(hasScore = hasScore || !!score) ? "show" : "hide"]()
 							.text(score);
 					}
-					$("#" + name + "_reset")[(hasScore) ? "show" : "hide"]();
+					$("#" + name + "-reset")[(hasScore) ? "show" : "hide"]();
 				};
 
 				var setPlate = function(plate, value) {
@@ -267,7 +353,7 @@
 
 			.container {
 				background: none;
-				margin: 0 auto;
+				margin: 15vh auto 0;
 			}
 
 			.container .header {
@@ -278,6 +364,8 @@
 			}
 
 			.container .content {
+				background-color: floralwhite;
+				background-image: none;
 				padding: 0.2em;
 			}
 
@@ -311,7 +399,7 @@
 				border-width: 0;
 				display: inline-block;
 				font-size: 50%;
-				padding: 2px;
+				padding: 4px;
 				position: absolute;
 				top: 105%;
 			}
@@ -320,14 +408,54 @@
 				display: inline-block;
 				font-size: 125%;
 				margin: 0 0 0 0.5em;
+				padding: 0.1em;
 				min-width: 2em;
 				text-align: center;
 			}
 
-			.resetButton {
+			.reset-button, .switch-button {
 				background-image: none !important;
 				font-size: 50% !important;
+			}
+
+			.reset-button {
+				height: 2em;
 				margin: -0.5em 0 0 0.5em;
+			}
+
+			.middle {
+				align-items: center;
+				display: flex;
+				margin-bottom: 0.5em;
+			}
+
+			.middle hr {
+				flex: 9;
+				height: 0;
+			}
+
+			.switch-button {
+				margin-left: 1em;
+				height: 3em;
+				width: 3em;
+			}
+
+			.results {
+				display: flex;
+				justify-content: space-between;
+			}
+
+			.number {
+				background-color: skyblue !important;
+				background-blend-mode: lighten;
+				font-weight: bold !important;
+			}
+
+			.plate-row .number {
+				float: right;
+				font-size: 45%;
+				margin-top: 1em;
+				padding: 0.3em;
 			}
 
 			@media all and (min-width: 920px) {
@@ -343,14 +471,18 @@
 	</head>
 	<body class="ui-widget large-on-large-screens">
 		<div class="container ui-widget-header ui-corner-all">
-			<div class="header ui-widget-header ui-corner-top">Targhe</div>
+			<div class="header ui-widget-header ui-corner-top ui-state-active">Targhe</div>
 			<div class="content ui-widget-content">
-				<div id="ref" class="row"></div>
+				<div id="ref" class="row plate-row"></div>
+				<div class="middle">
+					<hr/>
+					<button class="switch-button"></button>
+				</div>
+				<div id="plate" class="row plate-row"></div>
 				<hr/>
-				<div id="plate" class="row"></div>
-				<hr/>
-				<div class="row">
-					<div id="difference" class="count ui-corner-all"></div>
+				<div class="row results">
+					<div id="difference" class="count difference ui-corner-all"></div>
+					<div id="plate-difference" class="count number ui-corner-all"></div>
 				</div>
 			</div>
 		</div>
