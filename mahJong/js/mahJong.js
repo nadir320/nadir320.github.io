@@ -154,7 +154,8 @@
 		}
 	};
 
-	var _debug = _param("debug");
+	var _debug = _param("debug"),
+		_mapStyleID = "map-style";
 
 	var Game;
 
@@ -375,7 +376,7 @@
 					}
 				})();
 
-				_setStyle(styles.join("\n"), "map-style");
+				_setStyle(styles.join("\n"), _mapStyleID);
 
 				var tilesPerType;
 
@@ -383,9 +384,10 @@
 					var n, newTiles, variableFaces = map.findIndex(function(tile) {
 						return typeof tile.faceIndex !== "undefined";
 					}) < 0;
-					
+
 					do {
-						var index, faceSet = faces.slice(), m, n, t = { };
+						var index, faceSet = faces.slice(), m, n, t = { },
+							scanProperty, tilesToScan;
 
 						if (variableFaces) {
 							while (map.length < faceSet.length) {
@@ -418,14 +420,19 @@
 								newTiles.splice(0, 0, 0, 0);
 								faceSet.splice.apply(faceSet, newTiles);
 							}
+							tilesToScan = faceSet;
+							scanProperty = "type";
+						} else {
+							tilesToScan = map;
+							scanProperty = "faceIndex";
 						}
 
 						tilesPerType = { };
-						faceSet.forEach(function(item) {
-							if (typeof tilesPerType[item.type] !== "undefined") {
-								tilesPerType[item.type]++;
+						tilesToScan.forEach(function(item) {
+							if (typeof tilesPerType[item[scanProperty]] !== undefined) {
+								tilesPerType[item[scanProperty]]++;
 							} else {
-								tilesPerType[item.type] = 1;
+								tilesPerType[item[scanProperty]] = 1;
 							}
 						});
 
@@ -661,9 +668,10 @@
 									}
 									if (!fatal) {
 										type = parseInt(tile.dataset.type);
-										uncovered = history.findIndex(function(item) {
+										/* uncovered = history.findIndex(function(item) {
 											return parseInt(item[0].dataset.type) === type;
-										}) >= 0;
+										}) >= 0; */
+										uncovered = !overlapping.length;
 									}
 								}
 								tile.classList[(fatal) ? "add": "remove"]("fatal");
