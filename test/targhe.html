@@ -342,18 +342,22 @@
 				var setCount = function(name) {
 					var count = parsePlate(getPlate(name)),
 						hasScore,
+						isNumber,
 						score,
 						source;
 
+					console.log("|" + getPlate(name) + "|");
 					$("#" + name + "-count")
 						[(count) ? "addClass" : "removeClass"]("ui-state-highlight")
 						.text((count) ? count.toLocaleString() : String.empty);
 					for (var i = 0; i < LENGTH; i++) {
+						isNumber = i === 2 || i === 3 || i === 4;
 						source = "#" + name + (i + 1).toString();
-						score = getCount($(source).val(),
-							i === 2 || i === 3 || i === 4);
+						score = getCount($(source).val(), isNumber);
+						console.log(source + ": " + score);
+						hasScore = hasScore || !!score;
 						$(source + "-score")
-							[(hasScore = hasScore || !!score) ? "show" : "hide"]()
+							[(!!score) ? "show" : "hide"]()
 							.text(score);
 					}
 					$("#" + name + "-reset")[(hasScore) ? "show" : "hide"]();
@@ -375,7 +379,7 @@
 			body {
 				display: flex;
 				justify-content: center;
-				margin-top: 10vh;
+				margin-top: 3em;
 			}
 
 			.ui-state-active,
@@ -433,19 +437,18 @@
 			}
 
 			.plate-score {
-				border-radius: 100%;
+				border-radius: 35%;
 				border-width: 0;
 				display: inline-block;
 				font-size: 40%;
+				height: 1.5em;
 				opacity: 0.75;
 				padding: 4px;
 				position: absolute;
-				position: absolute;
-				right: -17.5%;
+				right: -0.75em;
 				text-align: center;
-				top: 65%;
+				top: 2em;
 				width: 1.5em;
-				height: 1.5em;
 				z-index: 999;
 			}
 
@@ -499,7 +502,7 @@
 			.plate-row .number {
 				float: right;
 				font-size: 45%;
-				margin-top: 1em;
+				margin-top: 1.5em;
 				padding: 0.3em;
 				z-index: 9999;
 			}
