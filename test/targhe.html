@@ -20,14 +20,40 @@
 
 			$().ready(function() {
 				var CHARS = "abcdefghjklmnprstvwxyz".toLowerCase().split(String.empty),
+					N = "plates-test",
 					LENGTH = 7;
 
-				var _tabIndex = 0;
+				var _get = function(name) {
+						if (window.localStorage && window.localStorage.getItem) {
+							var o = window.localStorage.getItem(N);
+
+							if (o && o.length) {
+								return $.parseJSON(o)[name];
+							}
+						}
+					},
+					_set = function(name, value) {
+						if (window.localStorage && window.localStorage.setItem) {
+							var o = window.localStorage.getItem(N);
+
+							if (o && o.length) {
+								o = $.parseJSON(o);
+							} else {
+								o = { };
+							}
+							o[name] = value;
+							window.localStorage.setItem(N, window.JSON.stringify(o));
+						}
+					},
+					_tabIndex = 0;
 
 				var createPlate = function(label, name, appendTo) {
 					var inputs = [ ],
-						isNumber;
+						isNumber,
+						row;
 
+					row = $(document.createElement("div"))
+						.appendTo(appendTo);
 					$(document.createElement("label"))
 						.attr({
 							"for": name + 1..toString()
@@ -35,7 +61,7 @@
 						.text(label)
 						.appendTo($(document.createElement("div"))
 							.addClass("label")
-							.appendTo(appendTo));
+							.appendTo(row));
 					for (var i = 0; i < LENGTH; i++) {
 						isNumber = i === 2 ||
 							i === 3 ||
@@ -60,17 +86,18 @@
 								"isNumber": isNumber
 							})
 							.appendTo($(document.createElement("div"))
-								.addClass("plateItem")
+								.addClass("plate-item")
 								.append((!isNumber) ? $(document.createElement("div"))
 									.addClass("ui-state-error")
 									.addClass("ui-corner-all")
-									.addClass("plateScore")
+									.addClass("plate-score")
 									.attr({
 										"id": name + (i + 1).toString() + "-score"
 									}) : undefined)
-								.appendTo(appendTo)));
+								.appendTo(row)));
 					}
-					$(document.createElement("br"))
+
+					row = $(document.createElement("div"))
 						.appendTo(appendTo);
 					$(document.createElement("div"))
 						.addClass("count")
@@ -78,7 +105,7 @@
 						.attr({
 							"id": name + "-count"
 						})
-						.appendTo(appendTo);
+						.appendTo(row);
 					$(document.createElement("button"))
 						.addClass("reset-button")
 						.attr({
@@ -107,14 +134,14 @@
 								}, 50);
 							}
 						})
-						.appendTo(appendTo);
-					$(document.createElement("span"))
+						.appendTo(row);
+					$(document.createElement("div"))
 						.addClass("number")
 						.addClass("ui-corner-all")
 						.addClass("ui-state-active")
 						.attr({
 							"id": name + "-number"
-						}).appendTo(appendTo);
+						}).appendTo(row);
 				};
 
 				var getCount = function(value, isNumber) {
@@ -151,9 +178,9 @@
 				};
 
 				var go = function(element, backward) {
-					var other = $(element).closest(".plateItem")[(backward) ?
+					var other = $(element).closest(".plate-item")[(backward) ?
 						"prev" :
-						"next"](".plateItem").find(".plate").first();
+						"next"](".plate-item").find(".plate").first();
 
 					other.focus();
 					window.setTimeout(function() {
@@ -166,10 +193,10 @@
 						plate = window.location.get("plate");
 
 					if (!(ref && ref.length)) {
-						ref = window.sessionStorage.getItem("ref");
+						ref = _get("ref");
 					}
 					if (!(plate && plate.length)) {
-						plate = window.sessionStorage.getItem("plate");
+						plate = _get("plate");
 					}
 					createPlate("Targa", "ref", $("#ref"));
 					setPlate("ref", ref);
@@ -177,8 +204,6 @@
 					setPlate("plate", plate);
 					$("input").on({
 						"change input": function(e) {
-							console.log(e);
-
 							var source = $(e.target),
 								isNumber = source.data("isNumber"),
 								isWrong,
@@ -310,8 +335,8 @@
 					} else {
 						$("#difference").add($("#plate-difference")).hide();
 					}
-					window.sessionStorage.setItem("ref", ref);
-					window.sessionStorage.setItem("plate", plate);
+					_set("ref", ref);
+					_set("plate", plate);
 				}
 
 				var setCount = function(name) {
@@ -348,12 +373,23 @@
 		</script>
 		<style type="text/css">
 			body {
-				text-align: center;
+				display: flex;
+				justify-content: center;
+				margin-top: 10vh;
+			}
+
+			.ui-state-active,
+			.ui-state-default,
+			.ui-state-error {
+				text-shadow: 0 0 0.15em darkslategray;
+			}
+
+			.ui-state-highlight {
+				text-shadow: 0 0 0.15em saddlebrown;
 			}
 
 			.container {
 				background: none;
-				margin: 15vh auto 0;
 			}
 
 			.container .header {
@@ -361,12 +397,13 @@
 				border-right-width: 0;
 				border-top-width: 0;
 				padding: 0.25em;
+				text-align: center;
 			}
 
 			.container .content {
 				background-color: floralwhite;
 				background-image: none;
-				padding: 0.2em;
+				padding: 1vw;
 			}
 
 			.row {
@@ -377,10 +414,10 @@
 				float: left;
 				font-size: 80%;
 				padding: 0.2em 0 0;
-				width: 8em;
+				width: 8.5em;
 			}
 
-			.plateItem {
+			.plate-item {
 				display: inline-block;
 				position: relative;
 			}
@@ -395,13 +432,21 @@
 				width: 1.6em;
 			}
 
-			.plateScore {
+			.plate-score {
+				border-radius: 100%;
 				border-width: 0;
 				display: inline-block;
-				font-size: 50%;
+				font-size: 40%;
+				opacity: 0.75;
 				padding: 4px;
 				position: absolute;
-				top: 105%;
+				position: absolute;
+				right: -17.5%;
+				text-align: center;
+				top: 65%;
+				width: 1.5em;
+				height: 1.5em;
+				z-index: 999;
 			}
 
 			.count {
@@ -456,16 +501,7 @@
 				font-size: 45%;
 				margin-top: 1em;
 				padding: 0.3em;
-			}
-
-			@media all and (min-width: 920px) {
-				.container {
-					width: 50%;
-				}
-
-				.container .content {
-					padding: 1em;
-				}
+				z-index: 9999;
 			}
 		</style>
 	</head>
