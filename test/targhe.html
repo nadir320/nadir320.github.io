@@ -346,7 +346,6 @@
 						score,
 						source;
 
-					console.log("|" + getPlate(name) + "|");
 					$("#" + name + "-count")
 						[(count) ? "addClass" : "removeClass"]("ui-state-highlight")
 						.text((count) ? count.toLocaleString() : String.empty);
@@ -354,7 +353,6 @@
 						isNumber = i === 2 || i === 3 || i === 4;
 						source = "#" + name + (i + 1).toString();
 						score = getCount($(source).val(), isNumber);
-						console.log(source + ": " + score);
 						hasScore = hasScore || !!score;
 						$(source + "-score")
 							[(!!score) ? "show" : "hide"]()
