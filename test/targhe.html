@@ -173,6 +173,10 @@
 						for (i = v.length - 1; i >= 0; i--) {
 							n += v[i] * 1000 * Math.pow(f, v.length - i - 1);
 						}
+						/* Exclude EE */
+						if (plate.substr(0, 2).toLowerCase() > "ee") {
+							n -= 1000 * Math.pow(f, 2);
+						}
 					}
 					return n + 1;
 				};
@@ -503,6 +507,10 @@
 				margin-top: 1.5em;
 				padding: 0.3em;
 				z-index: 9999;
+			}
+
+			.plate-row .number::after {
+				content: "°";
 			}
 		</style>
 	</head>
