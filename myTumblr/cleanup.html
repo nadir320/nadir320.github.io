@@ -9,12 +9,12 @@
         <script type="text/javascript" src="../js/firebaseDatastore3.min.js"></script>
     </head>
     <body>
-        <button type="button">Cleanup 2</button>
+        <button type="button">Cleanup 3</button>
         <script type="text/javascript">
             document.getElementsByTagName("button")[0]
                 .addEventListener("click", function(e) {
                     try {
-                        window.firebaseDatastore.cleanup();
+                        window.firebaseDataStore3.cleanup();
                         window.alert("Done!");
                     } catch (ex) {
                         window.alert(ex.message);
