@@ -381,14 +381,16 @@
 				var tilesPerType;
 
 				(function() {
-					var n, newTiles, variableFaces = map.findIndex(function(tile) {
+					var generations = 0, n, newTiles, variableFaces = map.findIndex(function(tile) {
 						return typeof tile.faceIndex !== "undefined";
-					}) < 0;
+					}) < 0, scanProperty = (variableFaces) ?
+						"type" :
+						"faceIndex";
 
 					do {
-						var index, faceSet = faces.slice(), m, n, t = { },
-							scanProperty, tilesToScan;
+						var index, faceSet = faces.slice(), m, n, t = { }, tilesToScan;
 
+						generations++;
 						if (variableFaces) {
 							while (map.length < faceSet.length) {
 								index = Math.floor(Math.random() * faceSet.length);
@@ -421,15 +423,13 @@
 								faceSet.splice.apply(faceSet, newTiles);
 							}
 							tilesToScan = faceSet;
-							scanProperty = "type";
 						} else {
 							tilesToScan = map;
-							scanProperty = "faceIndex";
 						}
 
 						tilesPerType = { };
 						tilesToScan.forEach(function(item) {
-							if (typeof tilesPerType[item[scanProperty]] !== undefined) {
+							if (typeof tilesPerType[item[scanProperty]] !== "undefined") {
 								tilesPerType[item[scanProperty]]++;
 							} else {
 								tilesPerType[item[scanProperty]] = 1;
@@ -467,7 +467,7 @@
 
 						for (i = 0, length = non0ZTiles.length; i < length; i++) {
 							tile = non0ZTiles[i];
-							maxPerColumn = tilesPerType[tile.type] / 2;
+							maxPerColumn = tilesPerType[tile[scanProperty]] / 2;
 
 							inColumn = 0;
 							for (z = z1; z <= z2; z++) {
@@ -475,6 +475,9 @@
 									return item.z === z && item.type === tile.type && zOverlap(non0ZTiles[i], item);
 								}) >= 0) {
 									if (++inColumn >= maxPerColumn) {
+										if (generations > Math.pow(map.length, 2)) {
+											throw new Error();
+										}
 										return true;
 									}
 								}
@@ -752,122 +755,126 @@
 			};
 
 			init(function() {
-				tilesPerType = loadFaces(tileSet = map);
+				try {
+					tilesPerType = loadFaces(tileSet = map);
 
-				Array.from(board.childNodes).forEach(function(node) {
-					node.parentElement.removeChild(node);
-				});
+					Array.from(board.childNodes).forEach(function(node) {
+						node.parentElement.removeChild(node);
+					});
 
-				(function() {
-					var z = 0;
+					(function() {
+						var z = 0;
 
-					tileSet.forEach(function(item) {
-						var tile = document.createElement("div");
+						tileSet.forEach(function(item) {
+							var tile = document.createElement("div");
 
-						tile.classList.add("tile");
-						tile.classList.add("fade");
-						if (item.w !== 1 || item.h !== 1) {
-							tile.classList.add("w-" + item.w);
-							tile.classList.add("h-" + item.h);
-						}
+							tile.classList.add("tile");
+							tile.classList.add("fade");
+							if (item.w !== 1 || item.h !== 1) {
+								tile.classList.add("w-" + item.w);
+								tile.classList.add("h-" + item.h);
+							}
 
-						tile.style.left = (item.x * constants.width - item.z * constants.depth + constants.padding) + "px";
-						tile.style.top = (item.y * constants.height - item.z * constants.depth + constants.padding) + "px";
-						tile.style.zIndex = z++;
+							tile.style.left = (item.x * constants.width - item.z * constants.depth + constants.padding) + "px";
+							tile.style.top = (item.y * constants.height - item.z * constants.depth + constants.padding) + "px";
+							tile.style.zIndex = z++;
 
-						tile.dataset.index = item.index;
-						tile.dataset.type = item.type;
-						tile.dataset.x = item.x;
-						tile.dataset.y = item.y;
-						tile.dataset.z = item.z;
-						tile.dataset.w = item.w;
-						tile.dataset.h = item.h;
+							tile.dataset.index = item.index;
+							tile.dataset.type = item.type;
+							tile.dataset.x = item.x;
+							tile.dataset.y = item.y;
+							tile.dataset.z = item.z;
+							tile.dataset.w = item.w;
+							tile.dataset.h = item.h;
 
-						tile.addEventListener("click", function(e) {
-							(function(tile) {
-								var clearHints = true,
-									clicked = Array.from(board.getElementsByClassName("clicked")),
-									matching = Array.from(board.getElementsByClassName("matching"));
+							tile.addEventListener("click", function(e) {
+								(function(tile) {
+									var clearHints = true,
+										clicked = Array.from(board.getElementsByClassName("clicked")),
+										matching = Array.from(board.getElementsByClassName("matching"));
 
-								if (tile.classList.contains("free") || end) {
-									matching.forEach(function(match, i) {
-										match.classList.remove("matching");
-									});
-									if (clicked.length === 1 && clicked[0] !== tile &&
-										clicked[0].dataset.type === tile.dataset.type) {
-
-										_hide(clicked[0]);
-										_hide(tile);
-										clicked[0].classList.remove("clicked");
-										tile.classList.remove("clicked");
-										history.push([ clicked[0], tile ]);
-										if (!start) {
-											start = Date.now();
-										}
-										checkStatus();
-									} else if (end) {
-										_hide(tile);
-										tile.classList.remove("clicked");
-										history.push([ tile ]);
-										checkStatus();
-									} else {
-										clicked.forEach(function(item, i) {
-											if (item !== tile) {
-												item.classList.remove("clicked");
-											}
+									if (tile.classList.contains("free") || end) {
+										matching.forEach(function(match, i) {
+											match.classList.remove("matching");
 										});
-										tile.classList.toggle("clicked");
-										if (tile.classList.contains("clicked")) {
-											clearHints = !tile.classList.contains("hint");
-											getMatchingTiles(tile).forEach(function(match, i) {
-												match.classList.add("matching");
+										if (clicked.length === 1 && clicked[0] !== tile &&
+											clicked[0].dataset.type === tile.dataset.type) {
+
+											_hide(clicked[0]);
+											_hide(tile);
+											clicked[0].classList.remove("clicked");
+											tile.classList.remove("clicked");
+											history.push([ clicked[0], tile ]);
+											if (!start) {
+												start = Date.now();
+											}
+											checkStatus();
+										} else if (end) {
+											_hide(tile);
+											tile.classList.remove("clicked");
+											history.push([ tile ]);
+											checkStatus();
+										} else {
+											clicked.forEach(function(item, i) {
+												if (item !== tile) {
+													item.classList.remove("clicked");
+												}
+											});
+											tile.classList.toggle("clicked");
+											if (tile.classList.contains("clicked")) {
+												clearHints = !tile.classList.contains("hint");
+												getMatchingTiles(tile).forEach(function(match, i) {
+													match.classList.add("matching");
+												});
+											}
+										}
+										if (clearHints) {
+											hintIndex = undefined;
+											Array.from(board.getElementsByClassName("hint")).forEach(function(item, i) {
+												item.classList.remove("hint");
 											});
 										}
 									}
-									if (clearHints) {
-										hintIndex = undefined;
-										Array.from(board.getElementsByClassName("hint")).forEach(function(item, i) {
-											item.classList.remove("hint");
-										});
-									}
-								}
-							})(this);
-						});
-
-						var face = document.createElement("div");
-
-						face.classList.add("face");
-						face.classList.add("t" + item.face);
-						if (item.w !== 1 || item.h !== 1) {
-							face.style.backgroundPosition = (item.background.x * item.w) + "px " + (item.background.y * item.h) + "px";
-						}
-						if (_debug) {
-							var info = document.createElement("span");
-
-							info.style.color = "red";
-							info.style.fontSize = "7pt";
-							info.style.fontWeight = "bold";
-							info.style.pointerEvents = "none";
-							info.innerText = [item.index, item.x, item.y, item.z].join(", ");
-							face.appendChild(info);
-						}
-						tile.appendChild(face);
-						board.appendChild(tile);
-						item.tile = tile;
-					});
-					(function() {
-						tileSet.forEach(function(item) {
-							getMatchingTiles(item.tile).filter(function(tile) {
-								return zOverlap(getTileBox(tile), item);
-							}).forEach(function(tile) {
-								tile.classList.add("sandwich");
+								})(this);
 							});
+
+							var face = document.createElement("div");
+
+							face.classList.add("face");
+							face.classList.add("t" + item.face);
+							if (item.w !== 1 || item.h !== 1) {
+								face.style.backgroundPosition = (item.background.x * item.w) + "px " + (item.background.y * item.h) + "px";
+							}
+							if (_debug) {
+								var info = document.createElement("span");
+
+								info.style.color = "red";
+								info.style.fontSize = "7pt";
+								info.style.fontWeight = "bold";
+								info.style.pointerEvents = "none";
+								info.innerText = [item.index, item.x, item.y, item.z].join(", ");
+								face.appendChild(info);
+							}
+							tile.appendChild(face);
+							board.appendChild(tile);
+							item.tile = tile;
 						});
+						(function() {
+							tileSet.forEach(function(item) {
+								getMatchingTiles(item.tile).filter(function(tile) {
+									return zOverlap(getTileBox(tile), item);
+								}).forEach(function(tile) {
+									tile.classList.add("sandwich");
+								});
+							});
+						})();
+						checkStatus();
 					})();
-					checkStatus();
-				})();
-				if (ready) {
-					ready();
+					if (ready) {
+						ready();
+					}
+				} catch (e) {
+					board.dispatchEvent(new Event("game.wrong"));
 				}
 			});
 
@@ -954,7 +961,7 @@
 
 		var askNewGame = function() {
 			if (!_isVisible(message)) {
-				if (game.history.length) {
+				if (game && game.history.length) {
 					showMessage(document.getElementById("askNewMessage").value);
 				} else {
 					newGame();
@@ -1075,6 +1082,7 @@
 			board.addEventListener("game.changed", checkGame);
 			board.addEventListener("game.won", function() { showMessage(document.getElementById("wonMessage").value); });
 			board.addEventListener("game.lost", function() { showMessage(document.getElementById("lostMessage").value); });
+			board.addEventListener("game.wrong", function() { showMessage(document.getElementById("wrongGameMessage").value); });
 
 			_bindClickByClassName(status, "newGame", askNewGame);
 			_bindClickByClassName(status, "undo", function() { undo(); });

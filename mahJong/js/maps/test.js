@@ -80,10 +80,10 @@ if (typeof window.maps.test === "undefined") {
 
 		addTile({      y: 2, i: 0});
 
-		addTile({      y: 3, i: 0});
+		/*addTile({      y: 3, i: 0});
 		addTile({x: 1, y: 3, i: 0});
 		addTile({      y: 4, i: 0});
-		addTile({x: 1, y: 4, i: 0});
+		addTile({x: 1, y: 4, i: 0});*/
 
 		return map;
 	};
