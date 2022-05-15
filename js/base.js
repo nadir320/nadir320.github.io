@@ -1327,16 +1327,16 @@ if (window.jQuery) {
 							.text(text)
 							.append(document.createElement("br"))
 							.append(input = $(document.createElement("input"))
-								.val(value))
-							.on("submit", function(e) {
-								input
-									.closest(".ui-dialog")
-									.find(".ui-dialog-buttonpane")
-									.find(".ui-button")
-									.first()
-									.click();
-								return false;
-							})))
+								.val(value)))
+						.on("submit", function(e) {
+							input
+								.closest(".ui-dialog")
+								.find(".ui-dialog-buttonpane")
+								.find(".ui-button")
+								.first()
+								.click();
+							return false;
+						}))
 					/* end of version with form */
 
 					.appendTo(document.body)
