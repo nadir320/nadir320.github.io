@@ -80,7 +80,7 @@ body {
 
 .ui-dialog .loaderDialog {
 	text-align: center;
-	overflow: hidden;
+	overflow: hidden !important;
 }
 
 .loaderDialog .loadingProgress {
