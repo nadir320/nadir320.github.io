@@ -1,0 +1,124 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="../images/binary.png">
+		<title>Testo Binario</title>
+		<style type="text/css">
+			:root {
+				--c: silver;
+			}
+
+			html, body {
+				margin: 0;
+				min-height: 100vh;
+				overflow: auto;
+			}
+
+			body {
+				background-color: white;
+				font-family: Roboto, "Palatino Linotype", "Book Antiqua", Palatino, serif;
+			}
+
+			.card {
+				border: 1px solid var(--c);
+				border-radius: 0.5rem;
+				box-shadow: 0 0 1rem 0 var(--c);
+				margin: 2rem auto 0;
+				max-width: 40rem;
+				padding: 1rem;
+			}
+
+			.card .title {
+				border-bottom: 1px solid var(--c);
+				margin-bottom: 1rem;
+				text-align: center;
+			}
+
+			.card .title > * {
+				margin-bottom: 1rem;
+				margin-top: 0;
+			}
+
+			.row {
+				align-items: baseline;
+				display: flex;
+			}
+
+			.row label {
+				flex: 1;
+			}
+
+			.row textarea {
+				border-color: var(--c);
+				border-radius: 0.25rem;
+				flex: 4;
+				font-family: "Courier New";
+				height: 8rem;
+				min-height: 2rem;
+				resize: vertical;
+				white-space: pre;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="card">
+			<div class="title"><h3>Testo binario</h3></div>
+			<div class="row">
+				<label for="text">Testo:</label>
+				<textarea id="text">test ♾</textarea>
+			</div>
+			<br/>
+			<div class="row">
+				<label for="binary">Binario:</label>
+				<textarea id="binary" readonly></textarea>
+			</div>
+		</div>
+		<script type="text/javascript">
+			"use strict";
+
+			var FIXED_LENGTH = 8;
+
+			var toBinary = function(text) {
+				var b, binary = [], c, i, l, m = 0;
+
+				for (i = 0, l = text.length; i < l; i++) {
+					b = text.charCodeAt(i).toString(2);
+
+					m = Math.max(m, b.length);
+					while (b.length < FIXED_LENGTH) {
+						b = 0..toString() + b;
+					}
+					binary.push(b);
+				}
+				if (m > FIXED_LENGTH) {
+					for (i = 0, l = binary.length; i < l; i++) {
+						c = binary[i];
+
+						while (c.length < m) {
+							c = " " + c;
+						}
+						binary[i] = c;
+					}
+				}
+				for (i = 0, l = binary.length; i < l; i++) {
+					binary[i] += " " + text[i];
+				}
+				return binary.join("\n");
+			};
+
+			var textArea = document.getElementById("text"),
+				binaryArea = document.getElementById("binary");
+
+			var convertToBinary = function() {
+				binaryArea.value = toBinary(textArea.value);
+			};
+
+			textArea.addEventListener("input", convertToBinary);
+			textArea.addEventListener("change", convertToBinary);
+			convertToBinary();
+		</script>
+	</body>
+</html>
