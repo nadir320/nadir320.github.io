@@ -446,6 +446,7 @@ img.ui-state-highlight {
 .pageOptionsDialog .forceNSFWOptions { }
 
 .pageOptionsDialog button,
+.blogPageTitle button,
 .blogNavigator a,
 .blogNavigator button {
 	margin-bottom: 0.275em;

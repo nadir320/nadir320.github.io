@@ -337,7 +337,7 @@ var textTables = {
 		, "sortBy": "Sort by:"
 		, "sortByPosts": "Sort by number of new posts"
 		, "synchronizingDownloads": "Synchronizing downloads..."
-		, "taggedPosts": "{0} - posts tagged '{1}'"
+		, "taggedPosts": "{0}\nPosts tagged '{1}'"
 		, "theme": "Theme:"
 		, "three": "{0} / {1} / {2}"
 		, "threeFrom": "{0} ({1}, from {2})"
@@ -606,7 +606,7 @@ var textTables = {
 		, "sortBy": "Ordina per:"
 		, "sortByPosts": "Ordina per numero di nuovi post"
 		, "synchronizingDownloads": "Sincronizzazione download..."
-		, "taggedPosts": "{0} - post taggati '{1}'"
+		, "taggedPosts": "{0}\nPost taggati '{1}'"
 		, "theme": "Tema:"
 		, "three": "{0} / {1} / {2}"
 		, "threeFrom": "{0} ({1}, da {2})"
@@ -710,9 +710,11 @@ $().ready(function() {
 					});
 				};
 
-			$(window).on("beforeunload", function() {
-				if (listElement.children().length) {
-					return getLocalizedText("downloadsInProgress");
+			$(window).on({
+				"beforeunload": function() {
+					if (listElement.children().length) {
+						return getLocalizedText("downloadsInProgress");
+					}
 				}
 			});
 			return {
@@ -4271,13 +4273,15 @@ $().ready(function() {
 						"touchToDrag": true
 					})
 				});
-				snapper.on("animated", function() {
-					if ($(document.body).hasClass("snapjs-left")) {
-						$(".statusToast").addClass("noSnapperOnClick");
-						resizePageContent();
-						/* $(".snap-drawer-left").focus(); */
-					} else {
-						/* $("#blogPage").focus(); */
+				snapper.on({
+					"animated": function() {
+						if ($(document.body).hasClass("snapjs-left")) {
+							$(".statusToast").addClass("noSnapperOnClick");
+							resizePageContent();
+							/* $(".snap-drawer-left").focus(); */
+						} else {
+							/* $("#blogPage").focus(); */
+						}
 					}
 				});
 
@@ -5721,19 +5725,21 @@ $().ready(function() {
 
 			$(post.tags).each(function(i, tag) {
 				$(document.createElement("a"))
-					.addClass("expandedTag")
 					.attr({
 						"href": "#",
 					})
 					.data({
 						"tag": tag
 					})
-					.on("click", function(e) {
-						searchTag($(e.target).data("tag"));
-						return e.preventAll();
+					.on({
+						"click": function(e) {
+							searchTag($(e.target).data("tag"));
+							return e.preventAll();
+						}
 					})
 					.text(tag)
 					.appendTo($(document.createElement("li"))
+						.addClass("expandedTag")
 						.appendTo(listElement));
 			});
 		}
@@ -6758,28 +6764,30 @@ $().ready(function() {
 		$(".pageOptionsDialog")
 			.find("[name=blogOptions_expandTags]")
 			.off()
-			.prop("checked", blogOptions.expandTags)
-			.on("change", function(e) {
-				var currentOptions = getBlogOptions(info.url),
-					currentValue = $(e.target).prop("checked"),
-					hasProperties = false,
-					name;
+			.prop("checked", !!blogOptions.expandTags)
+			.on({
+				"change": function(e) {
+					var currentOptions = getBlogOptions(info.url),
+						currentValue = $(e.target).prop("checked"),
+						hasProperties = false,
+						name;
 
-				if (currentValue) {
-					currentOptions.expandTags = !!currentValue;
-				} else {
-					delete currentOptions.expandTags;
-					for (name in currentOptions) {
-						hasProperties = true;
-						break;
+					if (currentValue) {
+						currentOptions.expandTags = !!currentValue;
+					} else {
+						delete currentOptions.expandTags;
+						for (name in currentOptions) {
+							hasProperties = true;
+							break;
+						}
+						if (!hasProperties) {
+							currentOptions = undefined;
+						}
 					}
-					if (!hasProperties) {
-						currentOptions = undefined;
-					}
+					$.when(setBlogOptions(info.url, currentOptions)).then(function() {
+						applyBlogPageOptions(true);
+					});
 				}
-				$.when(setBlogOptions(info.url, currentOptions)).then(function() {
-					applyBlogPageOptions(true);
-				});
 			});
 
 		if (posts && posts.length) {
@@ -6824,7 +6832,7 @@ $().ready(function() {
 		}
 		if (tag && tag.length) {
 			blogTitle = localizedFormat("taggedPosts",
-				blogTitle, tag)
+				blogTitle, tag);
 		} else if (postType && postType.length) {
 			defaultTitle = false;
 			blogTitle = localizedFormat("typedPosts",
@@ -6870,7 +6878,24 @@ $().ready(function() {
 							});
 					}
 				})
-				.text(blogTitle));
+				.html(replaceHTMLNewLines(blogTitle))
+				.append((tag && tag.length) ?
+					$(document.createElement("button"))
+						.attr({
+							"type": "button"
+						})
+						.button({
+							"icons": {
+								"primary": "ui-icon-closethick"
+							},
+							"text": false
+						}).on({
+							"click": function(e) {
+								searchTag();
+								return e.preventAll();
+							}
+						}) :
+					undefined));
 
 		$.when.apply(this, hasNewVideoRequests).then(function() {
 			$("#blogPage")[(hasNewVideo) ?
