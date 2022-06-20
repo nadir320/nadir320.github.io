@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" %>
+﻿<%@ Page Language="C#" Debug="true" %>
 <%@ Import Namespace="System" %>
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Globalization" %>
@@ -64,6 +64,13 @@
 
 	private void LoadPage() {
 		/* if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break(); */
+
+		/* ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
+			SecurityProtocolType.Tls11 |
+			SecurityProtocolType.Tls12 |
+			SecurityProtocolType.Ssl3;
+
+		ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true; */
 
 		Response.Headers[Header_CORS_Headers] = ((char)0x002A).ToString();
 		Response.Headers[Header_CORS_Origin] = ((char)0x002A).ToString();

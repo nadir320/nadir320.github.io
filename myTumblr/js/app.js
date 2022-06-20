@@ -213,6 +213,7 @@ var textTables = {
 		, "enableFullScreenViewer": "Enable full-page view"
 		, "enableFullScreenViewerFullScreen": "Enable true full screen view"
 		, "enableImageSearch": "Enable image search"
+		, "expandTags": "Expand tags"
 		, "findDownloads": "Search"
 		, "firstPostOn": "First post on"
 		, "followers": "Followers:"
@@ -481,6 +482,7 @@ var textTables = {
 		, "enableFullScreenViewer": "Abilita vista a tutta pagina"
 		, "enableFullScreenViewerFullScreen": "Abilita vista a schermo intero"
 		, "enableImageSearch": "Abilita ricerca per immagine"
+		, "expandTags": "Espandi i tag"
 		, "findDownloads": "Cerca"
 		, "firstPostOn": "Iniziato"
 		, "followers": "Seguito da:"
@@ -1192,12 +1194,14 @@ $().ready(function() {
 
 	var applyBlogPageOptions = function(skipImages) {
 		return $.Deferred(function(deferred) {
-			var imageSize = getImageSize(window.sessionStorage.getItem("blog")),
+			var blog = window.sessionStorage.getItem("blog"),
+				blogOptions = getBlogOptions(blog),
+				imageSize = getImageSize(window.sessionStorage.getItem("blog")),
 				micro = imageSize === "micro",
 				pageElement = $("#blogPage"),
 				pageWidth = pageElement.width(),
 				pageHeight = $(window).height() * 0.8,
-				preloadImages = getPreloadImages(window.sessionStorage.getItem("blog")),
+				preloadImages = getPreloadImages(blog),
 				videos;
 
 			if (!skipImages) {
@@ -1294,7 +1298,8 @@ $().ready(function() {
 				deferred.resolve();
 			}
 
-			pageElement.find(".tagsButton")[(_options.showTags) ? "show" : "hide"]();
+			pageElement.find(".tagsButton")[(_options.showTags && !blogOptions.expandTags) ? "show" : "hide"]();
+			pageElement.find(".expandedTag")[(_options.showTags && blogOptions.expandTags) ? "show" : "hide"]();
 			pageElement.find(".imageSizesButton")[(_options.showAllImageSizes) ? "show" : "hide"]();
 			pageElement.find(".fullScreenButton")[(_options.enableFullScreenViewer) ? "show" : "hide"]();
 			pageElement.find(".notes")[(_options.showNotes) ? "show" : "hide"]();
@@ -3025,9 +3030,9 @@ $().ready(function() {
 			return $.when(blog.getPosts(pageIndex, info, _options.postType, _options.postsPerPage,
 				window.sessionStorage.getItem("blogTag"))).then(function(posts) {
 
-				var hasFilter = (window.sessionStorage.getItem("blogTag") &&
-					window.sessionStorage.getItem("blogTag").length) ||
-					(_options.postType && _options.postType.length);
+				var hasFilter = (!!window.sessionStorage.getItem("blogTag") &&
+					!!window.sessionStorage.getItem("blogTag").length) ||
+					(!!_options.postType && !!_options.postType.length);
 
 				var lastUpdatedDate = getLastUpdatedDate(info.url, true),
 					newPages,
@@ -3123,7 +3128,7 @@ $().ready(function() {
 
 							window.sessionStorage.setItem("blogPage", blog.page = pageIndex);
 							$(".pageIndex").find(".newImage").remove();
-							$(".pageIndex").find(".content").text((newPages) ?
+							$(".pageIndex").find(".content").text((newPages && !hasFilter) ?
 								localizedFormat("pageNumber2", pageIndex + 1, (newPages < 0) ?
 									localizedFormat("lessThanZero", Math.abs(newPages)) :
 									Math.abs(newPages), blogPages) :
@@ -3137,7 +3142,7 @@ $().ready(function() {
 							postsElement = $(document.createElement("div")).appendTo(pageElement);
 
 							$(stickyPosts).each(function(i, post) {
-								waitFors.push(loadPost(blog, postsElement, post, pageIndex, info.postsDifference, newPosts, posts.length));
+								waitFors.push(loadPost(blog, postsElement, post, pageIndex, info.postsDifference, newPosts, posts.length, hasFilter));
 							});
 							$(posts).each(function(i, post) {
 								if (!post.isNewPost) {
@@ -3150,7 +3155,7 @@ $().ready(function() {
 									}
 								}
 
-								waitFors.push(loadPost(blog, postsElement, post, pageIndex, info.postsDifference, newPosts, posts.length));
+								waitFors.push(loadPost(blog, postsElement, post, pageIndex, info.postsDifference, newPosts, posts.length, hasFilter));
 								wasNewPost = post.isNewPost;
 							});
 
@@ -5081,13 +5086,14 @@ $().ready(function() {
 		});
 	};
 
-	var loadPost = function(blog, container, post, pageIndex, postsDifference, newPosts, posts) {
+	var loadPost = function(blog, container, post, pageIndex, postsDifference, newPosts, posts, hasFilter) {
 		var buttonsElement,
 			buttonText,
 			downloadButton,
 			downloadButtonSet,
 			downloadInfoButton,
 			hasDownloadText,
+			listElement,
 			photo2Index,
 			postContentElement,
 			postElement,
@@ -5136,11 +5142,11 @@ $().ready(function() {
 				})
 				.text((!isNaN(parseInt(post.fullIndex))) ?
 					(post.isNewPost) ?
-						localizedFormat("two2", post.fullIndex + 1,(postsDifference > 0) ?
+						localizedFormat("two2", post.fullIndex + 1, (postsDifference > 0) ?
 							((pageIndex * _options.postsPerPage) + newPosts > postsDifference) ?
 								localizedFormat("lessThanZero", (pageIndex * _options.postsPerPage) + newPosts) :
 								postsDifference :
-							(newPosts < posts) ?
+							(hasFilter || newPosts < posts) ?
 								(pageIndex * _options.postsPerPage) + newPosts :
 								localizedFormat("lessThanZero", (pageIndex + 1) * _options.postsPerPage)) :
 						(post.fullIndex + 1).toLocaleString() :
@@ -5445,13 +5451,13 @@ $().ready(function() {
 						textElement.append($(document.createElement("br")));
 					}
 					if (post.type === "chat") {
-						var chatElement = $(document.createElement("ul"))
+						listElement = $(document.createElement("ul"))
 							.addClass("chatList")
 							.appendTo(textElement);
 
 						$(post.body.split("\n")).each(function(i, line) {
 							var chatLineElement = $(document.createElement("li"))
-								.appendTo(chatElement);
+								.appendTo(listElement);
 
 							if ((line = $.trim(line)).length) {
 								chatLineElement
@@ -5708,6 +5714,30 @@ $().ready(function() {
 				}
 			});
 		}
+
+		if (post.tags && post.tags.length) {
+			listElement = $(document.createElement("ul"))
+				.appendTo(postElement);
+
+			$(post.tags).each(function(i, tag) {
+				$(document.createElement("a"))
+					.addClass("expandedTag")
+					.attr({
+						"href": "#",
+					})
+					.data({
+						"tag": tag
+					})
+					.on("click", function(e) {
+						searchTag($(e.target).data("tag"));
+						return e.preventAll();
+					})
+					.text(tag)
+					.appendTo($(document.createElement("li"))
+						.appendTo(listElement));
+			});
+		}
+
 		if (isUselessPost(postElement, blog, post)) {
 			postElement.addClass("useless");
 		}
@@ -6096,7 +6126,7 @@ $().ready(function() {
 
 							$(sameSource(data)).find(".postBody img").each(function(i, image) {
 								var src = $(image).data("src");
-								
+
 								link.before($(document.createElement("img")).attr({
 									/*"has-src": String.empty*/
 									"src": (_isLocal) ? getProxiedURL(src) : src
@@ -6723,6 +6753,33 @@ $().ready(function() {
 					}
 					setBlogEntry(info.url, entry);
 				}
+			});
+
+		$(".pageOptionsDialog")
+			.find("[name=blogOptions_expandTags]")
+			.off()
+			.prop("checked", blogOptions.expandTags)
+			.on("change", function(e) {
+				var currentOptions = getBlogOptions(info.url),
+					currentValue = $(e.target).prop("checked"),
+					hasProperties = false,
+					name;
+
+				if (currentValue) {
+					currentOptions.expandTags = !!currentValue;
+				} else {
+					delete currentOptions.expandTags;
+					for (name in currentOptions) {
+						hasProperties = true;
+						break;
+					}
+					if (!hasProperties) {
+						currentOptions = undefined;
+					}
+				}
+				$.when(setBlogOptions(info.url, currentOptions)).then(function() {
+					applyBlogPageOptions(true);
+				});
 			});
 
 		if (posts && posts.length) {
