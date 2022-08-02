@@ -53,7 +53,7 @@ var BLANK_PAGE = "about:blank",
 	DOWNLOAD_SERVERS = [ "va.media", "ve.media", "vt", "vt.media", "vtt" ],
 	HIDE_OFFSCREEN_ANIMATIONS = !!window.location.get(PARAMETERS.hideOffscreenAnimations),
 	IDB = !!window.location.get(PARAMETERS.indexedDB),
-	IFRAME_ALLOWED_HOSTS = [ "youtube.com", "youtu.be", "youtube-nocookie.com" ],
+	IFRAME_ALLOWED_HOSTS = [ "youtube.com", "youtu.be", "youtube-nocookie.com", "spotify.com" ],
 	NO_LOCAL_PROXY_ON_LOCALHOST = !!parseInt(window.location.get(PARAMETERS.noLocalProxyOnLocalhost)),
 	OFFICE_MODE = !!window.location.get(PARAMETERS.officeMode),
 	PEEK = !!window.location.get(PARAMETERS.peek),
@@ -2851,7 +2851,7 @@ $().ready(function() {
 	};
 
 	var isUselessPost = function(postElement, blog, post) {
-		var content = postElement.html(),
+		var content = postElement.html ? postElement.html() : postElement,
 			i,
 			j;
 
@@ -3393,6 +3393,26 @@ $().ready(function() {
 																info.isNew = true;
 															}
 														});
+													});
+											} else if (blog.data.checkUselessPosts) {
+												debugger;
+												waitFor = $.when(blog.getPosts(undefined, info, undefined, _options.postsPerPage))
+													.then(function(posts) {
+														var hasNonUselessNewPost = false;
+
+														dataLength += posts.dataLength + 70;
+														updateProgress();
+														$(posts).each(function(i, post) {
+															if (getLastUpdatedDate(info.url, true).getTime() < post.timestamp.getTime() &&
+																!isUselessPost(post.body || post.caption || String.empty, blog, post)) {
+
+																hasNonUselessNewPost = true;
+																return false;
+															}
+														});
+														if (!hasNonUselessNewPost) {
+															info.toAutoUpdate = true;
+														}
 													});
 											} else {
 												info.isNew = true;
@@ -6176,6 +6196,11 @@ $().ready(function() {
 			$(store).on({
 				"error": function(e, error) {
 					if (!store.errorsSuspended) {
+						if (error.error.match(/QuotaExceededError/i) &&
+							store.cleanup) {
+
+							store.cleanup(DATASTORE_CLEANUP_INTERVAL);
+						}
 						$.toast.error(error.error);
 					}
 				},
@@ -6878,24 +6903,25 @@ $().ready(function() {
 							});
 					}
 				})
-				.html(replaceHTMLNewLines(blogTitle))
-				.append((tag && tag.length) ?
-					$(document.createElement("button"))
-						.attr({
-							"type": "button"
-						})
-						.button({
-							"icons": {
-								"primary": "ui-icon-closethick"
-							},
-							"text": false
-						}).on({
-							"click": function(e) {
-								searchTag();
-								return e.preventAll();
-							}
-						}) :
-					undefined));
+				.html(replaceHTMLNewLines(blogTitle)));
+		if (tag && tag.length) {
+			$(".blogPageTitle")
+				.append($(document.createElement("button"))
+					.attr({
+						"type": "button"
+					})
+					.button({
+						"icons": {
+							"primary": "ui-icon-closethick"
+						},
+						"text": false
+					}).on({
+						"click": function(e) {
+							searchTag();
+							return e.preventAll();
+						}
+					}));
+		}
 
 		$.when.apply(this, hasNewVideoRequests).then(function() {
 			$("#blogPage")[(hasNewVideo) ?
