@@ -131,6 +131,7 @@ var textTables = {
 		, "cancel": "Cancel"
 		, "change": "Change"
 		, "changePassword": "Change password"
+		, "checkUselessPosts": "Auto check for useless posts"
 		, "confirmAddBlog": "Are you sure you want to add '{0}' to your blogs?"
 		, "confirmAddToReadLater": "Are you sure you want to add '{0}' to your 'Read Later' blogs?"
 		, "confirmClearReadLater": "Are you sure you want to remove all the 'Read Later' blogs?"
@@ -400,6 +401,7 @@ var textTables = {
 		, "cancel": "Annulla"
 		, "change": "Cambia"
 		, "changePassword": "Cambio password"
+		, "checkUselessPosts": "Controlla automaticamente post filtrati"
 		, "confirmAddBlog": "Aggiungere '{0}' ai blog?"
 		, "confirmAddToReadLater": "Aggiungere '{0}' ai blog da leggere più tardi?"
 		, "confirmClearReadLater": "Cancellare tutti i blog da leggere più tardi?"
@@ -3073,7 +3075,7 @@ $().ready(function() {
 							var minutes,
 								seconds;
 
-							if (lastUpdatedDate < post.timestamp) {
+							if (lastUpdatedDate.getTime() < post.timestamp.getTime()) {
 								post.isNewPost = true;
 								newPosts++;
 							} else {
@@ -3208,7 +3210,7 @@ $().ready(function() {
 														var hasANewPost = (!!$(posts)
 															.filter(function(j, post) {
 																return post.id === item.id;
-															}).length || lastUpdatedDate < item.timestamp);
+															}).length || lastUpdatedDate.getTime() < item.timestamp.getTime());
 
 														$.when(isFileDownloaded(item.download_url))
 															.then(function(downloaded) {
@@ -3366,7 +3368,10 @@ $().ready(function() {
 									t.isLoginSupported &&
 									blog.data.disabled &&
 									!blog.data.login_required)).then(function(info) {
-									var waitFor;
+
+									var waitFor,
+										checkMismatches,
+										checkUselessPosts;
 
 									dataLength += info.dataLength + 70;
 									progress++;
@@ -3384,38 +3389,41 @@ $().ready(function() {
 										if (getLastUpdatedDate(info.url).getTime() < info.updated.getTime()) {
 											if (info.postsDifference <= 0 && _options.autoUpdatePostCountMismatches) {
 												info.toAutoUpdate = true;
-												waitFor = $.when(blog.getPosts(undefined, info, undefined, 1))
-													.then(function(posts) {
-														dataLength += posts.dataLength + 70;
-														updateProgress();
-														$(posts).each(function(i, post) {
-															if (getLastUpdatedDate(info.url, true).getTime() < post.timestamp.getTime()) {
-																info.isNew = true;
-															}
-														});
-													});
-											} else if (blog.data.checkUselessPosts) {
-												debugger;
-												waitFor = $.when(blog.getPosts(undefined, info, undefined, _options.postsPerPage))
+												checkMismatches = true;
+											} else if (getBlogOptions(info.url).checkUselessPosts) {
+												checkUselessPosts = true;
+											} else {
+												info.isNew = true;
+											}
+											if (checkMismatches || checkUselessPosts) {
+												waitFor = $.when(blog.getPosts(undefined, info, undefined, (checkUselessPosts) ? _options.postsPerPage : 1))
 													.then(function(posts) {
 														var hasNonUselessNewPost = false;
 
 														dataLength += posts.dataLength + 70;
 														updateProgress();
 														$(posts).each(function(i, post) {
-															if (getLastUpdatedDate(info.url, true).getTime() < post.timestamp.getTime() &&
-																!isUselessPost(post.body || post.caption || String.empty, blog, post)) {
+															if (checkMismatches) {
+																if (getLastUpdatedDate(info.url, true).getTime() < post.timestamp.getTime()) {
+																	info.isNew = true;
+																}
+															} else if (checkUselessPosts) {
+																if (getLastUpdatedDate(info.url, true).getTime() < post.timestamp.getTime() &&
+																	!isUselessPost(post.body || post.caption || String.empty, blog, post)) {
 
-																hasNonUselessNewPost = true;
-																return false;
+																	hasNonUselessNewPost = true;
+																	return false;
+																}
 															}
 														});
-														if (!hasNonUselessNewPost) {
-															info.toAutoUpdate = true;
+														if (checkUselessPosts) {
+															if (hasNonUselessNewPost) {
+																info.isNew = true;
+															} else {
+																info.toAutoUpdate = true;
+															}
 														}
 													});
-											} else {
-												info.isNew = true;
 											}
 										} else {
 											if ((now - info.updated.getTime()) > OLD_BLOG_INTERVAL) {
@@ -4727,7 +4735,7 @@ $().ready(function() {
 
 														$(posts).each(function(i, post) {
 															if (!post.sticky) {
-																if (post.timestamp > lastUpdatedDate) {
+																if (post.timestamp.getTime() > lastUpdatedDate.getTime()) {
 																	hasANewPost = true;
 																} else {
 																	hasAnOldPost = true;
@@ -6786,34 +6794,39 @@ $().ready(function() {
 				}
 			});
 
-		$(".pageOptionsDialog")
-			.find("[name=blogOptions_expandTags]")
-			.off()
-			.prop("checked", !!blogOptions.expandTags)
-			.on({
-				"change": function(e) {
-					var currentOptions = getBlogOptions(info.url),
-						currentValue = $(e.target).prop("checked"),
-						hasProperties = false,
-						name;
+		var bindBooleanOption = function(optionName) {
+			$(".pageOptionsDialog")
+				.find("[name=blogOptions_{0}]".format(optionName))
+				.off()
+				.prop("checked", !!blogOptions[optionName])
+				.on({
+					"change": function(e) {
+						var currentOptions = getBlogOptions(info.url),
+							currentValue = $(e.target).prop("checked"),
+							hasProperties = false,
+							name;
 
-					if (currentValue) {
-						currentOptions.expandTags = !!currentValue;
-					} else {
-						delete currentOptions.expandTags;
-						for (name in currentOptions) {
-							hasProperties = true;
-							break;
+						if (currentValue) {
+							currentOptions[optionName] = !!currentValue;
+						} else {
+							delete currentOptions[optionName];
+							for (name in currentOptions) {
+								hasProperties = true;
+								break;
+							}
+							if (!hasProperties) {
+								currentOptions = undefined;
+							}
 						}
-						if (!hasProperties) {
-							currentOptions = undefined;
-						}
+						$.when(setBlogOptions(info.url, currentOptions)).then(function() {
+							applyBlogPageOptions(true);
+						});
 					}
-					$.when(setBlogOptions(info.url, currentOptions)).then(function() {
-						applyBlogPageOptions(true);
-					});
-				}
-			});
+				});
+		};
+
+		bindBooleanOption("checkUselessPosts");
+		bindBooleanOption("expandTags");
 
 		if (posts && posts.length) {
 			$(posts).each(function(i, post) {
