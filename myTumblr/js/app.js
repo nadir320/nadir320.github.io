@@ -3409,7 +3409,7 @@ $().ready(function() {
 																}
 															} else if (checkUselessPosts) {
 																if (getLastUpdatedDate(info.url, true).getTime() < post.timestamp.getTime() &&
-																	!isUselessPost(post.body || post.caption || String.empty, blog, post)) {
+																	!isUselessPost(post.body || post.caption || post.description || String.empty, blog, post)) {
 
 																	hasNonUselessNewPost = true;
 																	return false;
