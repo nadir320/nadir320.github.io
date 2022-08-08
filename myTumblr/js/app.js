@@ -905,6 +905,7 @@ $().ready(function() {
 		})(),
 		_downloads = (function() {
 			var KEY_PROPERTY = "key",
+				STORAGE_NAME_ALLDOWNLOADS = "my_tumblr_alldownloads",
 				STORAGE_NAME_DOWNLOADS = "my_tumblr_downloads";
 
 			var db, downloads, open = $.Deferred();
@@ -926,7 +927,7 @@ $().ready(function() {
 						window.webkitIDBKeyRange ||
 						window.msIDBKeyRange;
 				}
-				if (IDB && window.indexedDB) {
+				if (/*IDB && */window.indexedDB) {
 					var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS);
 
 					request.onerror = function(e) {
@@ -942,14 +943,61 @@ $().ready(function() {
 						db.createObjectStore(STORAGE_NAME_DOWNLOADS, {
 							keyPath: KEY_PROPERTY
 						});
+						db.createObjectStore(STORAGE_NAME_ALLDOWNLOADS, {
+							keyPath: KEY_PROPERTY
+						});
 					};
 				} else {
 					open.reject();
 				}
 			})();
 
+			var getFromDB = function(key, table) {
+				return $.Deferred(function(deferred) {
+					table = table || STORAGE_NAME_DOWNLOADS;
+
+					var transaction = db.transaction([table]);
+
+					var objectStore = transaction.objectStore(table);
+
+					var request = objectStore.get(key);
+
+					request.onerror = function(e) {
+						deferred.reject(e);
+					};
+					request.onsuccess = function(e) {
+						deferred.resolve(request.result.value);
+					};
+				});
+			};
+
 			var hasDB = function() {
 				return open.promise();
+			};
+
+			var setInDB = function(key, value, table) {
+				return $.Deferred(function(deferred) {
+					table = table || STORAGE_NAME_DOWNLOADS;
+
+					var transaction = db.transaction([table], "readwrite");
+
+					var objectStore = transaction.objectStore(table);
+
+					var data = {
+						"value": value
+					};
+
+					data[KEY_PROPERTY] = key;
+
+					var request = objectStore.put(data);
+
+					request.onerror = function(e) {
+						deferred.reject(e);
+					};
+					request.onsuccess = function(e) {
+						deferred.resolve(request.result);
+					};
+				});
 			};
 
 			return {
@@ -1027,14 +1075,43 @@ $().ready(function() {
 						if (value && value.length) {
 							downloads = window.JSON.parse(value);
 						} else {
-							downloads = { };
+							return $.Deferred(function(deferred) {
+								$.when(hasDB()).then(function() {
+									$.when(getFromDB(STORAGE_NAME_DOWNLOADS, STORAGE_NAME_ALLDOWNLOADS)).then(function(dbValue) {
+										downloads = window.JSON.parse(dbValue);
+										deferred.resolve();
+									}, deferred.reject);
+								}, function() {
+									downloads = { };
+								}).always(deferred.resolve);
+							});
 						}
 					}
 				},
 				"save": function() {
 					if (!IDB) {
-						window.localStorage.setItem(STORAGE_NAME_DOWNLOADS,
-							window.JSON.stringify(downloads));
+						return $.Deferred(function(deferred) {
+							var fallback = function() {
+									try {
+										window.localStorage.setItem(STORAGE_NAME_DOWNLOADS, value);
+										deferred.resolve();
+									} catch (e) {
+										deferred.reject(e);
+									}
+								}, value = window.JSON.stringify(downloads);
+
+							$.when(hasDB()).then(function() {
+								$.when(setInDB(STORAGE_NAME_DOWNLOADS, value, STORAGE_NAME_ALLDOWNLOADS))
+									.then(function() {
+										try {
+											window.localStorage.removeItem(STORAGE_NAME_DOWNLOADS);
+											deferred.resolve()
+										} catch (e) {
+											deferred.reject(e);
+										}
+									}, fallback);
+							}, fallback);
+						});
 					}
 				},
 				"store": function(values) {
