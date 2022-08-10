@@ -369,6 +369,7 @@ var textTables = {
 		}
 		, "useDefault": "Use default setting"
 		, "usernameRequired": "Please specify a valid e-mail address."
+		, "version": "Version: {0}"
 		, "vibrateOnCheckCompletion": "Vibrate on loading completion"
 		, "view": "View"
 		, "viewDownloads": "Downloads in page ({0}/{1})"
@@ -639,6 +640,7 @@ var textTables = {
 		}
 		, "useDefault": "Usa impostazione predefinita"
 		, "usernameRequired": "Inserire un indirizzo e-mail."
+		, "version": "Versione: {0}"
 		, "vibrateOnCheckCompletion": "Vibra a caricamento completato"
 		, "view": "Mostra"
 		, "viewDownloads": "Download nella pagina ({0}/{1})"
@@ -931,6 +933,7 @@ $().ready(function() {
 					var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS);
 
 					request.onerror = function(e) {
+						$.toast.error("Cannot open DB: {0}", e);
 						open.reject();
 					};
 					request.onsuccess = function(e) {
@@ -963,10 +966,11 @@ $().ready(function() {
 					var request = objectStore.get(key);
 
 					request.onerror = function(e) {
+						$.toast.error("Cannot get value from DB: {0}", e);
 						deferred.reject(e);
 					};
 					request.onsuccess = function(e) {
-						deferred.resolve(request.result.value);
+						deferred.resolve((request.result) ? request.result.value : undefined);
 					};
 				});
 			};
@@ -992,6 +996,7 @@ $().ready(function() {
 					var request = objectStore.put(data);
 
 					request.onerror = function(e) {
+						$.toast.error("Cannot set value in DB: {0}", e);
 						deferred.reject(e);
 					};
 					request.onsuccess = function(e) {
@@ -1078,12 +1083,13 @@ $().ready(function() {
 							return $.Deferred(function(deferred) {
 								$.when(hasDB()).then(function() {
 									$.when(getFromDB(STORAGE_NAME_DOWNLOADS, STORAGE_NAME_ALLDOWNLOADS)).then(function(dbValue) {
-										downloads = window.JSON.parse(dbValue);
+										downloads = (dbValue) ? window.JSON.parse(dbValue) : { };
 										deferred.resolve();
 									}, deferred.reject);
 								}, function() {
 									downloads = { };
-								}).always(deferred.resolve);
+									deferred.resolve();
+								});
 							});
 						}
 					}
@@ -3083,9 +3089,9 @@ $().ready(function() {
 
 		window.sessionStorage.setItem("blogTitle", info.title);
 		window.sessionStorage.setItem("blog", info.url);
-		window.sessionStorage.setItem("blogLoginRequired", info.blog &&
-			info.blog.data &&
-			info.blog.data.login_required);
+		window.sessionStorage[(info.blog && info.blog.data && info.blog.data.login_required) ?
+			"setItem" :
+			"removeItem"]("blogLoginRequired", true);
 
 		var pageIndex = parseInt(window.sessionStorage.getItem("blogPage"));
 
@@ -4245,7 +4251,25 @@ $().ready(function() {
 			});
 		$(".optionsDialog").attr({
 			"title": getLocalizedText("options")
-		});
+		}).find(".version").text((function() {
+			var currentScripts = window.document.getElementsByTagName("script"),
+				date,
+				source;
+
+			if (currentScripts.length) {
+				source = currentScripts[currentScripts.length - 1].getAttribute("src").split("?");
+
+				if (source.length > 1) {
+					source = window.parseArguments(source[1]).v;
+					if (source && source.length) {
+						date = new Date("{0}-{1}-{2}".format(source.substr(0, 4), source.substr(4, 2), source.substr(6, 2)));
+						if (!isNaN(date.getTime())) {
+							return localizedFormat("version", date.toLocaleDateString ? date.toLocaleDateString() : date.toLocaleString());
+						}
+					}
+				}
+			}
+		})());
 
 		$(".title")
 			.find("a")

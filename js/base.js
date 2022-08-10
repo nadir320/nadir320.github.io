@@ -392,6 +392,20 @@ window.guid = function() {
 	});
 };
 
+window.parseArguments = function(a) {
+	var j, p, parameters = { };
+
+	a = a.split("&");
+
+	for (var i = 0; i < a.length; i++) {
+		p = a[i], j = p.indexOf("=");
+
+		parameters[window.decodeURIComponent(p.substr(0, j))] =
+			window.decodeURIComponent(p.substr(j + 1));
+	}
+	return parameters;
+};
+
 window.randomColor = function(randomizeAlpha) {
 	return (randomizeAlpha) ?
 		"rgba({0}, {1}, {2}, {3})".format(Math.floor(Math.random() * 255),
@@ -668,13 +682,9 @@ window.selectText = function(element) {
 	}
 
 	if (window.location.search && window.location.search.length) {
-		a = window.location.search.substr(1).split("&");
-
-		for (var i = 0; i < a.length; i++) {
-			p = a[i], j = p.indexOf("=");
-
-			parameters[window.decodeURIComponent(p.substr(0, j))] =
-				window.decodeURIComponent(p.substr(j + 1));
+		a = window.parseArguments(window.location.search.substr(1));
+		for (var i in a) {
+			parameters[i] = a[i];
 		}
 	}
 	for (a in window.location.parameters = parameters) {

@@ -420,6 +420,11 @@ img.ui-state-highlight {
 	text-align: initial;
 }
 
+.optionsDialog .version {
+	font-size: small;
+	margin: 1em 0 0;
+}
+
 .booleanOptions {
 	font-size: 85%;
 	text-align: initial;
