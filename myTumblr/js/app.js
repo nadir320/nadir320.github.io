@@ -9855,9 +9855,7 @@ $().ready(function() {
 
 							restoreMessages();
 							if (!downloadsDate || dataStoreDate.getTime() !== downloadsDate.getTime()) {
-								alert(downloadsDate);
-								alert(dataStoreDate);
-								alert("ab");
+								alert("c");
 								return $.when(_options.downloadSynchronization === "synchronize" ||
 									$.confirm(getLocalizedText("requireDownloadsSynchronization"), undefined, [
 										getLocalizedText("yes"),
