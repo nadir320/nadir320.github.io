@@ -946,8 +946,8 @@ $().ready(function() {
 							try {
 								var db = event.target.result;
 
-								try { db.deleteObjectStore(STORAGE_NAME_DOWNLOADS); } catch (ex) {
-								try { db.deleteObjectStore(STORAGE_NAME_ALLDOWNLOADS); } catch (ex) {
+								try { db.deleteObjectStore(STORAGE_NAME_DOWNLOADS); } catch (ex) { }
+								try { db.deleteObjectStore(STORAGE_NAME_ALLDOWNLOADS); } catch (ex) { }
 
 								db.createObjectStore(STORAGE_NAME_DOWNLOADS, {
 									keyPath: KEY_PROPERTY
