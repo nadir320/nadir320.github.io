@@ -1111,6 +1111,7 @@ $().ready(function() {
 									.then(function() {
 										try {
 											window.localStorage.removeItem(STORAGE_NAME_DOWNLOADS);
+											alert("removed!");
 											deferred.resolve()
 										} catch (e) {
 											deferred.reject(e);
