@@ -946,8 +946,8 @@ $().ready(function() {
 							try {
 								var db = event.target.result;
 
-								db.deleteObjectStore(STORAGE_NAME_DOWNLOADS);
-								db.deleteObjectStore(STORAGE_NAME_ALLDOWNLOADS);
+								try { db.deleteObjectStore(STORAGE_NAME_DOWNLOADS); } catch (ex) {
+								try { db.deleteObjectStore(STORAGE_NAME_ALLDOWNLOADS); } catch (ex) {
 
 								db.createObjectStore(STORAGE_NAME_DOWNLOADS, {
 									keyPath: KEY_PROPERTY
@@ -955,14 +955,13 @@ $().ready(function() {
 								db.createObjectStore(STORAGE_NAME_ALLDOWNLOADS, {
 									keyPath: KEY_PROPERTY
 								});
-							} catch (e2) {
-								$.toast.error(e2.message);
-								alert(e2.message);
+							} catch (ex) {
+								$.toast.error(ex.message);
 								open.reject();
 							}
 						};
-					} catch (e1) {
-						alert(e1.message);
+					} catch (e) {
+						$.toast.error(e.message);
 						open.reject();
 					}
 				} else {
@@ -9857,7 +9856,7 @@ $().ready(function() {
 
 							restoreMessages();
 							if (!downloadsDate || dataStoreDate.getTime() !== downloadsDate.getTime()) {
-								alert("d");
+								alert("e");
 								return $.when(_options.downloadSynchronization === "synchronize" ||
 									$.confirm(getLocalizedText("requireDownloadsSynchronization"), undefined, [
 										getLocalizedText("yes"),
