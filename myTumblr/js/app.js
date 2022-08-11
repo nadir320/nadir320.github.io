@@ -1095,6 +1095,7 @@ $().ready(function() {
 					}
 				},
 				"save": function() {
+					alert("Saving");
 					if (!IDB) {
 						return $.Deferred(function(deferred) {
 							var fallback = function() {
@@ -9836,6 +9837,7 @@ $().ready(function() {
 							if (!downloadsDate || dataStoreDate.getTime() !== downloadsDate.getTime()) {
 								alert(downloadsDate);
 								alert(dataStoreDate);
+								alert("aa");
 								return $.when(_options.downloadSynchronization === "synchronize" ||
 									$.confirm(getLocalizedText("requireDownloadsSynchronization"), undefined, [
 										getLocalizedText("yes"),
