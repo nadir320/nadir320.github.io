@@ -931,7 +931,7 @@ $().ready(function() {
 				}
 				if (/*IDB && */window.indexedDB) {
 					try {
-						var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS);
+						var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS, 2);
 
 						request.onerror = function(e) {
 							$.toast.error("Cannot open DB: {0}", e);
@@ -942,8 +942,12 @@ $().ready(function() {
 							open.resolve();
 						};
 						request.onupgradeneeded = function(e) {
+							$.toast("Upgrading...");
 							try {
 								var db = event.target.result;
+
+								db.deleteObjectStore(STORAGE_NAME_DOWNLOADS);
+								db.deleteObjectStore(STORAGE_NAME_ALLDOWNLOADS);
 
 								db.createObjectStore(STORAGE_NAME_DOWNLOADS, {
 									keyPath: KEY_PROPERTY
@@ -952,6 +956,7 @@ $().ready(function() {
 									keyPath: KEY_PROPERTY
 								});
 							} catch (e2) {
+								$.toast.error(e2.message);
 								alert(e2.message);
 								open.reject();
 							}
@@ -976,7 +981,7 @@ $().ready(function() {
 					var request = objectStore.get(key);
 
 					request.onerror = function(e) {
-						$.toast.error("Cannot get value from DB: {0}", e);
+						$.toast.error(e);
 						deferred.reject(e);
 					};
 					request.onsuccess = function(e) {
@@ -1007,16 +1012,14 @@ $().ready(function() {
 						var request = objectStore.put(data);
 
 						request.onerror = function(e) {
-							$.toast.error("Cannot set value in DB: {0}", e);
+							$.toast.error(e);
 							deferred.reject(e);
 						};
 						request.onsuccess = function(e) {
-							$.toast("Value set in DB! (maybe)");
 							deferred.resolve(request.result);
 						};
 					} catch (e) {
-						alert("fffuuuu");
-						alert(e.message);
+						$.toast.error(e.message);
 					}
 				});
 			};
@@ -1111,7 +1114,6 @@ $().ready(function() {
 					}
 				},
 				"save": function() {
-					alert("Saving");
 					if (!IDB) {
 						return $.Deferred(function(deferred) {
 							var fallback = function(e1) {
@@ -1126,7 +1128,7 @@ $().ready(function() {
 								}, value = window.JSON.stringify(downloads);
 
 							$.when(hasDB()).then(function() {
-								alert("hasDB");
+								$.toast("Database open");
 								$.when(setInDB(STORAGE_NAME_DOWNLOADS, value, STORAGE_NAME_ALLDOWNLOADS))
 									.then(function() {
 										try {
@@ -9855,7 +9857,7 @@ $().ready(function() {
 
 							restoreMessages();
 							if (!downloadsDate || dataStoreDate.getTime() !== downloadsDate.getTime()) {
-								alert("c");
+								alert("d");
 								return $.when(_options.downloadSynchronization === "synchronize" ||
 									$.confirm(getLocalizedText("requireDownloadsSynchronization"), undefined, [
 										getLocalizedText("yes"),
