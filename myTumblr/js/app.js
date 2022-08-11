@@ -930,26 +930,36 @@ $().ready(function() {
 						window.msIDBKeyRange;
 				}
 				if (/*IDB && */window.indexedDB) {
-					var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS);
+					try {
+						var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS);
 
-					request.onerror = function(e) {
-						$.toast.error("Cannot open DB: {0}", e);
+						request.onerror = function(e) {
+							$.toast.error("Cannot open DB: {0}", e);
+							open.reject();
+						};
+						request.onsuccess = function(e) {
+							db = e.target.result;
+							open.resolve();
+						};
+						request.onupgradeneeded = function(e) {
+							try {
+								var db = event.target.result;
+
+								db.createObjectStore(STORAGE_NAME_DOWNLOADS, {
+									keyPath: KEY_PROPERTY
+								});
+								db.createObjectStore(STORAGE_NAME_ALLDOWNLOADS, {
+									keyPath: KEY_PROPERTY
+								});
+							} catch (e2) {
+								alert(e2.message);
+								open.reject();
+							}
+						};
+					} catch (e1) {
+						alert(e1.message);
 						open.reject();
-					};
-					request.onsuccess = function(e) {
-						db = e.target.result;
-						open.resolve();
-					};
-					request.onupgradeneeded = function(e) {
-						var db = event.target.result;
-
-						db.createObjectStore(STORAGE_NAME_DOWNLOADS, {
-							keyPath: KEY_PROPERTY
-						});
-						db.createObjectStore(STORAGE_NAME_ALLDOWNLOADS, {
-							keyPath: KEY_PROPERTY
-						});
-					};
+					}
 				} else {
 					open.reject();
 				}
