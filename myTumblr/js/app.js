@@ -1,21 +1,15 @@
 /*
-	~ change downloads storage to (asynchronous) Indexed DB to avoid storage quota exceedings
-	- review blog list for proper blog categorization
-	- try to detect /tagged links and change them accordingly
-	- try to detect post links and display the single post (navigate to it?)
 	- change statistics dialog with links to post types
-		- possible to change post type images to links to that post type?
+		- change post type images to links to that post type?
+	- try to detect post links and display the single post (navigate to it?)
+	- try to detect /tagged links and change them accordingly
+	- review blog list for proper blog categorization
+	- CHECK_ALL_BLOGS single-click button
 
-	- CHECK_ALL_BLOGS single-click button?
-	- GIF player for a single image in full-screen mode
-
-	- Review options
-		- Group options using jQuery pop menu?
-		- Remove select-menus?
-	- Search
+	- Search?
 	- Change CSS filters to a plugin?
+	- GIF player for a single image in full-screen mode?
 	- Blog activity graph? (in another page, like the downloader?)
-	- ;
 */
 
 "use strict";
@@ -154,7 +148,8 @@ var textTables = {
 			, "sepia": "Sepia effect"
 		}
 		, "customGifControls": "Use custom controls for GIF images"
-		, "customVideoControls": "Use custom video controls"
+		, "customVideoControls": "Use custom video controls",
+		, "databaseError": "Cannot open database: {0}"
 		, "dataStorageChangingPassword": "Changing password..."
 		, "dataStorageConnected": "Connected"
 		, "dataStorageConnecting": "Connecting..."
@@ -357,6 +352,7 @@ var textTables = {
 		, "unknownDownloadProgressWithWait": "{0} downloaded\ncurrent speed: {3}/s, average: {4}/s, maximum: {5}/s\nelapsed: {7}, waited: {6}, total: {8}"
 		, "unknownTrackName": "Unknown track name"
 		, "updated": "Updated: {0}"
+		, "upgradingDatabase": "Upgrading database..."
 		, "usageMode": "Usage mode"
 		, "usageModes": {
 			  "car_daily": "Car (day)"
@@ -426,6 +422,7 @@ var textTables = {
 		}
 		, "customGifControls": "Usa controlli personalizzati per le immagini GIF"
 		, "customVideoControls": "Usa controlli video personalizzati"
+		, "databaseError": "Impossibile aprire il database: {0}"
 		, "dataStorageChangingPassword": "Cambio password in corso..."
 		, "dataStorageConnected": "Connesso"
 		, "dataStorageConnecting": "Connessione in corso..."
@@ -628,6 +625,7 @@ var textTables = {
 		, "unknownDownloadProgressWithWait": "{0} scaricati\nvelocità: {3}/s, media: {4}/s, massima: {5}/s\ntrascorso: {7}, in attesa: {6}, totale: {8}"
 		, "unknownTrackName": "Brano sconosciuto"
 		, "updated": "Aggiornato: {0}"
+		, "upgradingDatabase": "Aggiornamento database..."
 		, "usageMode": "Modo d'uso"
 		, "usageModes": {
 			  "car_daily": "Auto (giorno)"
@@ -934,15 +932,15 @@ $().ready(function() {
 						var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS, 3);
 
 						request.onerror = function(e) {
-							$.toast.error("Cannot open DB: {0}", e);
-							open.reject();
+							$.toast.error(localizedFormat("databaseError", e));
+							open.reject(e);
 						};
 						request.onsuccess = function(e) {
 							db = e.target.result;
-							open.resolve();
+							open.resolve(db);
 						};
 						request.onupgradeneeded = function(e) {
-							$.toast("Upgrading...");
+							$.toast.message(getLocalizedText("upgradingDatabase"));
 							try {
 								var db = event.target.result;
 
@@ -957,13 +955,13 @@ $().ready(function() {
 								});
 							} catch (ex) {
 								$.toast.error(ex.message);
-								open.reject();
+								open.reject(ex);
 								throw ex;
 							}
 						};
 					} catch (e) {
 						$.toast.error(e.message);
-						open.reject();
+						open.reject(e);
 					}
 				} else {
 					open.reject();
@@ -972,21 +970,25 @@ $().ready(function() {
 
 			var getFromDB = function(key, table) {
 				return $.Deferred(function(deferred) {
-					table = table || STORAGE_NAME_DOWNLOADS;
+					try {
+						table = table || STORAGE_NAME_DOWNLOADS;
 
-					var transaction = db.transaction([table]);
+						var transaction = db.transaction([table]);
 
-					var objectStore = transaction.objectStore(table);
+						var objectStore = transaction.objectStore(table);
 
-					var request = objectStore.get(key);
+						var request = objectStore.get(key);
 
-					request.onerror = function(e) {
-						$.toast.error(e);
-						deferred.reject(e);
-					};
-					request.onsuccess = function(e) {
-						deferred.resolve((request.result) ? request.result.value : undefined);
-					};
+						request.onerror = function(e) {
+							$.toast.error(e);
+							deferred.reject(e);
+						};
+						request.onsuccess = function(e) {
+							deferred.resolve((request.result) ? request.result.value : undefined);
+						};
+					} catch (e) {
+						$.toast.error(e.message);
+					}
 				});
 			};
 
@@ -1020,6 +1022,7 @@ $().ready(function() {
 						};
 					} catch (e) {
 						$.toast.error(e.message);
+						deferred.reject(e);
 					}
 				});
 			};
@@ -1103,7 +1106,7 @@ $().ready(function() {
 								$.when(hasDB()).then(function() {
 									$.when(getFromDB(STORAGE_NAME_DOWNLOADS, STORAGE_NAME_ALLDOWNLOADS)).then(function(dbValue) {
 										downloads = (dbValue) ? window.JSON.parse(dbValue) : { };
-										deferred.resolve();
+										deferred.resolve(downloads);
 									}, deferred.reject);
 								}, function() {
 									downloads = { };
@@ -1117,8 +1120,6 @@ $().ready(function() {
 					if (!IDB) {
 						return $.Deferred(function(deferred) {
 							var fallback = function(e1) {
-									alert("merda!");
-									alert(e1);
 									try {
 										window.localStorage.setItem(STORAGE_NAME_DOWNLOADS, value);
 										deferred.resolve();
@@ -1128,15 +1129,12 @@ $().ready(function() {
 								}, value = window.JSON.stringify(downloads);
 
 							$.when(hasDB()).then(function() {
-								$.toast("Database open");
 								$.when(setInDB(STORAGE_NAME_DOWNLOADS, value, STORAGE_NAME_ALLDOWNLOADS))
 									.then(function() {
 										try {
 											window.localStorage.removeItem(STORAGE_NAME_DOWNLOADS);
-											alert("removed!");
 											deferred.resolve()
 										} catch (e) {
-											alert("cazzo: {0}".format(e.message));
 											deferred.reject(e);
 										}
 									}, fallback);
@@ -4287,9 +4285,10 @@ $().ready(function() {
 					source = window.parseArguments(source[1]).v;
 					if (source && source.length) {
 						date = new Date("{0}-{1}-{2}".format(source.substr(0, 4), source.substr(4, 2), source.substr(6, 2)));
-						if (!isNaN(date.getTime())) {
-							return localizedFormat("version", date.toLocaleDateString ? date.toLocaleDateString() : date.toLocaleString());
-						}
+
+						return localizedFormat("version", (!isNaN(date.getTime())) ?
+							date.toLocaleDateString ? date.toLocaleDateString() : date.toLocaleString() :
+							source);
 					}
 				}
 			}
@@ -9857,7 +9856,6 @@ $().ready(function() {
 
 							restoreMessages();
 							if (!downloadsDate || dataStoreDate.getTime() !== downloadsDate.getTime()) {
-								alert("e");
 								return $.when(_options.downloadSynchronization === "synchronize" ||
 									$.confirm(getLocalizedText("requireDownloadsSynchronization"), undefined, [
 										getLocalizedText("yes"),
