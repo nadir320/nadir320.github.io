@@ -1098,7 +1098,9 @@ $().ready(function() {
 					alert("Saving");
 					if (!IDB) {
 						return $.Deferred(function(deferred) {
-							var fallback = function() {
+							var fallback = function(e1) {
+									alert("merda!");
+									alert(e1);
 									try {
 										window.localStorage.setItem(STORAGE_NAME_DOWNLOADS, value);
 										deferred.resolve();
@@ -1108,6 +1110,7 @@ $().ready(function() {
 								}, value = window.JSON.stringify(downloads);
 
 							$.when(hasDB()).then(function() {
+								alert("hasDB");
 								$.when(setInDB(STORAGE_NAME_DOWNLOADS, value, STORAGE_NAME_ALLDOWNLOADS))
 									.then(function() {
 										try {
@@ -1115,6 +1118,7 @@ $().ready(function() {
 											alert("removed!");
 											deferred.resolve()
 										} catch (e) {
+											alert("cazzo: {0}".format(e.message));
 											deferred.reject(e);
 										}
 									}, fallback);
@@ -9837,7 +9841,7 @@ $().ready(function() {
 							if (!downloadsDate || dataStoreDate.getTime() !== downloadsDate.getTime()) {
 								alert(downloadsDate);
 								alert(dataStoreDate);
-								alert("aa");
+								alert("ab");
 								return $.when(_options.downloadSynchronization === "synchronize" ||
 									$.confirm(getLocalizedText("requireDownloadsSynchronization"), undefined, [
 										getLocalizedText("yes"),
