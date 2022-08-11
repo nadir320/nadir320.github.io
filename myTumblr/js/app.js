@@ -981,27 +981,33 @@ $().ready(function() {
 
 			var setInDB = function(key, value, table) {
 				return $.Deferred(function(deferred) {
-					table = table || STORAGE_NAME_DOWNLOADS;
+					try {
+						table = table || STORAGE_NAME_DOWNLOADS;
 
-					var transaction = db.transaction([table], "readwrite");
+						var transaction = db.transaction([table], "readwrite");
 
-					var objectStore = transaction.objectStore(table);
+						var objectStore = transaction.objectStore(table);
 
-					var data = {
-						"value": value
-					};
+						var data = {
+							"value": value
+						};
 
-					data[KEY_PROPERTY] = key;
+						data[KEY_PROPERTY] = key;
 
-					var request = objectStore.put(data);
+						var request = objectStore.put(data);
 
-					request.onerror = function(e) {
-						$.toast.error("Cannot set value in DB: {0}", e);
-						deferred.reject(e);
-					};
-					request.onsuccess = function(e) {
-						deferred.resolve(request.result);
-					};
+						request.onerror = function(e) {
+							$.toast.error("Cannot set value in DB: {0}", e);
+							deferred.reject(e);
+						};
+						request.onsuccess = function(e) {
+							$.toast("Value set in DB! (maybe)");
+							deferred.resolve(request.result);
+						};
+					} catch (e) {
+						alert("fffuuuu");
+						alert(e.message);
+					}
 				});
 			};
 
