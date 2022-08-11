@@ -931,7 +931,7 @@ $().ready(function() {
 				}
 				if (/*IDB && */window.indexedDB) {
 					try {
-						var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS, 2);
+						var request = window.indexedDB.open(STORAGE_NAME_DOWNLOADS, 3);
 
 						request.onerror = function(e) {
 							$.toast.error("Cannot open DB: {0}", e);
@@ -958,6 +958,7 @@ $().ready(function() {
 							} catch (ex) {
 								$.toast.error(ex.message);
 								open.reject();
+								throw ex;
 							}
 						};
 					} catch (e) {
