@@ -9833,6 +9833,8 @@ $().ready(function() {
 
 							restoreMessages();
 							if (!downloadsDate || dataStoreDate.getTime() !== downloadsDate.getTime()) {
+								alert(downloadsDate);
+								alert(dataStoreDate);
 								return $.when(_options.downloadSynchronization === "synchronize" ||
 									$.confirm(getLocalizedText("requireDownloadsSynchronization"), undefined, [
 										getLocalizedText("yes"),
