@@ -1,4 +1,5 @@
 /*
+	- fix bug in autocorrect useless posts
 	- change statistics dialog with links to post types
 		- change post type images to links to that post type?
 	- try to detect post links and display the single post (navigate to it?)
@@ -148,7 +149,7 @@ var textTables = {
 			, "sepia": "Sepia effect"
 		}
 		, "customGifControls": "Use custom controls for GIF images"
-		, "customVideoControls": "Use custom video controls",
+		, "customVideoControls": "Use custom video controls"
 		, "databaseError": "Cannot open database: {0}"
 		, "dataStorageChangingPassword": "Changing password..."
 		, "dataStorageConnected": "Connected"
@@ -259,7 +260,7 @@ var textTables = {
 		, "newPostsTitle": "({0} / {1})"
 		, "no": "No"
 		, "noActiveDownload": "No active download"
-		, "noBlog": "No blog for current user"
+		, "noBlog": "No blog for the current user"
 		, "noDownloadsInPage": "No downloads in page {0}"
 		, "noNewPost": "No new post"
 		, "nonNewBlogsStatus": "{0}: {1} (SFW: {2}, NSFW: {3})\nTotal posts: {4} (SFW: {5}, NSFW: {6})\nLast updated: {7}\non {8}\n({9})\nLast viewed: {10}\non {11}\n({12})\nChanged: {13}"
@@ -4436,6 +4437,14 @@ $().ready(function() {
 						}
 					}
 				});
+				setTimeout(function() {
+					$("#blogs")
+						.append($(document.createElement("div"))
+							.addClass("noBlog")
+							.addClass("ui-state-highlight")
+							.addClass("ui-corner-all")
+							.text(getLocalizedText("noBlog")));
+				});
 
 				$(".popover")
 					.button({
@@ -5232,6 +5241,7 @@ $().ready(function() {
 						return proxy.name === PROXIES[i];
 					})[0];
 				});
+
 				window.setTimeout(function() {
 					$(document.body).addClass("transitionable");
 					applyPageOptions();
