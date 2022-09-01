@@ -31,6 +31,12 @@
 				return a;
 			};
 		}
+
+		var storageName = _thisScript.getAttribute("storage");
+
+		if (storageName && storageName.length) {
+			_storageName = storageName + "Storage";
+		}
 	})();
 
 	var _bindClicks = function(elements, callback) {
@@ -241,12 +247,6 @@
 				_singletonInvoke(initEngine, callback);
 			},
 			initEngine = function(callback) {
-				var storageName = _thisScript.getAttribute("storage");
-
-				if (storageName && storageName.length) {
-					_storageName = storageName + "Storage";
-				}
-
 				var palette = new Image();
 
 				palette.onload = function() {
