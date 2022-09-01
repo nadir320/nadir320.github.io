@@ -1,6 +1,10 @@
 ﻿"use strict";
 
 (function() {
+	var _mapStyleID = "map-style",
+		_stateKey = "mahjong-game-state",
+		_storageName = "sessionStorage";
+
 	var _thisScript = Array.prototype.slice.call(window.document.getElementsByTagName("script")).pop();
 
 	(function() {
@@ -116,6 +120,20 @@
 		return params;
 	};
 
+	var _readObject = function(key) {
+		try {
+			var storage = window[_storageName];
+
+			if (storage) {
+				var value = storage.getItem(key);
+
+				if (value && value.length) {
+					return window.JSON.parse(value);
+				}
+			}
+		} catch (e) { }
+	};
+
 	var _setStyle = function(css, id) {
 		var cssElement;
 
@@ -154,8 +172,21 @@
 		}
 	};
 
-	var _debug = _param("debug"),
-		_mapStyleID = "map-style";
+	var _writeObject = function(key, value) {
+		try {
+			var storage = window[_storageName];
+
+			if (storage) {
+				if (typeof value !== "undefined") {
+					storage.setItem(key, window.JSON.stringify(value));
+				} else {
+					storage.removeItem(key);
+				}
+			}
+		} catch (e) { }
+	};
+
+	var _debug = _param("debug");
 
 	var Game;
 
@@ -210,6 +241,12 @@
 				_singletonInvoke(initEngine, callback);
 			},
 			initEngine = function(callback) {
+				var storageName = _thisScript.getAttribute("storage");
+
+				if (storageName && storageName.length) {
+					_storageName = storageName + "Storage";
+				}
+
 				var palette = new Image();
 
 				palette.onload = function() {
@@ -288,7 +325,7 @@
 				}
 				return true;
 			},
-			loadFaces = function(map) {
+			loadFaces = function(map, generate) {
 				var x1 = _min(map.map(function(item) { return item.x; })),
 					x2 = _max(map.map(function(item) { return item.x + item.w; })),
 					y1 = _min(map.map(function(item) { return item.y; })),
@@ -380,111 +417,122 @@
 
 				var tilesPerType;
 
-				(function() {
-					var generations = 0, n, newTiles, variableFaces = map.findIndex(function(tile) {
-						return typeof tile.faceIndex !== "undefined";
-					}) < 0, scanProperty = (variableFaces) ?
-						"type" :
-						"faceIndex";
+				if (generate) {
+					(function() {
+						var generations = 0, n, newTiles, variableFaces = map.findIndex(function(tile) {
+							return typeof tile.faceIndex !== "undefined";
+						}) < 0, scanProperty = (variableFaces) ?
+							"type" :
+							"faceIndex";
 
-					do {
-						var index, faceSet = faces.slice(), m, n, t = { }, tilesToScan;
+						do {
+							var index, faceSet = faces.slice(), m, n, t = { }, tilesToScan;
 
-						generations++;
-						if (variableFaces) {
-							while (map.length < faceSet.length) {
-								index = Math.floor(Math.random() * faceSet.length);
-								index = faceSet[index].type;
-								m = (t[index]) ? 0 : 2;
-								t[index] = true;
-								n = 0;
-								faceSet = faceSet.filter(function(item) {
-									return item.type !== index || n++ < m;
-								});
-							}
-							while (map.length > faceSet.length) {
-								index = Math.floor(Math.random() * faceSet.length);
-								index = faceSet[index].type;
-								n = faceSet.length;
-								newTiles = faceSet.filter(function(item) {
-									return item.type === index;
-								}).slice(0, 2).map(function(item) {
-									return {
-										background: {
-											x: item.background.x,
-											y: item.background.y
-										},
-										face: item.face,
-										index: n++,
-										type: item.type
-									};
-								});
-								newTiles.splice(0, 0, 0, 0);
-								faceSet.splice.apply(faceSet, newTiles);
-							}
-							tilesToScan = faceSet;
-						} else {
-							tilesToScan = map;
-						}
-
-						tilesPerType = { };
-						tilesToScan.forEach(function(item) {
-							if (typeof tilesPerType[item[scanProperty]] !== "undefined") {
-								tilesPerType[item[scanProperty]]++;
-							} else {
-								tilesPerType[item[scanProperty]] = 1;
-							}
-						});
-
-						map.forEach(function(tile, i) {
-							tile.index = i;
-
-							var index = (variableFaces) ?
-									Math.floor(Math.random() * faceSet.length) :
-									tile.faceIndex,
-								face = faceSet[index];
-
-							tile.background = face.background;
-							tile.face = face.face;
-							tile.type = face.type;
+							generations++;
 							if (variableFaces) {
-								faceSet.splice(index, 1);
+								while (map.length < faceSet.length) {
+									index = Math.floor(Math.random() * faceSet.length);
+									index = faceSet[index].type;
+									m = (t[index]) ? 0 : 2;
+									t[index] = true;
+									n = 0;
+									faceSet = faceSet.filter(function(item) {
+										return item.type !== index || n++ < m;
+									});
+								}
+								while (map.length > faceSet.length) {
+									index = Math.floor(Math.random() * faceSet.length);
+									index = faceSet[index].type;
+									n = faceSet.length;
+									newTiles = faceSet.filter(function(item) {
+										return item.type === index;
+									}).slice(0, 2).map(function(item) {
+										return {
+											background: {
+												x: item.background.x,
+												y: item.background.y
+											},
+											face: item.face,
+											index: n++,
+											type: item.type
+										};
+									});
+									newTiles.splice(0, 0, 0, 0);
+									faceSet.splice.apply(faceSet, newTiles);
+								}
+								tilesToScan = faceSet;
+							} else {
+								tilesToScan = map;
 							}
-						});
-					} while ((function() {
-						var i,
-							inColumn,
-							index,
-							length,
-							maxPerColumn,
-							non0ZTiles,
-							tile,
-							z;
 
-						non0ZTiles = map.filter(function(item) {
-							return item.z;
-						});
+							tilesPerType = { };
+							tilesToScan.forEach(function(item) {
+								if (typeof tilesPerType[item[scanProperty]] !== "undefined") {
+									tilesPerType[item[scanProperty]]++;
+								} else {
+									tilesPerType[item[scanProperty]] = 1;
+								}
+							});
 
-						for (i = 0, length = non0ZTiles.length; i < length; i++) {
-							tile = non0ZTiles[i];
-							maxPerColumn = tilesPerType[tile[scanProperty]] / 2;
+							map.forEach(function(tile, i) {
+								tile.index = i;
 
-							inColumn = 0;
-							for (z = z1; z <= z2; z++) {
-								if (z !== tile.z && map.findIndex(function(item) {
-									return item.z === z && item.type === tile.type && zOverlap(non0ZTiles[i], item);
-								}) >= 0) {
-									if (++inColumn >= maxPerColumn) {
-										if (generations > Math.pow(map.length, 2)) {
-											throw new Error();
+								var index = (variableFaces) ?
+										Math.floor(Math.random() * faceSet.length) :
+										tile.faceIndex,
+									face = faceSet[index];
+
+								tile.background = face.background;
+								tile.face = face.face;
+								tile.type = face.type;
+								if (variableFaces) {
+									faceSet.splice(index, 1);
+								}
+							});
+						} while ((function() {
+							var i,
+								inColumn,
+								index,
+								length,
+								maxPerColumn,
+								non0ZTiles,
+								tile,
+								z;
+
+							non0ZTiles = map.filter(function(item) {
+								return item.z;
+							});
+
+							for (i = 0, length = non0ZTiles.length; i < length; i++) {
+								tile = non0ZTiles[i];
+								maxPerColumn = tilesPerType[tile[scanProperty]] / 2;
+
+								inColumn = 0;
+								for (z = z1; z <= z2; z++) {
+									if (z !== tile.z && map.findIndex(function(item) {
+										return item.z === z && item.type === tile.type && zOverlap(non0ZTiles[i], item);
+									}) >= 0) {
+										if (++inColumn >= maxPerColumn) {
+											if (generations > Math.pow(map.length, 2)) {
+												throw new Error();
+											}
+											return true;
 										}
-										return true;
 									}
 								}
 							}
+						})());
+					})();
+				} else {
+					tilesPerType = { };
+					faces.forEach(function(item) {
+						if (typeof tilesPerType[item.type] !== "undefined") {
+							tilesPerType[item.type]++;
+						} else {
+							tilesPerType[item.type] = 1;
 						}
-					})());
-				})();
+					});
+				}
 				return tilesPerType;
 			},
 			zCover = function(what, cover) {
@@ -499,7 +547,7 @@
 					;
 			};
 
-		Game = function(board, map, ready) {
+		Game = function(board, map, ready, state) {
 			var availableMoves = 0,
 				end,
 				hiddenTiles = 0,
@@ -756,7 +804,13 @@
 
 			init(function() {
 				try {
-					tilesPerType = loadFaces(tileSet = map);
+					if (state) {
+						end = state.end;
+						hintIndex = state.hintIndex;
+						start = state.start;
+						map = state.tileSet;
+					}
+					tilesPerType = loadFaces(tileSet = map, !state);
 
 					Array.from(board.childNodes).forEach(function(node) {
 						node.parentElement.removeChild(node);
@@ -870,6 +924,19 @@
 						})();
 						checkStatus();
 					})();
+
+					if (state && state.history && state.history.length) {
+						history = state.history.map(function(entry, i) {
+							return entry.map(function(index, j) {
+								var item = board.querySelector("[data-index='" + index + "']");
+
+								_hide(item);
+								return item;
+							});
+						});
+						checkStatus();
+					}
+
 					if (ready) {
 						ready();
 					}
@@ -905,6 +972,20 @@
 						});
 						hintIndex = index;
 					}
+				},
+				save() {
+					_writeObject(_stateKey, {
+						end: end,
+						hintIndex: hintIndex,
+						history: history.map(function(entry, i) {
+							return entry.map(function(item, j) {
+								return parseInt(item.dataset.index);
+							});
+						}),
+						start: start,
+						tileSet: tileSet,
+						tilesPerType: tilesPerType
+					});
 				},
 				get start() { return start; },
 				undo: function(all) {
@@ -1009,6 +1090,10 @@
 			document.getElementById("tiles").innerText = (game) ? game.visibleTiles.toLocaleString() : "";
 			document.getElementById("availableMoves").innerText = (game) ? game.availableMoves.toLocaleString() : "";
 			document.getElementById("hiddenTiles").innerText = (game) ? game.hiddenTiles.toLocaleString() : "";
+
+			if (game) {
+				game.save();
+			}
 		};
 
 		var hideMessage = function() {
@@ -1017,7 +1102,7 @@
 			_hide(document.getElementById("messageBackdrop"));
 		};
 
-		var newGame = function() {
+		var newGame = function(state) {
 			if (mapName) {
 				if (game) {
 					game = undefined;
@@ -1030,7 +1115,7 @@
 						resizer();
 						checkGame();
 					});
-				});
+				}, state);
 			}
 		};
 
@@ -1094,7 +1179,7 @@
 				hideMessage();
 			});
 			_bindClickByTagName(message, "button", hideMessage);
-			_bindClickByClassName(message, "newGame", newGame);
+			_bindClickByClassName(message, "newGame", function() { newGame(); });
 			_bindClickByClassName(message, "restart", restart);
 
 			_bindClickByTagName(menu, "button", hideMessage);
@@ -1201,6 +1286,8 @@
 
 		window.setInterval(refreshTime, 100);
 
-		document.addEventListener("DOMContentLoaded", newGame);
+		document.addEventListener("DOMContentLoaded", function() {
+			newGame(_readObject(_stateKey));
+		});
 	})();
 })();
