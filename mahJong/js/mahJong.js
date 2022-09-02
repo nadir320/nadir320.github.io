@@ -974,8 +974,7 @@
 					}
 				},
 				save() {
-					_writeObject(_stateKey, {
-						end: end,
+					_writeObject(_stateKey, (end) ? undefined : {
 						hintIndex: hintIndex,
 						history: history.map(function(entry, i) {
 							return entry.map(function(item, j) {
