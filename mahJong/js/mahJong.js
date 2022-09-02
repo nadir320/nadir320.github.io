@@ -1,9 +1,10 @@
 ﻿"use strict";
 
 (function() {
-	var _mapStyleID = "map-style",
+	var _mapNameKey = "mahjong-map-name",
+		_mapStyleID = "map-style",
 		_stateKey = "mahjong-game-state",
-		_storageName = "sessionStorage";
+		_storageName = "session";
 
 	var _thisScript = Array.prototype.slice.call(window.document.getElementsByTagName("script")).pop();
 
@@ -35,8 +36,9 @@
 		var storageName = _thisScript.getAttribute("storage");
 
 		if (storageName && storageName.length) {
-			_storageName = storageName + "Storage";
+			_storageName = storageName;
 		}
+		_storageName += "Storage";
 	})();
 
 	var _bindClicks = function(elements, callback) {
@@ -127,15 +129,21 @@
 	};
 
 	var _readObject = function(key) {
+		var value = _readValue(key);
+
+		if (value && value.length) {
+			try {
+				return window.JSON.parse(value);
+			} catch (e) { }
+		}
+	};
+
+	var _readValue = function(key) {
 		try {
 			var storage = window[_storageName];
 
-			if (storage) {
-				var value = storage.getItem(key);
-
-				if (value && value.length) {
-					return window.JSON.parse(value);
-				}
+			if (storage && storage.getItem) {
+				return storage.getItem(key);
 			}
 		} catch (e) { }
 	};
@@ -179,18 +187,27 @@
 	};
 
 	var _writeObject = function(key, value) {
+		if (typeof value !== "undefined") {
+			value = window.JSON.stringify(value);
+		}
+		_writeValue(key, value);
+	};
+
+	var _writeValue = function(key, value) {
 		try {
 			var storage = window[_storageName];
 
 			if (storage) {
 				if (typeof value !== "undefined") {
-					storage.setItem(key, window.JSON.stringify(value));
-				} else {
+					if (storage.setItem) {
+						storage.setItem(key, value);
+					}
+				} else if (storage.removeItem) {
 					storage.removeItem(key);
 				}
 			}
 		} catch (e) { }
-	};
+	}
 
 	var _debug = _param("debug");
 
@@ -800,6 +817,18 @@
 						/* } */
 					}
 				}
+
+				_writeObject(_stateKey, (end) ? undefined : {
+					hintIndex: hintIndex,
+					history: history.map(function(entry, i) {
+						return entry.map(function(item, j) {
+							return parseInt(item.dataset.index);
+						});
+					}),
+					start: start,
+					tileSet: tileSet,
+					tilesPerType: tilesPerType
+				});
 			};
 
 			init(function() {
@@ -973,19 +1002,6 @@
 						hintIndex = index;
 					}
 				},
-				save() {
-					_writeObject(_stateKey, (end) ? undefined : {
-						hintIndex: hintIndex,
-						history: history.map(function(entry, i) {
-							return entry.map(function(item, j) {
-								return parseInt(item.dataset.index);
-							});
-						}),
-						start: start,
-						tileSet: tileSet,
-						tilesPerType: tilesPerType
-					});
-				},
 				get start() { return start; },
 				undo: function(all) {
 					if (history.length) {
@@ -1058,11 +1074,7 @@
 
 		var changeMap = function() {
 			mapName = document.getElementById("mapList").querySelector("input[type=radio]:checked").value;
-			try {
-				if (window.sessionStorage && window.sessionStorage.setItem) {
-					window.sessionStorage.setItem("mahJong-map", mapName);
-				}
-			} catch (e) { }
+			_writeValue(_mapNameKey, mapName);
 			newGame();
 		};
 
@@ -1089,10 +1101,6 @@
 			document.getElementById("tiles").innerText = (game) ? game.visibleTiles.toLocaleString() : "";
 			document.getElementById("availableMoves").innerText = (game) ? game.availableMoves.toLocaleString() : "";
 			document.getElementById("hiddenTiles").innerText = (game) ? game.hiddenTiles.toLocaleString() : "";
-
-			if (game) {
-				game.save();
-			}
 		};
 
 		var hideMessage = function() {
@@ -1188,12 +1196,7 @@
 				var allMaps, list, names;
 
 				if ((allMaps = window.maps) && (names = Object.keys(allMaps)).length) {
-					try {
-						if (window.sessionStorage && window.sessionStorage.getItem) {
-							mapName = window.sessionStorage.getItem("mahJong-map");
-						}
-					} catch (e) { }
-					if (mapName && names.indexOf(mapName) < 0) {
+					if ((mapName = _readValue(_mapNameKey)) && names.indexOf(mapName) < 0) {
 						mapName = undefined;
 					}
 					mapName = mapName || names[0];
