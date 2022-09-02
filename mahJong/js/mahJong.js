@@ -788,7 +788,7 @@
 							var n = function(i) {
 								var box = getTileBox(i[0]);
 
-								return i.length * 1e9 + box.z * 1e6 + box.y * 1e3 + box.x;
+								return ((i[0].classList.contains("last")) ? 1 : 0) * 1e12 + i.length * 1e9 + box.z * 1e6 + box.y * 1e3 + box.x;
 							}, x = n(a), y = n(b);
 
 							return (x < y) ? 1 : (x > y) ? -1 : 0;
@@ -834,7 +834,6 @@
 			init(function() {
 				try {
 					if (state) {
-						end = state.end;
 						hintIndex = state.hintIndex;
 						start = state.start;
 						map = state.tileSet;
