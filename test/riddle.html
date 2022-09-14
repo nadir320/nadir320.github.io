@@ -1,0 +1,491 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="../images/box.png">
+		<title>Riddle</title>
+		<style type="text/css">
+			* {
+				box-sizing: border-box;
+			}
+
+			body, html {
+				margin: 0;
+				height: 100%;
+			}
+
+			body {
+				background-color: whitesmoke;
+			}
+
+			.background {
+				background-image: url("../images/box.png");
+				background-position: center;
+				background-size: cover;
+				bottom: 0;
+				opacity: 0.15;
+				position: fixed;
+				left: 0;
+				right: 0;
+				top: 0;
+				z-index: -1;
+			}
+
+			.scaler {
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+				justify-content: center;
+				padding: 1rem;
+			}
+
+			#board table {
+				border-collapse: collapse;
+				box-shadow: 0 0 1rem dimGray;
+				margin: 0 auto;
+				opacity: 0.75;
+			}
+
+			#board .tile {
+				border: 1px solid dimGray;
+				background-color: cornSilk;
+				color: midnightBlue;
+				font-weight: bold;
+				text-align: center;
+				user-select: none;
+				vertical-align: middle;
+			}
+
+			#board .tile .box {
+				font-size: smaller;
+			}
+
+			#board .tile .slip {
+				border-style: solid;
+				border-width: 1px;
+				display: inline-block;
+				padding: 2px;
+			}
+
+			#board .tile:not(.clicked) {
+				/* color: transparent; */
+				cursor: pointer;
+			}
+
+			#board .tile.clicked {
+				background-color: tan;
+			}
+
+			#board .tile.current, #loops .loop.current {
+				background-color: rgba(112, 128, 144, 0.5);
+			}
+
+			#board .tile:not(.clicked):hover,
+			#loops .loop:hover {
+				background-color: gold;
+			}
+
+			#board .tile.loop-1 { color: red; }
+
+			#commands {
+				background-color: whitesmoke;
+				border: 1px solid dimGray;
+				border-radius: 1rem;
+				box-shadow: 0 0 1rem dimGray;
+				position: fixed;
+				padding: 1rem;
+				right: 1rem;
+				top: 1rem;
+			}
+
+			#commands .buttons {
+				text-align: center;
+			}
+
+			#commands .buttons button {
+				border: 1px solid silver;
+				border-radius: 0.25rem;
+				cursor: pointer;
+				padding: 0.25rem 0.5rem;
+			}
+
+			#loops .loop {
+				border-radius: 0.25rem;
+				cursor: pointer;
+				padding: 0.25rem;
+			}
+
+			#loops .result {
+				font-weight: bold;
+			}
+
+			#loops .result.alive { color: green; }
+			#loops .result.dead { color: red; }
+
+			.line:not(.current) {
+				display: none;
+			}
+
+			.line {
+				pointer-events: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="background"></div>
+		<div class="scaler">
+			<div id="board"></div>
+		</div>
+		<div id="commands">
+			<div class="buttons">
+				<button id="new-button" type="button">New</button>
+				<button id="new-thousand" type="button">+1000</button>
+			</div>
+			<hr/>
+			<div id="stats">
+				<div>Alive: <span id="alive"></span></div>
+				<div>Dead: <span id="dead"></span></div>
+				<div>Total: <span id="total"></span></div>
+			</div>
+			<hr/>
+			<div id="loops">
+			</div>
+		</div>
+		<script type="text/javascript">
+			"use strict";
+
+			let _alive = 0,
+				_dead = 0;
+
+			const _setStyle = (css, id) => {
+				var cssElement;
+
+				if (id && (cssElement = document.getElementById(id))) {
+					cssElement.innerText = css;
+				} else {
+					cssElement = document.createElement("style");
+					cssElement.setAttribute("type", "text/css");
+					if (id) {
+						cssElement.setAttribute("id", id);
+					}
+					cssElement.innerText = css;
+					document.querySelector("head").appendChild(cssElement);
+				}
+			};
+
+			const _connect = (e1, e2, thickness, color) => {
+				const getOffset = (e) => {
+					const rect = e.getBoundingClientRect();
+					return {
+						left: rect.left + window.pageXOffset,
+						top: rect.top + window.pageYOffset,
+						width: rect.width || e.offsetWidth,
+						height: rect.height || e.offsetHeight
+					};
+				};
+
+				const off1 = getOffset(e1),
+					off2 = getOffset(e2);
+
+				const x1 = off1.left + off1.width / 2,
+					y1 = off1.top + off1.height / 2;
+
+				const x2 = off2.left + off2.width / 2,
+					y2 = off2.top + off2.height / 2;
+
+				const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+
+				const cx = ((x1 + x2) / 2) - (length / 2),
+					cy = ((y1 + y2) / 2) - (thickness / 2);
+
+				const angle = Math.atan2(y1 - y2, x1 - x2) * (180 / Math.PI);
+
+				const line = document.createElement("div");
+
+				line.classList.add("line");
+				line.style.margin = 0;
+				line.style.padding = 0;
+				if (thickness) {
+					line.style.height = thickness + "px";
+				}
+				if (color) {
+					line.style.backgroundColor = color;
+				}
+				line.style.lineHeight = "1px";
+				line.style.position = "absolute";
+				line.style.left = cx + "px";
+				line.style.top = cy + "px";
+				line.style.width = length + "px";
+				line.style.transform = "rotate(" + angle + "deg)";
+
+				document.body.appendChild(line);
+				return line;
+			}
+
+			const Game = function(board, sim) {
+				const R = 10,
+					C = 10,
+					H = 48,
+					W = 48,
+					P = 10,
+					S = "§";
+
+				const slips = [ ];
+
+				for (let i = 0; i < R * C; i++) slips.push(i);
+				slips.sort((a, b) => Math.random() * 2 - 1);
+
+				const findLoop = (n) => {
+					const loop = [n];
+
+					let x;
+
+					while (!loop.includes(x = slips[n])) {
+						if (x === undefined) debugger;
+						loop.push(x);
+						n = x;
+					}
+					return loop;
+				};
+
+				const loops = [];
+
+				(() => {
+					let copy = slips.slice();
+
+					while (copy.length) {
+						const loop = findLoop(copy[0]);
+
+						loops.push(loop);
+						copy = copy.filter((n) => !loop.includes(n));
+					}
+				})();
+				loops.sort((a, b) => b.length - a.length);
+
+				if (!sim) {
+					Array.from(board.childNodes).forEach(function(node) {
+						node.parentElement.removeChild(node);
+					});
+
+					const t = document.createElement("table");
+
+					board.appendChild(t);
+
+					const b = document.createElement("tbody");
+
+					t.appendChild(b);
+
+					for (let j = 0, k = 0; j < R; j++) {
+						const row = document.createElement("tr");
+
+						for (let i = 0; i < C; i++) {
+							const tile = document.createElement("td");
+
+							tile.classList.add("tile");
+							tile.dataset.x = i;
+							tile.dataset.y = j;
+							tile.dataset.k = k;
+							tile.dataset.s = slips[k];
+
+							const box = document.createElement("div");
+
+							box.classList.add("box");
+							box.appendChild(document.createTextNode(parseInt(tile.dataset.k) + 1));
+							tile.appendChild(box);
+
+							const slip = document.createElement("div");
+
+							slip.classList.add("slip");
+							slip.appendChild(document.createTextNode(parseInt(tile.dataset.s) + 1));
+							tile.appendChild(slip);
+
+							tile.addEventListener("click", (e) => {
+								let t = e.target;
+
+								while (t.localName !== "td") t = t.parentElement;
+								if (!t.classList.contains("clicked")) {
+									const tiles = Array.from(board.querySelectorAll(".tile"));
+
+									const index = loops.findIndex((loop) => loop.includes(parseInt(t.dataset.k))),
+										loop = loops[index];
+
+									tiles.forEach((x) => {
+										x.classList[(x === t) ? "add" : "remove"]("clicked");
+										//x.classList[(loop.includes(parseInt(x.dataset.s))) ? "add" : "remove"]("current");
+									});
+
+									//Array.from(document.querySelectorAll(".loop")).forEach((l) => l.classList[(parseInt(l.dataset.loop) === index) ? "add" : "remove"]("current"));
+									Array.from(document.querySelectorAll(".loop")).forEach((l) => l.classList[(l.classList.contains("loop" + index)) ? "add" : "remove"]("current"));
+								}
+							});
+							row.appendChild(tile);
+							k++;
+						}
+						b.appendChild(row);
+					}
+
+					const r = Math.random() * (360 / loops.length);
+
+					_setStyle([".tile{width:" + W + "px;height:" + H + "px}", ...loops.map((l, i) => {
+						let x = (i + 1 * 0) / loops.length * 360;
+
+						x = Math.floor(x + r) % 360;
+
+						const c = "hsl(" + x + ", 80%, 50%) !important",
+							c2 = "hsla(" + x + ", 80%, 50%, 35%) !important";
+
+						return [
+							".loop" + i + "{color:" + c + "}",
+							".loop" + i + " .slip{border-color:" + c + "}",
+							".loop" + i + ".line{background-color:" + c2 + "}"
+						].join("");
+					})].join(""), S);
+
+					Array.from(board.querySelectorAll(".tile")).forEach((tile) =>  {
+						const n = loops.findIndex((loop) => loop.includes(parseInt(tile.dataset.k)));
+
+						tile.classList.add("loop");
+						tile.classList.add("loop" + n);
+					});
+				}
+				((d) => {
+					let success = true;
+
+					if (!sim) {
+						Array.from(document.querySelectorAll(".line")).forEach((i) => i.parentElement.removeChild(i));
+						Array.from(d.childNodes).forEach((i) => d.removeChild(i));
+					}
+
+					loops.forEach((loop, i) => {
+						if (!sim) {
+							const x = document.createElement("div");
+
+							x.dataset.loop = i;
+							x.classList.add("loop");
+							x.classList.add("loop" + i);
+							x.appendChild(document.createTextNode("Loop #" + (i + 1) + ": " + loop.length));
+							x.addEventListener("click", (e) => {
+								board.querySelector(".tile[data-k='" + loops[i][0] + "']").click();
+							});
+							d.appendChild(x);
+						}
+						if (loop.length > Math.ceil(R * C + 1) / 2) {
+							success = false;
+						}
+						if (!sim && loop.length > 1) {
+							const c = (a, b) => {
+								const l = _connect(board.querySelector(".tile[data-k='" + loop[a] + "']"),
+									board.querySelector(".tile[data-k='" + loop[b] + "']"), 2);
+
+								l.classList.add("loop");
+								l.classList.add("loop" + i);
+							};
+
+							for (let j = 0; j < loop.length - 1; j++) {
+								c(j, j + 1);
+							}
+							if (loop.length > 2) {
+								c(loop.length - 1, 0);
+							}
+						}
+					});
+					if (!sim) {
+						d.appendChild(document.createElement("hr"));
+
+						const y = document.createElement("div");
+
+						y.classList.add("result");
+						y.classList.add((success) ? "alive" : "dead");
+						y.appendChild(document.createTextNode((success) ? "The prisoners are alive!" : "The prisoners are dead..."));
+						d.appendChild(y);
+					}
+					if (success) {
+						_alive++;
+					} else {
+						_dead++;
+					}
+					if (!sim) {
+						const r = (n, e) => Math.round((n + Number.EPSILON) * Math.pow(10, e || 0)) / Math.pow(10, e || 0);
+
+						document.getElementById("total").innerText = _alive + _dead;
+						document.getElementById("alive").innerText = _alive + " (" + r((_alive / (_alive + _dead)) * 100, 1) + "%)";
+						document.getElementById("dead").innerText = _dead + " (" + r((_dead / (_alive + _dead)) * 100, 1) + "%)";
+					}
+				})(document.getElementById("loops"));
+
+				return  {
+					board: {
+						width: C * W,
+						height: R * H,
+					},
+					constants: {
+						padding: P
+					}
+				};
+			};
+
+			var game, resizer;
+
+			const newGame = (sim) => {
+				game = new Game(document.getElementById("board"), sim);
+				if (!sim) {
+					resizer();
+				}
+			};
+
+			(() => {
+				const scaler = document.querySelector(".scaler");
+
+				(resizer = function() {
+					if (game) {
+						var x = (window.innerWidth - 2 * game.constants.padding) / game.board.width,
+							y = (window.innerHeight - 2 * game.constants.padding) / game.board.height,
+							z = 1;
+
+						if (board.clientHeight) {
+							if (x < 1 || y < 1) {
+								z = Math.min(x, y);
+							}
+
+							scaler.style["-ms-transform"] =
+								scaler.style["-moz-transform"] =
+								scaler.style["-o-transform"] =
+								scaler.style["-webkit-transform"] =
+								scaler.style.transform = (z < 1) ?
+									"scale(" + z + ")" : "";
+						}
+					}
+				})();
+				window.addEventListener("resize", resizer);
+			})();
+
+			document.addEventListener("keydown", function(e) {
+				switch (e.which) {
+					case 113: /* F2 */
+						document.getElementById((e.altKey || e.shiftKey || e.ctrlKey) ? "new-thousand" : "new-button").click();
+						break;
+					default:
+						/* console.info(e.which); */
+						break;
+				}
+			});
+			document.getElementById("new-button").addEventListener("click", () => {
+				setTimeout(newGame);
+			});
+			document.getElementById("new-thousand").addEventListener("click", () => {
+				setTimeout(() => {
+					const x = (_alive + _dead === 1) ? -1 : 0;
+
+					for (let i = 0; i < 1e3 - 1 + x; i++) {
+						newGame(true);
+					}
+					newGame();
+				});
+			});
+
+			newGame();
+		</script>
+	</body>
+</html>

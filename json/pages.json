@@ -9,10 +9,12 @@
 		, { "text": "Uomini e donne", "url": "?uominiEDonne=1&title=Uomini%20e%20donne", "icon": "./mediaset/images/uominiEDonne.png" }
 	], "disabled": true }
 	, { "text": "Test", "url": "./test", "pages": [
-		  { "text": "Calcio a Genova", "url": "calcio.html", "icon": "./images/ball.png" }
+		  { "text": "Caccia al tesoro", "url": "treasure-hunt.html", "icon": "./images/treasure.png" }
+		, { "text": "Calcio a Genova", "url": "calcio.html", "icon": "./images/ball.png" }
 		, { "text": "Download", "url": "download.html", "icon": "./images/download.png" }
 		, { "text": "CryptoJS", "url": "cryptoJS.html", "icon": "./images/padlock.png" }
 		, { "text": "ECCAIRS 5 Web API", "url": "eccairs5", "icon": "./eccairs5/favicon.ico", "forceHTTP": true }
+		, { "text": "Indovinello", "url": "riddle.html", "icon": "./images/box.png" }
 		, { "text": "Mah Jong", "url": "../mahJong", "icon": "./mahJong/images/greenDragon.png" }
 		, { "text": "Mobile", "url": "mobile.html", "icon": "./images/mobile.png" }
 		, { "text": "Note", "url": "notes.html", "icon": "./images/notes.png" }

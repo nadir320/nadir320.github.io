@@ -1,0 +1,221 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="../images/treasure.png">
+		<title>Treasure Hunt</title>
+		<style type="text/css">
+			* {
+				box-sizing: border-box;
+			}
+
+			body, html {
+				margin: 0;
+				height: 100%;
+			}
+
+			body {
+				background-color: whitesmoke;
+			}
+
+			.background {
+				background-image: url("../images/treasure.png");
+				background-position: center;
+				background-size: cover;
+				bottom: 0;
+				opacity: 0.15;
+				position: fixed;
+				left: 0;
+				right: 0;
+				top: 0;
+				z-index: -1;
+			}
+
+			.scaler {
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+				justify-content: center;
+				padding: 1rem;
+			}
+
+			#board table {
+				border-collapse: collapse;
+				box-shadow: 0 0 1rem dimGray;
+				margin: 0 auto;
+				opacity: 0.75;
+			}
+
+			#board .tile {
+				border: 1px solid dimGray;
+				background-color: cornSilk;
+				color: midnightBlue;
+				font-weight: bold;
+				text-align: center;
+				user-select: none;
+				vertical-align: middle;
+			}
+
+			#board .tile:not(.clicked) {
+				color: transparent;
+				cursor: pointer;
+			}
+
+			#board .tile.clicked {
+				background-color: tan;
+			}
+
+			#board .tile.treasure.clicked {
+				background-color: gold;
+				background-image: url("../images/treasure.png");
+				background-size: cover;
+				box-shadow: 0 0 1rem 1rem yellow;
+				position: fixed;
+			}
+
+			#board .tile:not(.clicked):hover {
+				background-color: gold;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="background"></div>
+		<div class="scaler">
+			<div id="board"></div>
+		</div>
+		<script type="text/javascript">
+			"use strict";
+
+			const _distance = (x1, y1, x2, y2) => Math.floor(Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)));
+
+			const _setStyle = (css, id) => {
+				var cssElement;
+
+				if (id && (cssElement = document.getElementById(id))) {
+					cssElement.innerText = css;
+				} else {
+					cssElement = document.createElement("style");
+					cssElement.setAttribute("type", "text/css");
+					if (id) {
+						cssElement.setAttribute("id", id);
+					}
+					cssElement.innerText = css;
+					document.querySelector("head").appendChild(cssElement);
+				}
+			};
+
+			const Game = function(board) {
+				const R = 30,
+					C = 40,
+					H = 24,
+					W = 24,
+					P = 10,
+					S = "§";
+
+				let tX, tY, tC;
+
+				Array.from(board.childNodes).forEach(function(node) {
+					node.parentElement.removeChild(node);
+				});
+
+				const t = document.createElement("table");
+
+				board.appendChild(t);
+
+				const b = document.createElement("tbody");
+
+				t.appendChild(b);
+
+				const setTreasure = () => {
+					tX = Math.floor(Math.random() * C);
+					tY = Math.floor(Math.random() * R);
+					tC = 0;
+					Array.from(board.querySelectorAll(".tile")).forEach((tile) => {
+						const x = parseInt(tile.dataset.x),
+							y = parseInt(tile.dataset.y),
+							t = x === tX && y === tY;
+
+						tile.classList.remove("clicked");
+						tile.textContent = (t) ? "" : _distance(x, y, tX, tY);
+						tile.classList[(t) ? "add" : "remove"]("treasure");
+					});
+				};
+
+				for (let j = 0; j < R; j++) {
+					const row = document.createElement("tr");
+
+					for (let i = 0; i < C; i++) {
+						const tile = document.createElement("td");
+
+						tile.classList.add("tile");
+						tile.dataset.x = i;
+						tile.dataset.y = j;
+						tile.addEventListener("click", (e) => {
+							if (!e.target.classList.contains("clicked")) {
+								e.target.classList.add("clicked");
+								tC++;
+								if (e.target.classList.contains("treasure")) {
+									setTimeout(() => {
+										alert(tC);
+										setTreasure();
+									});
+								}
+							}
+						});
+						row.appendChild(tile);
+					}
+					b.appendChild(row);
+				}
+				_setStyle(".tile{width:" + W + "px;height:" + H + "px}", S);
+
+				setTreasure();
+
+				return  {
+					board: {
+						width: C * W,
+						height: R * H,
+					},
+					constants: {
+						padding: P
+					}
+				};
+			};
+
+			var game, resizer;
+
+			const newGame = () => {
+				game = new Game(document.getElementById("board"));
+				resizer();
+			};
+
+			(() => {
+				const scaler = document.querySelector(".scaler");
+
+				(resizer = function() {
+					if (game) {
+						var x = (window.innerWidth - 2 * game.constants.padding) / game.board.width,
+							y = (window.innerHeight - 2 * game.constants.padding) / game.board.height,
+							z = 1;
+
+						if (board.clientHeight) {
+							if (x < 1 || y < 1) {
+								z = Math.min(x, y);
+							}
+
+							scaler.style["-ms-transform"] =
+								scaler.style["-moz-transform"] =
+								scaler.style["-o-transform"] =
+								scaler.style["-webkit-transform"] =
+								scaler.style.transform = (z < 1) ?
+									"scale(" + z + ")" : "";
+						}
+					}
+				})();
+				window.addEventListener("resize", resizer);
+			})();
+			newGame();
+		</script>
+	</body>
+</html>
