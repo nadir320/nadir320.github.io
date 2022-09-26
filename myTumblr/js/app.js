@@ -1107,7 +1107,7 @@ $().ready(function() {
 								$.when(hasDB()).then(function() {
 									$.when(getFromDB(STORAGE_NAME_DOWNLOADS, STORAGE_NAME_ALLDOWNLOADS)).then(function(dbValue) {
 										downloads = (dbValue) ? window.JSON.parse(dbValue) : { };
-										deferred.resolve(downloads);
+										deferred.resolve(/*downloads*/);
 									}, deferred.reject);
 								}, function() {
 									downloads = { };
@@ -4316,7 +4316,7 @@ $().ready(function() {
 			window.navigator.mozVibrate ||
 			window.navigator.msVibrate;
 
-		$.when(_downloads.load()).then(function() {
+		$.when(true/*_downloads.load()*/).then(function() {
 			var readLater = window.localStorage.getItem(STORAGE_NAME_READLATER),
 				useless = window.localStorage.getItem(STORAGE_NAME_USELESS);
 
@@ -5246,7 +5246,7 @@ $().ready(function() {
 					$(document.body).addClass("transitionable");
 					applyPageOptions();
 					clearBlogPage();
-					reconnect();
+					$.when(_downloads.load()).then(reconnect);
 				}, DEFAULT_TIMEOUT);
 			});
 		});
