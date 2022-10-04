@@ -247,7 +247,10 @@ window.tumblr = function() {
 								"description": data.response.blog.description.purify(),
 								"exists": true,
 								"name": blog.name,
-								"updated": new Date(data.response.blog.updated * 1000)
+								"updated": new Date(data.response.blog.updated * 1000),
+								"url": data.response.blog.url.match(/www\.tumblr\.com\/blog\/view\//gi) ?
+									blog.url :
+									data.response.blog.url
 							}, blogObject, {
 								"title": data.response.blog.title || blog.name
 							}));
