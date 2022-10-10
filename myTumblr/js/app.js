@@ -2141,12 +2141,18 @@ $().ready(function() {
 	};
 
 	var createLinkMenu = function(link) {
-		var buttonClass, href, items;
+		var buttonClass, href, items, path, useless;
 
-		if ((href = window.location.noProtocol((link = $(link)).attr("href"))
-			.split("/")[0])
-			.match(/.tumblr./i)) {
+		path = (href = window.location.noProtocol((link = $(link)).attr("href"))).split("/");
 
+		if (path[0].match(/.tumblr./i)) {
+			if (href.match(/.tumblr.com\/blog\/view\//i)) {
+				href = path[3] + ".tumblr.com";
+				path.length = 4;
+				useless = path.join("/");
+			} else {
+				useless = href = path[0];
+			}
 			items = [{
 				"attr": {
 					"title": getLocalizedText("blogStatistics")
@@ -2174,13 +2180,13 @@ $().ready(function() {
 				"icon": "ui-icon-search"
 			}];
 
-			if (isUseless(href)) {
+			if (isUseless(useless)) {
 				items.push({
 					"attr": {
 						"title": getLocalizedText("removeUseless")
 					},
 					"click": function(e) {
-						removeGlobalUseless(href);
+						removeGlobalUseless(useless);
 					},
 					"icon": "ui-icon-circle-check"
 				});
@@ -2190,7 +2196,7 @@ $().ready(function() {
 						"title": getLocalizedText("addUseless")
 					},
 					"click": function(e) {
-						addGlobalUseless(href);
+						addGlobalUseless(useless);
 					},
 					"icon": "ui-icon-circle-close"
 				});
