@@ -45,6 +45,10 @@ window.photoOfTheDay = {
 				caption = item.find(".ItemDescription").text();
 				copyright = item.find(".ItemPhotographer").text();
 				href = source = item.find("img").data("src");
+				
+				try {
+					caption = JSON.parse("\"" + caption + "\"");
+				} catch (e) { }
 
 				$(".photoLink").attr({
 					"href": href
