@@ -10,6 +10,7 @@
 	] }
 	, { "text": "Test", "url": "./test", "pages": [
 		  { "text": "Caff\u00e8", "url": "coffee.html", "icon": "./images/coffee.png" }
+		, { "text": "Foto del giorno", "url": "natGeo", "icon": "./natGeo/images/natGeo.png" }
 		, { "text": "Soldi (\u03B1)", "url": "../money/", "icon": "./money/images/euro.png" }
 		, { "text": "Targhe", "url": "targhe.html", "icon": "./images/aa.png" }
 	] }

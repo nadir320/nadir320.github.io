@@ -147,8 +147,8 @@ if (window.photoOfTheDay) {
 					}
 				}, getDateString = function(date) {
 					return date.getFullYear() + "-" +
-						(date.getMonth() + 1).toString().zeroPad(2) + "-" +
-						(date.getDate()).toString().zeroPad(2);
+							(date.getMonth() + 1).toString().zeroPad(2) + "-" +
+							(date.getDate()).toString().zeroPad(2);
 				}, isLatest, latestDate, load, noTomorrow,
 					todayHere = new Date(), waitFor, yesterday, yesterdayLink;
 
@@ -174,7 +174,9 @@ if (window.photoOfTheDay) {
 							latestDate.getDate() - 1))
 					});
 					return window.jQuery.when(window.jQuery.ajax({
-						"url": window.photoOfTheDay.jsonURL.format(getDateString(latestDate))
+						"url": window.photoOfTheDay.jsonURL.format((window.photoOfTheDay.getDateString) ?
+							window.photoOfTheDay.getDateString(latestDate) :
+							getDateString(latestDate))
 					})).then(function(data) {
 						var isToday;
 

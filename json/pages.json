@@ -1,7 +1,7 @@
 [
 	  { "text": "Codice fiscale", "url": "codiceFiscale/index.html", "icon": "./codiceFiscale/images/code.png" }
 	, { "text": "CORS", "url": "cors/index.html", "icon": "./cors/images/cors.png" }
-	, { "text": "Foto del giorno", "url": "natGeo", "icon": "./natGeo/images/natGeo.png" }
+	, { "text": "Foto del giorno", "url": "natGeo/tv.html", "icon": "./natGeo/images/natGeo.png" }
 	, { "text": "Foto del giorno (NASA)", "url": "nasa/apod.html", "icon": "./nasa/images/apod.png" }
 	, { "text": "Mediaset", "url": "./mediaset", "pages": [
 		  { "text": "L'isola dei famosi", "url": "?isolaDeiFamosi=1&title=L%27isola%20dei%20famosi", "icon": "./mediaset/images/isolaDeiFamosi.png" }
