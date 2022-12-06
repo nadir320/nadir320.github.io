@@ -19,8 +19,8 @@ window.photoOfTheDay = {
 	  "bodyWidgetClass": "header"
 	, "favicon": "natGeo"
 	, "getDateString": function(date) { return date.getFullYear() + "/" + englishMonths[date.getMonth()].toLowerCase(); }
-	, "jsonURL0": "https://api.allorigins.win/get?url=https://www.natgeotv.com/ca/photo-of-the-day/{0}/{1}"
-	, "jsonURL": "http://localhost/home/dropbox/web/cors/proxy.aspx?route=https://www.natgeotv.com/ca/photo-of-the-day/{0}"
+	, "jsonURL": "https://api.allorigins.win/get?url=https://www.natgeotv.com/ca/photo-of-the-day/{0}"
+	, "jsonURL1": "http://localhost/home/dropbox/web/cors/proxy.aspx?route=https://www.natgeotv.com/ca/photo-of-the-day/{0}"
 	, "pageURL": "https://www.natgeotv.com/ca/photo-of-the-day/"
 	, "siteURL": "https://www.natgeotv.com/ca/photo-of-the-day/"
 	, "theme": "UI Darkness"
@@ -30,9 +30,10 @@ window.photoOfTheDay = {
 		return new Date(window.photoOfTheDay.easternTimeNow().getTime() - 36e5);
 	}, "loadJSON": function(data, date, isToday) {
 		var found = false,
-			theDate = date.getDate() + " " + englishMonths[date.getMonth()] + " " + date.getFullYear();
+			theDate = date.getDate() + " " + englishMonths[date.getMonth()] + " " + date.getFullYear(),
+			page = (data.contents || data).replace(/ src="/gi, " data-src=\"");
 
-		$(data.replace(/ src="/gi, " data-src=\"")).find("li.PODItem").each(function(i, item) {
+		$(page).find("li.PODItem").each(function(i, item) {
 			var caption,
 				copyright,
 				href,
