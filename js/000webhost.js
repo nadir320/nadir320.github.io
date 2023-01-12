@@ -17,4 +17,5 @@ window.document.addEventListener("DOMContentLoaded", function(e) {
 				p.parentElement.removeChild(p);
 			}
 		}
+	}
 });

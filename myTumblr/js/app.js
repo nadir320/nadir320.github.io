@@ -3231,7 +3231,7 @@ $().ready(function() {
 							if (isInMyBlogs(info)) {
 								$.when(setLastViewedDate(info.title, info.url, (!pageIndex || !posts.length) ?
 									info.updated : posts[0].timestamp, info.posts -
-									(pageIndex * _options.postsPerPage), pageIndex, setAsLastViewed, info.is_nsfw))
+									(pageIndex * _options.postsPerPage), pageIndex, setAsLastViewed, info.is_nsfw, info.blog.data.login_required))
 									.then(function() {
 
 									refreshBlogList(info);
@@ -9641,6 +9641,7 @@ $().ready(function() {
 							])).then(function(url) {
 								$.when(addToReadLater(url)).then(function() {
 									refreshList();
+									refreshClearButton(context);
 								});
 							});
 						},
@@ -9648,14 +9649,17 @@ $().ready(function() {
 					},{
 						"class": "clearButton smallDialogButton",
 						"click": function(e) {
-							var dialog = $(this);
+							var context = this,
+								dialog = $(context);
 
 							$.when($.confirm(getLocalizedText("confirmClearReadLater"), undefined, [
 								getLocalizedText("yes"),
 								getLocalizedText("no")
 							])).then(function() {
 								saveReadLater(undefined, true);
-								dialog.dialog("close");
+								/* dialog.dialog("close"); */
+								refreshList();
+								refreshClearButton(context);
 							});
 						},
 						"text": getLocalizedText("deleteAll")
