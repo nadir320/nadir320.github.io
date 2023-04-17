@@ -37,6 +37,7 @@ window.tumblr = function() {
 						matches,
 						photo,
 						url = (item = $(item)).data("src"),
+						srcSet = item.attr("srcset"),
 						width;
 
 					if (window.tumblr.isPhotoURL(url, matches = { })) {
@@ -68,6 +69,37 @@ window.tumblr = function() {
 									"width": width
 								});
 							}
+						}
+						if (srcSet && srcSet.length) {
+							$(srcSet.split(",")).each(function(j, setItem) {
+								let setItemData = setItem.split(" "),
+									setItemWidth = setItemData.pop(),
+									setItemUrl = window.location.sameProtocol(setItemData.pop()),
+									setItemHeight,
+									inAltSizes = false;
+
+								if (setItemWidth = parseInt(setItemWidth.substr(0, setItemWidth.length - 1))) {
+									for (var k = 0; k < alt_sizes.length; k++) {
+										if (alt_sizes[k].width === setItemWidth) {
+											inAltSizes = true;
+											break;
+										}
+									}
+									if (!inAltSizes) {
+										setItemHeight = setItemUrl.split("/");
+										setItemHeight.pop();
+										setItemHeight = setItemHeight.pop();
+										setItemHeight = setItemHeight.split("_")[0];
+										setItemHeight = parseInt(setItemHeight.split("x").pop());
+										alt_sizes.push({
+											"height": setItemHeight,
+											"url": setItemUrl,
+											"width": setItemWidth
+										});
+									}
+								}
+							});
+							alt_sizes.sort(_sortImageSizes);
 						}
 						return {
 							"alt_sizes": alt_sizes,
@@ -187,6 +219,10 @@ window.tumblr = function() {
 
 	var _getPage = function(tumblrName, pageName, data, additionalData) {
 		return _getAjaxPage(String.format(API_URL_FORMAT, tumblrName, pageName), data, additionalData);
+	};
+
+	var _sortImageSizes = function(image1, image2) {
+		return -(image1.width - image2.width);
 	};
 
 	var instance = {

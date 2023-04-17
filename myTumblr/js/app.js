@@ -27,6 +27,7 @@ var PARAMETERS = {
 	, "language": "language"
 	, "noLocalProxyOnLocalhost": "noLocalProxyOnLocalhost"
 	, "officeMode": "officeMode"
+	, "optionsKey": "optionsKey"
 	, "password": "password"
 	, "peek": "peek"
 	, "poolSize": "poolSize"
@@ -50,7 +51,7 @@ var BLANK_PAGE = "about:blank",
 	IDB = !!window.location.get(PARAMETERS.indexedDB),
 	IFRAME_ALLOWED_HOSTS = [ "youtube.com", "youtu.be", "youtube-nocookie.com", "spotify.com" ],
 	NO_LOCAL_PROXY_ON_LOCALHOST = !!parseInt(window.location.get(PARAMETERS.noLocalProxyOnLocalhost)),
-	OFFICE_MODE = !!window.location.get(PARAMETERS.officeMode),
+	OFFICE_MODE = window.parseInt(window.location.get(PARAMETERS.officeMode)) || 0,
 	PEEK = !!window.location.get(PARAMETERS.peek),
 	POOL_SIZE = parseInt(window.location.get(PARAMETERS.poolSize)) || 6,
 	POSTS_PER_PAGE_STEP = parseInt(window.location.get(PARAMETERS.postsPerPageStep)) || 5,
@@ -59,6 +60,7 @@ var BLANK_PAGE = "about:blank",
 		"local": "Local CORS Proxy",
 		"remote": "allOrigins"
 	},
+	STORAGE_NAME_OPTIONS = window.location.get(PARAMETERS.optionsKey) || "my_tumblr",
 	THEME_ID = "pageTheme",
 	THEMECOLOR_ID = "themeColor",
 	VIBRATIONS = {
@@ -87,7 +89,6 @@ var APP_CUSTOM_TOKEN/* = "VUrbbIlEtfdFoqvKfxxWBN8dOaDUuMt9KQzlWjOQ"*/,
 	IDLE_INTERVAL = 5 * 60 * 1000,						// 5 minutes
 	MAXIMUM_DOWNLOAD_FILENAME = 160,
 	OLD_BLOG_INTERVAL = 90 * 24 * 60 * 60 * 1000,		// 90 days
-	STORAGE_NAME_OPTIONS = "my_tumblr",
 	STORAGE_NAME_READLATER = "my_tumblr_readLater",
 	STORAGE_NAME_USELESS = "my_tumblr_useless",
 	PASSWORD = window.location.get(PARAMETERS.password),
@@ -641,7 +642,7 @@ var textTables = {
 		, "usernameRequired": "Inserire un indirizzo e-mail."
 		, "version": "Versione: {0}"
 		, "vibrateOnCheckCompletion": "Vibra a caricamento completato"
-		, "view": "Mostra"
+		, "view": "Vedi"
 		, "viewDownloads": "Download nella pagina ({0}/{1})"
 		, "viewed": "Visto: {0}"
 		, "waitingForDownloads": "In attesa dei download..."
@@ -1372,18 +1373,18 @@ $().ready(function() {
 					.find("[has-src]");
 
 				imageElements = imageElements
-						.filter(function(i, item) {
-							var image = $(item);
+					.filter(function(i, item) {
+						var image = $(item);
 
-							if (image.closest(".newPost").length +
-								image.closest(".firstNonNewPost").length) {
-								newImageElements = newImageElements.add(image);
-							}
-							return image.data("src") &&
-								!image.attr("src");
-						}).each(function(i, item) {
-							bindMediaLoading(item);
-						});
+						if (image.closest(".newPost").length +
+							image.closest(".firstNonNewPost").length) {
+							newImageElements = newImageElements.add(image);
+						}
+						return image.data("src") &&
+							!image.attr("src");
+					}).each(function(i, item) {
+						bindMediaLoading(item);
+					});
 
 				if (preloadImages && newImageElements.length) {
 					window.setTimeout(function() {
@@ -1391,6 +1392,23 @@ $().ready(function() {
 
 						newImageElements.each(function(i, item) {
 							if (!(item = $(item)).closest(".useless").length) {
+								var itemPost = item.data("post"),
+									postPhotos;
+
+								if (itemPost) {
+									if ((postPhotos = itemPost.photos) && postPhotos.length) {
+										for (var i = 0; i < postPhotos.length; i++) {
+											if (window.location.noProtocol(postPhotos[i].original_size.url) === window.location.noProtocol(item.data("src"))) {
+												if (postPhotos[i].alt_sizes && postPhotos[i].alt_sizes.length) {
+													item.data({
+														"src": chooseImage(imageSize, itemPost, i, pageWidth, pageHeight).url
+													});
+												}
+												break;
+											}
+										}
+									}
+								}
 								waitFors.push(bindMediaLoading(item, true));
 								startLoadingImage(item);
 							}
@@ -2148,8 +2166,12 @@ $().ready(function() {
 		if (path[0].match(/.tumblr./i)) {
 			if (href.match(/.tumblr.com\/blog\/view\//i)) {
 				href = path[3] + ".tumblr.com";
-				path.length = 4;
-				useless = path.join("/");
+				/* path.length = 4;
+				useless = path.join("/"); */
+				useless = href;
+			} else if (href.match(/www.tumblr.com\//i)) {
+				href = path[1] + ".tumblr.com";
+				useless = href;
 			} else {
 				useless = href = path[0];
 			}
@@ -2702,7 +2724,7 @@ $().ready(function() {
 					return options.imageSize;
 				}
 			}
-			if (OFFICE_MODE) {
+			if (OFFICE_MODE !== 0) {
 				var nsfw = false;
 
 				$(_infos).each(function(i, info) {
@@ -3444,9 +3466,24 @@ $().ready(function() {
 							}
 
 							$(_dates).eachProp(function(name, value) {
-								var inFilter = !value.booooring &&
-									!(OFFICE_MODE && !_options.nsfw && (value.force_nsfw || (value.was_nsfw && value.force_nsfw === undefined))) &&
-									(CHECK_ALL_BLOGS || value.disabled === "auto" || (!value.disabled && (!value.login_required || t.isLoginSupported)));
+								var inFilter = !value.booooring,
+									isBlogNSFW = value.force_nsfw || (value.was_nsfw && value.force_nsfw === undefined);
+
+								if (inFilter && OFFICE_MODE !== 0) {
+									switch (OFFICE_MODE) {
+										case 1:
+											inFilter = _options.nsfw && !isBlogNSFW;
+											break;
+										case 2:
+											inFilter = !isBlogNSFW;
+											break;
+									}
+								}
+								if (inFilter) {
+									inFilter = CHECK_ALL_BLOGS ||
+										value.disabled === "auto" ||
+										(!value.disabled && (!value.login_required || t.isLoginSupported));
+								}
 
 								if (inFilter && filter && filter.length) {
 									inFilter = false;
@@ -5849,6 +5886,7 @@ $().ready(function() {
 									"photoIndex": photo2Index,
 									"post": post
 								});
+								item.removeAttr("srcset");
 								$(document.createElement("a"))
 									.addClass("photo-2")
 									.attr({
@@ -9496,6 +9534,8 @@ $().ready(function() {
 			$("#options_autoUpdatePostCountMismatches").prop("checked", options.autoUpdatePostCountMismatches);
 			$("#options_hideOldies").prop("checked", options.hideOldies);
 			$("#options_nativeDownload").prop("checked", options.nativeDownload);
+
+			$("#options_nsfw").parent().add($("#options_nsfw").parent().prev())[(OFFICE_MODE !== 2) ? "show" : "hide"]();
 		};
 
 		var refreshSelectMenus = function() {
