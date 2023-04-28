@@ -37,7 +37,7 @@
 		<script type="text/javascript" src="../js/lc/lc_gif_player.pack.js"></script>
 
 		<script type="text/javascript" src="js/tumblr.min.js?v=2023.04.17"></script>
-		<script type="text/javascript" src="js/app.min.js?v=2023.04.17"></script>
+		<script type="text/javascript" src="js/app.min.js?v=2023.04.26"></script>
 		<link rel="stylesheet" type="text/css" href="css/style.min.css?v=2022.08.08"/>
 	</head>
 	<body class="ui-widget large-on-large-screens">
@@ -548,11 +548,17 @@
 			<a class="fullScreenButton closeFullScreen rounded right first">&nbsp;</a>
 			<a class="fullScreenButton fullScreenDownload rounded right second">&nbsp;</a>
 			<a class="fullScreenButton imageSearch transitionable rounded google right third"
-				data-imagesearchurl="https://www.google.com/searchbyimage?&image_url={0}"
-				data-backgroundimage="./images/google.png">&nbsp;</a>
-			<a class="fullScreenButton imageSearch transitionable rounded tineye right fourth"
+				data-imagesearchurl="https://www.google.com/search?tbm=isch&q={0}"
+				data-backgroundimage="./images/google.png"
+				title="Google">&nbsp;</a>
+			<a class="fullScreenButton imageSearch transitionable rounded google-lens right fourth"
+				data-imagesearchurl="https://lens.google.com/uploadbyurl?url={0}"
+				data-backgroundimage="./images/google-lens.png"
+				title="Google Lens">&nbsp;</a>
+			<a class="fullScreenButton imageSearch transitionable rounded tineye right fifth"
 				data-imagesearchurl="https://www.tineye.com/search?url={0}"
-				data-backgroundimage="./images/tineye.png">&nbsp;</a>
+				data-backgroundimage="./images/tineye.png"
+				title="TinEye">&nbsp;</a>
 			<a class="fullScreenButton fullScreenFullScreen rounded right bottom">&nbsp;</a>
 			<div class="slideshowToolbar transitionable">
 				<a class="fullScreenButton previousPost rounded">&nbsp;</a>

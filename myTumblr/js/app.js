@@ -3472,7 +3472,7 @@ $().ready(function() {
 								if (inFilter && OFFICE_MODE !== 0) {
 									switch (OFFICE_MODE) {
 										case 1:
-											inFilter = _options.nsfw && !isBlogNSFW;
+											inFilter = _options.nsfw || !isBlogNSFW;
 											break;
 										case 2:
 											inFilter = !isBlogNSFW;
