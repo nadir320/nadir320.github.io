@@ -2203,6 +2203,7 @@ $().ready(function() {
 			}];
 
 			if (isUseless(useless)) {
+				link.addClass("useless-link");
 				items.push({
 					"attr": {
 						"title": getLocalizedText("removeUseless")
@@ -2993,6 +2994,11 @@ $().ready(function() {
 
 		if (isUseless(content)) {
 			return true;
+		}
+		if (postElement.html) {
+			if (postElement.find("a.useless-link").length > 0) {
+				return true;
+			}
 		}
 		if (blog &&
 			blog.data &&
