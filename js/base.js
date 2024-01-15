@@ -1446,14 +1446,29 @@ if (window.jQuery) {
 						toastElement.removeData("fading");
 					}
 					window.clearTimeout(toastElement.data("timeout"));
+					if (options.text === toastElement.data("lastText")) {
+						var textCount = parseInt(toastElement.data("textCount")) || 1;
+
+						toastElement
+							.children()
+							.first()
+							.children()
+							.last()
+							.text((options.text || String.empty) + " (" + (textCount + 1) + ")");
+						toastElement.data("textCount", textCount + 1);
+					} else {
+						toastElement.removeData("textCount");
+						toastElement
+							.children()
+							.first()
+							.append(("\n\n<slot>" + (options.text || String.empty)
+								.toString()).replace(/\n/g, "<br/>") + "</slot>");
+					}
 					toastElement
 						.removeData("timeout")
+						.data("lastText", options.text)
 						.stop(true, false)
 						.fadeIn()
-						.children()
-						.first()
-						.append(("\n\n" + (options.text || String.empty)
-							.toString()).replace(/\n/g, "<br/>"));
 					resetElement();
 				} else {
 					toastElement = undefined;
@@ -1476,12 +1491,13 @@ if (window.jQuery) {
 								return false;
 							}
 						})
-						.html((options.text || String.empty)
-							.toString().replace(/\n/g, "<br/>")))
+						.html("<slot>" + (options.text || String.empty)
+							.toString().replace(/\n/g, "<br/>") + "</slot>"))
 					.css({
 						"opacity": options.opacity,
 						"zIndex": options.zIndex
 					})
+					.data("lastText", options.text)
 					.hide()
 					.appendTo(document.body);
 

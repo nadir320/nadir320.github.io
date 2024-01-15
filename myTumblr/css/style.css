@@ -311,7 +311,7 @@ img.ui-state-highlight {
 	position: absolute;
 }
 
-.toast span,
+.toast span.info,
 #blogs .dateInfo span {
 	font-size: 125%;
 	font-weight: bold;

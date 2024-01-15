@@ -116,6 +116,7 @@ var textTables = {
 		, "ascending": "ascending"
 		, "asked": "{0} asked:"
 		, "audioTitle": "{0} - {1} (from {2})"
+		, "autoUpdatedBlogs" : "Auto-corrected blogs: {0}"
 		, "autoUpdatePostCountMismatches": "Auto-correct post count mismatches"
 		, "autoUpdatingPostCountMismatches": "Auto-correcting post count of {0}"
 		, "avatarSize": "Avatar size:"
@@ -389,6 +390,7 @@ var textTables = {
 		, "ascending": "ascendente"
 		, "asked": "{0} ha chiesto:"
 		, "audioTitle": "{0} - {1} (da {2})"
+		, "autoUpdatedBlogs" : "Blog corretti automaticamente: {0}"
 		, "autoUpdatePostCountMismatches": "Correggi automaticamente\ngli errori sul numero di post"
 		, "autoUpdatingPostCountMismatches": "Correzione automatica del numero di post di {0}"
 		, "avatarSize": "Dimensione avatar:"
@@ -1464,6 +1466,7 @@ $().ready(function() {
 			blogsElement = $("#blogs"),
 			lastElement,
 			newBlogsElements = [ ],
+			alerts = 0,
 			notFound = 0,
 			oldBlogs = 0,
 			readBlogs = 0;
@@ -1594,16 +1597,18 @@ $().ready(function() {
 					blogElement[(_options.hideOldies && typeof blogInfo.blog.data.disabled === "boolean") ? "hide" : "show"]();
 					oldBlogs++;
 				}
-				if (typeof blogInfo.blog.data.disabled !== "string") {
+				if (blogInfo.isAlert) {
+					alerts++;
+				} else if (typeof blogInfo.blog.data.disabled !== "string") {
 					notFound++;
 				}
 			}
 		});
 		blogsElement
-			.find(".notFoundBlogsHeader")
+			.find(".alertBlogsHeader")
 			.find(".text")
 			.first()
-			.text(localizedFormat("notFoundBlogs", notFound));
+			.text(localizedFormat("notFoundBlogs", alerts));
 		if (sortNewBlogs) {
 			sortBlogs(newBlogsElements, true);
 			lastElement = blogsElement
@@ -1626,6 +1631,11 @@ $().ready(function() {
 			.end()
 			.end()
 			[(!_options.hideOldies) ? "show" : "hide"]();
+		blogsElement
+			.find(".notFoundBlogsHeader")
+			.find(".text")
+			.first()
+			.text(localizedFormat("notFoundBlogs", notFound));
 		refreshBlogList();
 		if (!dontShowStatus) {
 			showNewBlogsStatus(function(e) {
@@ -3614,7 +3624,8 @@ $().ready(function() {
 									window.setTimeout(function() {
 										sortBlogs(infos);
 
-										var notFound = [ ],
+										var alerts = [ ],
+											notFound = [ ],
 											newBlogs = [ ],
 											oldBlogs = [ ],
 											readBlogs = [ ];
@@ -3632,21 +3643,22 @@ $().ready(function() {
 													readBlogs.push(info);
 												}
 												count++;
-											} else {
+											} else if (CHECK_ALL_BLOGS && info.blog.data && info.blog.data.disabled) {
 												notFound.push(info);
+											} else {
+												info.isAlert = true;
+												alerts.push(info);
 											}
 										});
 
 										var newInfos = [ ];
 
-										if (!CHECK_ALL_BLOGS) {
-											if (notFound.length) {
-												newInfos.push({
-													"class": "notFoundBlogsHeader",
-													"itemClass": "notFound"
-												});
-												newInfos = newInfos.concat(notFound);
-											}
+										if (alerts.length) {
+											newInfos.push({
+												"class": "alertBlogsHeader",
+												"itemClass": "alertBlog"
+											});
+											newInfos = newInfos.concat(alerts);
 										}
 										if (newBlogs.length) {
 											newInfos.push({
@@ -3669,14 +3681,12 @@ $().ready(function() {
 											});
 											newInfos = newInfos.concat(oldBlogs);
 										}
-										if (CHECK_ALL_BLOGS) {
-											if (notFound.length) {
-												newInfos.push({
-													"class": "notFoundBlogsHeader",
-													"itemClass": "notFound"
-												});
-												newInfos = newInfos.concat(notFound);
-											}
+										if (notFound.length) {
+											newInfos.push({
+												"class": "notFoundBlogsHeader",
+												"itemClass": "notFound"
+											});
+											newInfos = newInfos.concat(notFound);
 										}
 										saveBlogs(_infos = newInfos);
 										if (window.navigator.vibrate && _options.vibrateOnCheckCompletion) {
@@ -3697,7 +3707,8 @@ $().ready(function() {
 					window.loader.value(false);
 					window.loader.message(localizedFormat("loadingBlogs", count));
 					return $.afterTimeout(function() {
-						var blogsElement = $("#blogs"),
+						var autoUpdated = 0,
+							blogsElement = $("#blogs"),
 							now = $.now(),
 							sorts;
 
@@ -3764,6 +3775,7 @@ $().ready(function() {
 								} else {
 									blogTitleElement = blogElement
 										.addClass("notFound")
+										.addClass((info.isAlert) ? "alert" : undefined)
 										.addClass("ui-state-error")
 										.append($(document.createElement("a"))
 											.attr({
@@ -3798,9 +3810,9 @@ $().ready(function() {
 									textElement.append($(document.createElement("br")));
 								}
 								if (info.exists && !info.isNew && info.toAutoUpdate) {
-									$.toast.message(localizedFormat("autoUpdatingPostCountMismatches",
-										info.title));
+									$.toast.message(localizedFormat("autoUpdatingPostCountMismatches", info.title));
 									setLastViewedDate(info.title, info.url, info.updated, info.posts, 0, true, info.is_nsfw, undefined, true);
+									autoUpdated++;
 								}
 
 								blogDate = (info.exists) ?
@@ -3983,6 +3995,9 @@ $().ready(function() {
 						}
 						return $.when(downloadSychronization).always(function() {
 							applyBlogsOptions(!!window.sessionStorage.getItem("blog"));
+							if (autoUpdated > 0) {
+								$.toast.message(localizedFormat("autoUpdatedBlogs", autoUpdated));
+							}
 							refreshReadLaterButton();
 							loadLastBlog();
 						});
@@ -4493,7 +4508,7 @@ $().ready(function() {
 							.addClass("ui-state-highlight")
 							.addClass("ui-corner-all")
 							.text(getLocalizedText("noBlog")));
-				});
+				}, 1e3);
 
 				$(".popover")
 					.button({
@@ -5002,7 +5017,7 @@ $().ready(function() {
 							"click": function(e) {
 								var data = $(this).data();
 
-								$.when($.confirm(localizedFormat("confirmDisableBlog", data.title), undefined, [
+								$.when($.confirm(localizedFormat("confirmDisableBlog", data.title || data.url), undefined, [
 									getLocalizedText("yes"),
 									getLocalizedText("no")
 								])).then(function() {
@@ -8154,6 +8169,7 @@ $().ready(function() {
 							arg.toString();
 						args[i] = $(document.createElement("div"))
 							.append($(document.createElement("span"))
+								.addClass("info")
 								.addClass((small) ?
 									"small" :
 									undefined)
