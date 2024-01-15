@@ -8169,7 +8169,7 @@ $().ready(function() {
 							arg.toString();
 						args[i] = $(document.createElement("div"))
 							.append($(document.createElement("span"))
-								.addClass("info")
+								.addClass("data")
 								.addClass((small) ?
 									"small" :
 									undefined)
@@ -9455,10 +9455,12 @@ $().ready(function() {
 					.append(String.format(replaceHTMLNewLines(getLocalizedText("newBlogs")),
 						$(document.createElement("div"))
 							.append($(document.createElement("span"))
+								.addClass("data")
 								.text(text))
 							.html(),
 						$(document.createElement("div"))
 							.append($(document.createElement("span"))
+								.addClass("data")
 								.text(text2))
 							.html()));
 			} else {
@@ -9473,6 +9475,7 @@ $().ready(function() {
 						.append(localizedFormat("lastViewed",
 							$(document.createElement("div"))
 							.append($(document.createElement("span"))
+								.addClass("data")
 								.text(getDateInterval(interval)))
 								.html()));
 				}

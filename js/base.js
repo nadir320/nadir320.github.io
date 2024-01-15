@@ -1461,8 +1461,8 @@ if (window.jQuery) {
 						toastElement
 							.children()
 							.first()
-							.append(("\n\n<slot>" + (options.text || String.empty)
-								.toString()).replace(/\n/g, "<br/>") + "</slot>");
+							.append(("<br/><br/><span>" + (options.text || String.empty)
+								.toString()).replace(/\n/g, "<br/>") + "</span>");
 					}
 					toastElement
 						.removeData("timeout")
@@ -1491,8 +1491,8 @@ if (window.jQuery) {
 								return false;
 							}
 						})
-						.html("<slot>" + (options.text || String.empty)
-							.toString().replace(/\n/g, "<br/>") + "</slot>"))
+						.html("<span>" + (options.text || String.empty)
+							.toString().replace(/\n/g, "<br/>") + "</span>"))
 					.css({
 						"opacity": options.opacity,
 						"zIndex": options.zIndex
