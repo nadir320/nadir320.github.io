@@ -1814,7 +1814,7 @@ $().ready(function() {
 						}
 						window.sessionStorage.setItem("videoVolume", e.target.volume.toString());
 					},
-					"durationchange": function(e) {
+					"play durationchange": function(e) {
 						try {
 							e.target.muted = !window.sessionStorage.getItem("videoUnmuted");
 						} catch (e) { }
