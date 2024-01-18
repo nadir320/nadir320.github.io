@@ -5446,18 +5446,18 @@ $().ready(function() {
 						"href": "#",
 						"title": _textTable.postTypes[post.type]
 					})
-					.append(getPostTypeImage(post)
-						.addClass((post.original_type) ?
-							"actualType" :
-							undefined))
-					.append((post.original_type) ?
+					.append((post.actual_type) ?
 						getPostTypeImage({
-							"type": post.original_type
-						}).addClass("originalType") :
+							"type": post.actual_type
+						}).addClass("actualType") :
 						undefined)
+					.append(getPostTypeImage(post)
+						.addClass((post.actual_type) ?
+							"originalType" :
+							undefined))
 					.on({
 						"click": function(e) {
-							window.sessionStorage.setItem("blogPostType", post.type);
+							window.sessionStorage.setItem("blogPostType", post.actual_type || post.type);
 							window.sessionStorage.removeItem("blogPage");
 							window.setTimeout(loadLastBlog);
 							return e.preventAll();
