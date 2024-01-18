@@ -520,6 +520,18 @@ img.ui-state-highlight {
 	min-width: 18em;
 }
 
+.blogStatisticsDialog .blogStatisticsTable .postTypeLabel {
+	display: table-row;
+}
+
+.blogStatisticsDialog .blogStatisticsTable .postTypeLabel > * {
+	display: table-cell;
+}
+
+.blogStatisticsDialog .blogStatisticsTable .postTypeLabel .postTypeName {
+	margin-top: 1px;
+}
+
 .downloadsDialog,
 .downloadsProgressDialog,
 .readLaterDialog {

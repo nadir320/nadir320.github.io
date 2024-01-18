@@ -1,12 +1,9 @@
 /*
 	- fix bug in autocorrect useless posts
-	- change statistics dialog with links to post types
-		- change post type images to links to that post type?
 	- try to detect post links and display the single post (navigate to it?)
 	- try to detect /tagged links and change them accordingly
-	- review blog list for proper blog categorization
-	- CHECK_ALL_BLOGS single-click button
 
+	- CHECK_ALL_BLOGS single-click button?
 	- Search?
 	- Change CSS filters to a plugin?
 	- GIF player for a single image in full-screen mode?
@@ -313,6 +310,7 @@ var textTables = {
 		, "removeUseless": "Remove from global useless entries"
 		, "requireDownloadsSynchronization": "Synchronize downloads list?"
 		, "reset": "Reset"
+		, "resetPostType": "Show all posts"
 		, "searching": "Searching..."
 		, "searchingInPage": "Searching in page {0}..."
 		, "searchingInPage2": "Searching in page {0}/{1}..."
@@ -587,6 +585,7 @@ var textTables = {
 		, "removeUseless": "Rimuovi dai filtri globali"
 		, "requireDownloadsSynchronization": "Aggiornare la lista dei download?"
 		, "reset": "Reimposta"
+		, "resetPostType": "Visualizza tutti i post"
 		, "searching": "Ricerca in corso..."
 		, "searchingInPage": "Ricerca in corso in pagina {0}..."
 		, "searchingInPage2": "Ricerca in corso in pagina {0}/{1}..."
@@ -1672,6 +1671,7 @@ $().ready(function() {
 		if (newOptions.postType !== previousOptions.postType) {
 			window.sessionStorage.removeItem("blogPage");
 			window.sessionStorage.removeItem("blogTag");
+			window.sessionStorage.removeItem("blogPostType");
 			loadLastBlog();
 		} else if (newOptions.postsPerPage !== previousOptions.postsPerPage ||
 			newOptions.embedLinks !== previousOptions.embedLinks ||
@@ -1994,6 +1994,7 @@ $().ready(function() {
 		window.sessionStorage.removeItem("blogLoginRequired");
 		window.sessionStorage.removeItem("blogPage");
 		window.sessionStorage.removeItem("blogTag");
+		window.sessionStorage.removeItem("blogPostType");
 		window.sessionStorage.removeItem("blogTitle");
 		window.sessionStorage.removeItem("startupDates");
 		window.sessionStorage.removeItem("dates");
@@ -2800,15 +2801,18 @@ $().ready(function() {
 	};
 
 	var getPostCount = function(info) {
-		var postType = _options.postType;
+		var postType = window.sessionStorage.getItem("blogPostType");
 
+		if (!(postType && postType.length)) {
+			postType = _options.postType;
+		}
 		if (postType && postType.length) {
 			return (info.posts_per_type || { })[postType] || 0;
 		}
 		return info.posts;
 	};
 
-	var getPostImage = function(post) {
+	var getPostTypeImage = function(post) {
 		var className;
 
 		switch (post.type) {
@@ -3068,6 +3072,7 @@ $().ready(function() {
 		if (!reload) {
 			window.sessionStorage.removeItem("blogPage");
 			window.sessionStorage.removeItem("blogTag");
+			window.sessionStorage.removeItem("blogPostType");
 		} else {
 			pageIndex = parseInt(window.sessionStorage.getItem("blogPage"));
 		}
@@ -3179,14 +3184,18 @@ $().ready(function() {
 		}
 		window.loader.value(false);
 		return window.loading(function() {
-			var newPosts = 0;
+			var newPosts = 0,
+				postType = window.sessionStorage.getItem("blogPostType");
 
-			return $.when(blog.getPosts(pageIndex, info, _options.postType, _options.postsPerPage,
+			if (!(postType && postType.length)) {
+				postType = _options.postType;
+			}
+			return $.when(blog.getPosts(pageIndex, info, postType, _options.postsPerPage,
 				window.sessionStorage.getItem("blogTag"))).then(function(posts) {
 
 				var hasFilter = (!!window.sessionStorage.getItem("blogTag") &&
 					!!window.sessionStorage.getItem("blogTag").length) ||
-					(!!_options.postType && !!_options.postType.length);
+					(!!postType && !!postType.length);
 
 				var lastUpdatedDate = getLastUpdatedDate(info.url, true),
 					newPages,
@@ -3353,7 +3362,7 @@ $().ready(function() {
 												.addClass("ui-icon-loader-16");
 										});
 										$.when(blog.getPosts((pageIndex + 1) * _options.postsPerPage, undefined,
-											_options.postType, 1, window.sessionStorage.getItem("blogTag")))
+											postType, 1, window.sessionStorage.getItem("blogTag")))
 											.then(function(nextPost) {
 												if (nextPost.length) {
 													$(nextPost).each(function(i, item) {
@@ -3810,7 +3819,7 @@ $().ready(function() {
 									textElement.append($(document.createElement("br")));
 								}
 								if (info.exists && !info.isNew && info.toAutoUpdate) {
-									$.toast.message(localizedFormat("autoUpdatingPostCountMismatches", info.title));
+									/* $.toast.message(localizedFormat("autoUpdatingPostCountMismatches", info.title)); */
 									setLastViewedDate(info.title, info.url, info.updated, info.posts, 0, true, info.is_nsfw, undefined, true);
 									autoUpdated++;
 								}
@@ -4802,7 +4811,7 @@ $().ready(function() {
 						insertAfter = postsPerTypeRow.prev(),
 						postTypes = $(tumblr.POST_TYPES).map(function(i, type) {
 							return $.extend({ }, type, {
-								"name": _textTable["postTypes"][type.value]
+								"name": _textTable.postTypes[type.value]
 							});
 						}).get();
 
@@ -4817,7 +4826,27 @@ $().ready(function() {
 								.find(".postType")
 									.append($(document.createElement("ul"))
 										.append($(document.createElement("li"))
-											.text(type.name)))
+											.append($(document.createElement("a"))
+												.append($(document.createElement("div"))
+													.addClass("postTypeLabel")
+													.append(getPostTypeImage({
+														"type": type.value
+													}))
+													.append($(document.createElement("span"))
+														.addClass("postTypeName")
+														.text(type.name)))
+												.attr({
+													"href": "#"
+												})
+												.on({
+													"click": function(e) {
+														window.sessionStorage.setItem("blogPostType", type.value);
+														$(".pageOptionsDialog").dialog("close");
+														$(".blogStatisticsDialog").dialog("close");
+														window.setTimeout(loadLastBlog);
+														return e.preventAll();
+													}
+												}))))
 									.end()
 								.find(".postCount")
 									.data({
@@ -4905,12 +4934,16 @@ $().ready(function() {
 							"click": function(e) {
 								var info = $(".pageOptionsDialog").data("info"),
 									lastUpdatedDate = getLastUpdatedDate(info.url, true),
-									newPages = parseInt(info.newPages);
+									newPages = parseInt(info.newPages),
+									postType = window.sessionStorage.getItem("blogPostType");
 
 								if (isNaN(newPages) || newPages < 0) {
 									newPages = parseInt(window.sessionStorage.getItem("blogPage"));
 								} else if (newPages) {
 									newPages--;
+								}
+								if (!(postType && postType.length)) {
+									postType = _options.postType;
 								}
 								window.loading(function() {
 									return $.Deferred(function(deferred) {
@@ -4924,7 +4957,7 @@ $().ready(function() {
 											scanPage = function(pageIndex) {
 												return $.Deferred(function(pageDeferred) {
 													window.loader.message(localizedFormat("searchingInPage", pageIndex + 1));
-													$.when(info.blog.getPosts(pageIndex, undefined, _options.postType, _options.postsPerPage,
+													$.when(info.blog.getPosts(pageIndex, undefined, postType, _options.postsPerPage,
 														window.sessionStorage.getItem("blogTag"))).then(function(posts) {
 
 														var hasANewPost = false,
@@ -4988,6 +5021,20 @@ $().ready(function() {
 						.on({
 							"click": function(e) {
 								$(".pageOptionsDialog").dialog("close");
+							}
+						})
+					.end()
+					.find(".resetPostType")
+						.on({
+							"click": function(e) {
+								window.sessionStorage.removeItem("blogPostType");
+								$(".pageOptionsDialog").dialog("close");
+								window.setTimeout(loadLastBlog);
+							}
+						})
+						.button({
+							"icons": {
+								"primary": "ui-icon-refresh"
 							}
 						})
 					.end()
@@ -5391,7 +5438,19 @@ $().ready(function() {
 					})))
 			.append(postTitleElement = $(document.createElement("div"))
 				.addClass("postTitle")
-				.append(getPostImage(post))
+				.append($(document.createElement("a"))
+					.attr({
+						"href": "#",
+						"title": _textTable.postTypes[post.type]
+					})
+					.append(getPostTypeImage(post))
+					.on({
+						"click": function(e) {
+							window.sessionStorage.setItem("blogPostType", post.type);
+							window.setTimeout(loadLastBlog);
+							return e.preventAll();
+						}
+					}))
 				.append((post.isNewPost) ? newImage() : undefined)
 				.append($(document.createElement("a"))
 					.addClass("postLink")
@@ -6844,9 +6903,13 @@ $().ready(function() {
 			newPostsSuffix,
 			optionValue = "default",
 			postsDifference = info.postsDifference,
-			postType = _options.postType,
+			blogPostType = window.sessionStorage.getItem("blogPostType"),
+			postType = blogPostType,
 			tag = window.sessionStorage.getItem("blogTag");
 
+		if (!(postType && postType.length)) {
+			postType = _options.postType;
+		}
 		hasFilter = (tag && tag.length) ||
 			(postType && postType.length);
 
@@ -6882,6 +6945,11 @@ $().ready(function() {
 			.end()
 			.find(".goToLastViewedPage")
 				[(info.newPages) ? "show" : "hide"]()
+			.end()
+			.find(".resetPostType")
+				.parent()
+					[(blogPostType && blogPostType.length) ? "show": "hide"]()
+				.end()
 			.end()
 			.find(".goToBlog")
 				.attr({
@@ -7804,7 +7872,9 @@ $().ready(function() {
 							"addClass" :
 							"removeClass"]("downloaded"); */
 					if (post && post.download_url && post.download_url.length) {
-						item.attr("title", getDownloadTitle(post, href));
+						item.attr({
+							"title": getDownloadTitle(post, href)
+						});
 					}
 				}));
 		});
@@ -7842,7 +7912,7 @@ $().ready(function() {
 			.find(".field")
 			.fadeOut()
 			.end()
-			.find(".ui-icon")
+			.find(".postCount .ui-icon")
 			.hide();
 		if (!$.isPlainObject(info)) {
 			waitFor = $.when(findBlog(info))
@@ -7949,11 +8019,11 @@ $().ready(function() {
 							}
 							if (value && value.length) {
 								target
-									.closest("tr")
-										.show()
-									.end()
 									.find(".ui-icon")
 										.hide()
+									.end()
+									.closest("tr")
+										.show()
 									.end()
 									.find(".field")
 										.html(replaceHTMLNewLines(value))
@@ -7980,7 +8050,7 @@ $().ready(function() {
 							"primary": "ui-icon-clock"
 						});
 					dialog
-						.find(".ui-icon")
+						.find(".postCount .ui-icon")
 						.fadeIn();
 					dialog
 						.find(".url")
@@ -7997,6 +8067,15 @@ $().ready(function() {
 							.html($(document.createElement("div"))
 								.html(sameSource(info.description)).html());
 					}
+					dialog.find(".label.postType a").each(function(i, item) {
+						if (noShow) {
+							$(item).attr({
+								"href": "#"
+							});
+						} else {
+							$(item).removeAttr("href");
+						}
+					});
 
 					setField(".forceNSFW", (info.force_nsfw !== undefined) ?
 						getLocalizedText((info.force_nsfw) ? "yes" : "no") : undefined);
