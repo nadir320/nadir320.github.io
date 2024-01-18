@@ -4841,6 +4841,7 @@ $().ready(function() {
 												.on({
 													"click": function(e) {
 														window.sessionStorage.setItem("blogPostType", type.value);
+														window.sessionStorage.removeItem("blogPage");
 														$(".pageOptionsDialog").dialog("close");
 														$(".blogStatisticsDialog").dialog("close");
 														window.setTimeout(loadLastBlog);
@@ -5028,6 +5029,7 @@ $().ready(function() {
 						.on({
 							"click": function(e) {
 								window.sessionStorage.removeItem("blogPostType");
+								window.sessionStorage.removeItem("blogPage");
 								$(".pageOptionsDialog").dialog("close");
 								window.setTimeout(loadLastBlog);
 							}
@@ -5439,14 +5441,24 @@ $().ready(function() {
 			.append(postTitleElement = $(document.createElement("div"))
 				.addClass("postTitle")
 				.append($(document.createElement("a"))
+					.addClass("postTypeImage")
 					.attr({
 						"href": "#",
 						"title": _textTable.postTypes[post.type]
 					})
-					.append(getPostTypeImage(post))
+					.append(getPostTypeImage(post)
+						.addClass((post.original_type) ?
+							"actualType" :
+							undefined))
+					.append((post.original_type) ?
+						getPostTypeImage({
+							"type": post.original_type
+						}).addClass("originalType") :
+						undefined)
 					.on({
 						"click": function(e) {
 							window.sessionStorage.setItem("blogPostType", post.type);
+							window.sessionStorage.removeItem("blogPage");
 							window.setTimeout(loadLastBlog);
 							return e.preventAll();
 						}

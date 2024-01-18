@@ -796,9 +796,26 @@ img.ui-state-highlight {
 	margin-bottom: 0.3em;
 }
 
+#blogPage .postTitle .postTypeImage {
+	position: relative;
+}
+
 #blogPage .postTitle .postImage {
 	display: inline-block;
 	vertical-align: middle;
+}
+
+#blogPage .postTitle .postImage.actualType {
+	margin-right: 0.25em;
+	position: relative;
+	z-index: 1;
+}
+
+#blogPage .postTitle .postImage.originalType {
+	left: 0.25em;
+	opacity: 0.5;
+	position: absolute;
+	top: 0.25em;
 }
 
 #blogPage .notes {

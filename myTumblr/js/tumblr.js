@@ -436,7 +436,10 @@ window.tumblr = function() {
 												sourceElement.data("src"));
 										}
 									}
-									post.download_url = post.video_url;
+									if (post.download_url = post.video_url) {
+										post.original_type = post.type;
+										post.type = "video";
+									}
 									break;
 							}
 
