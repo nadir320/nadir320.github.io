@@ -5,9 +5,14 @@
 
 	if (window.location.href.toLowerCase() === url) {
 		var content = JSON.stringify($.makeArray($("a.character").map(function(i, item) {
+			var i = $(item).find(".character-portrait__img");
+
+			if (!i.length) {
+				i = $(item).find(".ship-portrait__img");
+			}
 			return {
 				"name": $(item).find("h5").text(),
-				"image": $(item).find(".character-portrait__img").attr("src")
+				"image": i.attr("src")
 			}
 		})), true, 4);
 
