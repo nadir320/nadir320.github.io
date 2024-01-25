@@ -3,7 +3,7 @@
 (function() {
 	var url = "https://swgoh.gg/";
 
-	if (window.location.href.toLowerCase() === url) {
+	if (window.location.href.toLowerCase().indexOf(url) === 0) {
 		var content = JSON.stringify($.makeArray($("a.character").map(function(i, item) {
 			var i = $(item).find(".character-portrait__img");
 
