@@ -7,7 +7,7 @@
 		var content = JSON.stringify($.makeArray($("a.character").map(function(i, item) {
 			return {
 				"name": $(item).find("h5").text(),
-				"image": $(item).find(".char-portrait-img").attr("src")
+				"image": $(item).find(".character-portrait__img").attr("src")
 			}
 		})), true, 4);
 
