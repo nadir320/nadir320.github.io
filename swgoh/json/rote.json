@@ -1,0 +1,8227 @@
+{
+	"affiliation": "Mixed",
+	"eventType": "ROTE",
+	"phaseTemplates": [
+		{
+			"ordinal": 0,
+			"phaseTop": 0,
+			"phaseMiddle": 0,
+			"phaseBottom": 0,
+			"starRequirement": 7,
+			"relicRequirement": 5,
+			"missionTemplates": [
+				{
+					"cgId": "tb3_mixed_phase01_conflict02_recon01",
+					"affiliation": "Dark",
+					"ordinal": 0,
+					"phaseOrdinal": 0,
+					"name": "Mustafar (left)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BT1"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "MAUL"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "DARTHSION"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GEONOSIANSTARFIGHTER3"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GAMORREANGUARD"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "MAUL"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "GAUNTLETSTARFIGHTER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "IMPERIALSUPERCOMMANDO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "UGNAUGHT"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "JANGOFETT"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "DARTHSIDIOUS"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "IG88"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DENGAR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ASAJVENTRESS"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "UGNAUGHT"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "NUTEGUNRAY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "HYENABOMBER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "DROIDEKA"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "VADER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "TRIPLEZERO"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TIEBOMBERIMPERIAL"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "NINTHSISTER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "SITHASSASSIN"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "TIEFIGHTERPILOT"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "HOUNDSTOOTH"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "TRIPLEZERO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BT1"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHSION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "HOUNDSTOOTH"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "DARKTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "IG86SENTINELDROID"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "EMBO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FOSITHTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "UGNAUGHT"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "TRIPLEZERO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "B1BATTLEDROIDV2"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "CANDEROUSORDO"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "FIRSTORDERSPECIALFORCESPILOT"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "NIGHTSISTERINITIATE"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "TUSKENSHAMAN"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "MARAJADE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "TRIPLEZERO"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "IG88"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BOBAFETT"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "DROIDEKA"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "CANDEROUSORDO"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "TIEFIGHTERIMPERIAL"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "VADER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHSIDIOUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "FIFTHBROTHER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FIRSTORDEROFFICERMALE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "FIRSTORDERSPECIALFORCESPILOT"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "FIRSTORDEROFFICERMALE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "COUNTDOOKU"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 8,
+					"starRequirement": 7,
+					"relicRequirement": 5,
+					"locationSpecifier": "left",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase01_conflict03_recon01",
+					"affiliation": "Mixed",
+					"ordinal": 1,
+					"phaseOrdinal": 0,
+					"name": "Corellia (mid)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "EETHKOTH"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "DARTHTRAYA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "IMAGUNDI"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FOSITHTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "HYENABOMBER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "JEDISTARFIGHTERANAKIN"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BADBATCHHUNTER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HANSOLO"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "JOLEEBINDO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "POE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BT1"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "GEONOSIANBROODALPHA"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GHOST"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "WATTAMBOR"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "PAPLOO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BOSSK"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "REYJEDITRAINING"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "C3POCHEWBACCA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "ARC170CLONESERGEANT"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "VADER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "KIADIMUNDI"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "COMMANDSHUTTLE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "CLONESERGEANTPHASEI"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BLADEOFDORIN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "T3_M4"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "TIESILENCER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "LOGRAY"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CAPITALMALEVOLENCE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "MAUL"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "GEONOSIANBROODALPHA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "COLONELSTARCK"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "TALIA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "KIADIMUNDI"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ADMIRALPIETT"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "DARTHSION"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "SANASTARROS"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "JAWAENGINEER"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 6,
+					"starRequirement": 7,
+					"relicRequirement": 5,
+					"locationSpecifier": "mid",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase01_conflict01_recon01",
+					"affiliation": "Light",
+					"ordinal": 2,
+					"phaseOrdinal": 0,
+					"name": "Coruscant (right)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "REYJEDITRAINING"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GREEFKARGA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HERMITYODA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CC2224"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BARRISSOFFEE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "L3_37"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "PHANTOM2"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "XWINGRESISTANCE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HERMITYODA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "JYNERSO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "SANASTARROS"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "SANASTARROS"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "CAPITALMONCALAMARICRUISER"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "REYJEDITRAINING"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "C3POCHEWBACCA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HERMITYODA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "UMBARANSTARFIGHTER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FULCRUMAHSOKA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "SANASTARROS"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "ARMORER"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "LOBOT"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HANSOLO"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "LOGRAY"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BLADEOFDORIN"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "VISASMARR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "HONDO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "JEDISTARFIGHTERANAKIN"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "JOLEEBINDO"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "LOGRAY"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "TEEBO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "KUIIL"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "C3POCHEWBACCA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "PHANTOM2"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SABINEWRENS3"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HERMITYODA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "AMILYNHOLDO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "ZAALBAR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "SANASTARROS"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "RAVENSCLAW"
+									}
+								]
+							],
+							"platoonBonus": 10000000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 7,
+					"starRequirement": 7,
+					"relicRequirement": 5,
+					"locationSpecifier": "right",
+					"allowPartialAssignments": false
+				}
+			],
+			"phaseLabel": "1"
+		},
+		{
+			"ordinal": 1,
+			"phaseTop": 0,
+			"phaseMiddle": 0,
+			"phaseBottom": 0,
+			"starRequirement": 7,
+			"relicRequirement": 6,
+			"missionTemplates": [
+				{
+					"cgId": "tb3_mixed_phase02_conflict02_recon01",
+					"affiliation": "Dark",
+					"ordinal": 0,
+					"phaseOrdinal": 1,
+					"name": "Geonosis (left)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "SITHINFILTRATOR"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "CAPITALSTARDESTROYER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "HK47"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "DARTHTALON"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TIEREAPER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "DENGAR"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "DROIDEKA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "KYLORENUNMASKED"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "B2SUPERBATTLEDROID"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "ASAJVENTRESS"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FIRSTORDEROFFICERMALE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "VEERS"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "FIRSTORDERTIEECHELON"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FIRSTORDEROFFICERMALE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "EMPERORSSHUTTLE"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "COLONELSTARCK"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "CAPITALMALEVOLENCE"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "B2SUPERBATTLEDROID"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "MAGMATROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "KYLORENUNMASKED"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "CADBANE"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "EMPERORPALPATINE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "DEATHTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "HYENABOMBER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "COMMANDSHUTTLE"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 13,
+					"starRequirement": 7,
+					"relicRequirement": 6,
+					"locationSpecifier": "left",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase02_conflict03_recon01",
+					"affiliation": "Mixed",
+					"ordinal": 1,
+					"phaseOrdinal": 1,
+					"name": "Felucia (mid)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "AAYLASECURA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "C3POCHEWBACCA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BLADEOFDORIN"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "THEMANDALORIAN"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "OUTRIDER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "EMPERORSSHUTTLE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "EMBO"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "JAWA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "ZAALBAR"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "GENERALHUX"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "SANASTARROS"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "SNOWTROOPER"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "COUNTDOOKU"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "KUIIL"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "LOGRAY"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "VEERS"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "EMBO"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "ADMIRALACKBAR"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "UWINGROGUEONE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FOSITHTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BASTILASHAN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "DEATHTROOPER"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "ADMINISTRATORLANDO"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BT1"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "L3_37"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 8,
+					"starRequirement": 7,
+					"relicRequirement": 6,
+					"locationSpecifier": "mid",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase02_conflict01_recon01",
+					"affiliation": "Light",
+					"ordinal": 2,
+					"phaseOrdinal": 1,
+					"name": "Bracca (right)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "BOUSHH"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "WEDGEANTILLES"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "L3_37"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "GHOST"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "ADMIRALRADDUS"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "XWINGBLACKONE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CLONESERGEANTPHASEI"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "R2D2_LEGENDARY"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "YWINGCLONEWARS"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "JUHANI"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "OUTRIDER"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "YOUNGHAN"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "PAO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "MONMOTHMA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "AAYLASECURA"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "JEDISTARFIGHTERCONSULAR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "C3POLEGENDARY"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "ARCTROOPER501ST"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "YWINGCLONEWARS"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALJEDICRUISER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "CT210408"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "EBONHAWK"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GREEFKARGA"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "KANANJARRUSS3"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "REYJEDITRAINING"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "ROSETICO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "ENFYSNEST"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "C3POCHEWBACCA"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BODHIROOK"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "CT5555"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GREEFKARGA"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GHOST"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "R2D2_LEGENDARY"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "SMUGGLERCHEWBACCA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BADBATCHOMEGA"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "UWINGSCARIF"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "REYJEDITRAINING"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "EZRABRIDGERS3"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "OUTRIDER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "GRANDMASTERYODA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "MILLENNIUMFALCON"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "KANANJARRUSS3"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CT7567"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "RAVENSCLAW"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "YOUNGCHEWBACCA"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "C3POLEGENDARY"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "TEEBO"
+									}
+								]
+							],
+							"platoonBonus": 11000000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 10,
+					"starRequirement": 7,
+					"relicRequirement": 6,
+					"locationSpecifier": "right",
+					"allowPartialAssignments": false
+				}
+			],
+			"phaseLabel": "2"
+		},
+		{
+			"ordinal": 2,
+			"phaseTop": 0,
+			"phaseMiddle": 0,
+			"phaseBottom": 0,
+			"starRequirement": 7,
+			"relicRequirement": 7,
+			"missionTemplates": [
+				{
+					"cgId": "tb3_mixed_phase03_conflict02_recon01",
+					"affiliation": "Dark",
+					"ordinal": 0,
+					"phaseOrdinal": 2,
+					"name": "Dathomir (left)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "TIEFIGHTERFOSF"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "MAUL"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "DENGAR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "GEONOSIANSTARFIGHTER3"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "TALIA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "SAVAGEOPRESS"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GRIEVOUS"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "GENERALHUX"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "TUSKENRAIDER"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "HYENABOMBER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HK47"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "DARKTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "SITHASSASSIN"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHREVAN"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "DENGAR"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "CADBANE"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "IG88"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "MOTHERTALZIN"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "FOSITHTROOPER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "TIEADVANCED"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GRANDADMIRALTHRAWN"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SEVENTHSISTER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "FIRSTORDERSPECIALFORCESPILOT"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "TRIPLEZERO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "GARSAXON"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "GRANDMOFFTARKIN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "EMPERORSSHUTTLE"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "CAPITALCHIMAERA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "DIRECTORKRENNIC"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TIEFIGHTERIMPERIAL"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "TUSKENRAIDER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "AURRA_SING"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "EMBO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "GEONOSIANSTARFIGHTER2"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 1,
+					"starRequirement": 7,
+					"relicRequirement": 7,
+					"locationSpecifier": "left",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase03_conflict03_recon01",
+					"affiliation": "Mixed",
+					"ordinal": 1,
+					"phaseOrdinal": 2,
+					"name": "Tatooine (mid)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "CARADUNE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BASTILASHANDARK"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GEONOSIANSPY"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "CHIRRUTIMWE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "TUSKENCHIEFTAIN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "GAUNTLETSTARFIGHTER"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "OUTRIDER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "QUIGONJINN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "50RT"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "OLDBENKENOBI"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "NIGHTSISTERACOLYTE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BASTILASHANDARK"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "LUMINARAUNDULI"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BADBATCHHUNTER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ROSETICO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "EWOKSCOUT"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "UNDERCOVERLANDO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "MARAJADE"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "TIEREAPER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "YOUNGHAN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "EPIXPOE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "CORUSCANTUNDERWORLDPOLICE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "EWOKELDER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "KYLORENUNMASKED"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "B1BATTLEDROIDV2"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HOTHREBELSCOUT"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CAPITALFINALIZER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BODHIROOK"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "TEEBO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "HK47"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "HONDO"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BARRISSOFFEE"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "IG2000"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "TIEFIGHTERFOSF"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "EPIXFINN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "OLDBENKENOBI"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 8,
+					"starRequirement": 7,
+					"relicRequirement": 7,
+					"locationSpecifier": "mid",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase03_conflict01_recon01",
+					"affiliation": "Light",
+					"ordinal": 2,
+					"phaseOrdinal": 2,
+					"name": "Kashyyyk (right)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "LOGRAY"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "MACEWINDU"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HANSOLO"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "C3POLEGENDARY"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "ANAKINKNIGHT"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "LOGRAY"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "MILLENNIUMFALCON"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "JEDIKNIGHTREVAN"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "LOGRAY"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "RAVENSCLAW"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "CLONESERGEANTPHASEI"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "GENERALKENOBI"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "MILLENNIUMFALCON"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "GRANDMASTERYODA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "UNDERCOVERLANDO"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "CT5555"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "LOGRAY"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "MILLENNIUMFALCONPRISTINE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MILLENNIUMFALCON"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "RESISTANCETROOPER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "HOTHREBELSCOUT"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "REYJEDITRAINING"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "LOGRAY"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "K2SO"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "MILLENNIUMFALCON"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "CAPITALNEGOTIATOR"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HANSOLO"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "RESISTANCETROOPER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "MILLENNIUMFALCON"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "EWOKSCOUT"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "HOTHREBELSOLDIER"
+									}
+								]
+							],
+							"platoonBonus": 13200000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 4,
+					"starRequirement": 7,
+					"relicRequirement": 7,
+					"locationSpecifier": "right",
+					"allowPartialAssignments": false
+				}
+			],
+			"phaseLabel": "3"
+		},
+		{
+			"ordinal": 3,
+			"phaseTop": 0,
+			"phaseMiddle": 0,
+			"phaseBottom": 0,
+			"starRequirement": 7,
+			"relicRequirement": 8,
+			"missionTemplates": [
+				{
+					"cgId": "tb3_mixed_phase04_conflict02_recon01",
+					"affiliation": "Dark",
+					"ordinal": 0,
+					"phaseOrdinal": 3,
+					"name": "Haven-class Medical Station (left)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "NIGHTSISTERSPIRIT"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "RANGETROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BASTILASHANDARK"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "VADER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "EMBO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BT1"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "IDENVERSIOEMPIRE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "SNOWTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CADBANE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FIRSTORDERTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "NIGHTSISTERZOMBIE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "AURRA_SING"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "DENGAR"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HYENABOMBER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "NIGHTSISTERINITIATE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "MAUL"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "TIESILENCER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "SNOWTROOPER"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DIRECTORKRENNIC"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "EIGHTHBROTHER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "IG88"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "HK47"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "NIGHTSISTERACOLYTE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "WAMPA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "KRRSANTAN"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "ASAJVENTRESS"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "TIEINTERCEPTOR"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "HYENABOMBER"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "ASAJVENTRESS"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "SAVAGEOPRESS"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "SEVENTHSISTER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "VEERS"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "SECONDSISTER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "AURRA_SING"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "MARAJADE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "SCYTHE"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "HONDO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "EMPERORSSHUTTLE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TIEFIGHTERPILOT"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "B2SUPERBATTLEDROID"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CAPITALMALEVOLENCE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "EMPERORSSHUTTLE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "FIRSTORDERTIEPILOT"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "DATHCHA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BOBAFETTSCION"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 5,
+					"starRequirement": 7,
+					"relicRequirement": 8,
+					"locationSpecifier": "left",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase04_conflict03_recon01",
+					"affiliation": "Mixed",
+					"ordinal": 1,
+					"phaseOrdinal": 3,
+					"name": "Kessel (mid)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "CORUSCANTUNDERWORLDPOLICE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "POGGLETHELESSER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "EBONHAWK"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BOBAFETTSCION"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "JEDISTARFIGHTERCONSULAR"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "OUTRIDER"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GAMORREANGUARD"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "SITHFIGHTER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ARC170REX"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BENSOLO"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BADBATCHECHO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "AURRA_SING"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SEVENTHSISTER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "NIGHTSISTERINITIATE"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "NIGHTSISTERINITIATE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "TIEINTERCEPTOR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "TIEINTERCEPTOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "SLAVE1"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "THEMANDALORIAN"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BAZEMALBUS"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "VEERS"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "HOTHREBELSOLDIER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "SCYTHE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BOKATAN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BISTAN"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SITHBOMBER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "ASAJVENTRESS"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "IG88"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "RAZORCREST"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "50RT"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "YWINGREBEL"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SITHTROOPER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TIESILENCER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ADMIRALACKBAR"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "COMMANDERAHSOKA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "DARKTROOPER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "KYLOREN"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 4,
+					"starRequirement": 7,
+					"relicRequirement": 8,
+					"locationSpecifier": "mid",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase04_conflict01_recon01",
+					"affiliation": "Light",
+					"ordinal": 2,
+					"phaseOrdinal": 3,
+					"name": "Lothal (right)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SMUGGLERCHEWBACCA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "JEDIKNIGHTREVAN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ZAALBAR"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "DASHRENDAR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "XANADUBLOOD"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "YWINGREBEL"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "THEMANDALORIANBESKARARMOR"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "CHEWBACCALEGENDARY"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "ZAALBAR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "XANADUBLOOD"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "FINN"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "R2D2_LEGENDARY"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "50RT"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "RAVENSCLAW"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "EBONHAWK"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "CHIEFNEBIT"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GHOST"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "KYLEKATARN"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "REYJEDITRAINING"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "SCARIFREBEL"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "JOLEEBINDO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "COMMANDERAHSOKA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "OUTRIDER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "SCARIFREBEL"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "EETHKOTH"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BADBATCHTECH"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "JEDIKNIGHTREVAN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "LOGRAY"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "JEDIKNIGHTCONSULAR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "RAZORCREST"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "LOGRAY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BISTAN"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "MILLENNIUMFALCON"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BLADEOFDORIN"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "XWINGRED2"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SANASTARROS"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "PADMEAMIDALA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BADBATCHECHO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "AAYLASECURA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BENSOLO"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "WICKET"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "50RT"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "HONDO"
+									}
+								]
+							],
+							"platoonBonus": 18480000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 4,
+					"starRequirement": 7,
+					"relicRequirement": 8,
+					"locationSpecifier": "right",
+					"allowPartialAssignments": false
+				}
+			],
+			"phaseLabel": "4"
+		},
+		{
+			"ordinal": 4,
+			"phaseTop": 0,
+			"phaseMiddle": 0,
+			"phaseBottom": 0,
+			"starRequirement": 7,
+			"relicRequirement": 9,
+			"missionTemplates": [
+				{
+					"cgId": "tb3_mixed_phase05_conflict02_recon01",
+					"affiliation": "Dark",
+					"ordinal": 0,
+					"phaseOrdinal": 4,
+					"name": "Malachor (left)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BOBAFETT"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "VULTUREDROID"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "SITHTROOPER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "SITHASSASSIN"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "FIRSTORDERSPECIALFORCESPILOT"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "DARTHMALGUS"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "NIGHTSISTERZOMBIE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TALIA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "FIRSTORDERSPECIALFORCESPILOT"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "TUSKENSHAMAN"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "KYLOREN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "SCYTHE"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "FIRSTORDERTIEPILOT"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "WAMPA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GAUNTLETSTARFIGHTER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "IG88"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "JANGOFETT"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "MAULS7"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SNOWTROOPER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HYENABOMBER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CAPITALSTARDESTROYER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "COUNTDOOKU"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "GEONOSIANSOLDIER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "GEONOSIANSTARFIGHTER2"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "MAGMATROOPER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "SITHTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "COLONELSTARCK"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "IG88"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "KYLORENUNMASKED"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "IG2000"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SITHBOMBER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TIEFIGHTERFIRSTORDER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "IDENVERSIOEMPIRE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FIRSTORDEROFFICERMALE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "MOFFGIDEONS1"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "IG88"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 8,
+					"starRequirement": 7,
+					"relicRequirement": 9,
+					"locationSpecifier": "left",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase05_conflict03_recon01",
+					"affiliation": "Mixed",
+					"ordinal": 1,
+					"phaseOrdinal": 4,
+					"name": "Vandor (mid)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "FULCRUMAHSOKA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "EPIXFINN"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "XWINGRED2"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GAUNTLETSTARFIGHTER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "HOUNDSTOOTH"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "JEDISTARFIGHTERCONSULAR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "TIEBOMBERIMPERIAL"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "WICKET"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "STARKILLER"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "50RT"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BADBATCHHUNTER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "JOLEEBINDO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "DARTHSIDIOUS"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HONDO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "DARTHMALAK"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "MAGNAGUARD"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BISTAN"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TUSKENSHAMAN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "DAKA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BASTILASHAN"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "KYLOREN"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BODHIROOK"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BARRISSOFFEE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "STARKILLER"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHMALAK"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "MACEWINDU"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HYENABOMBER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "JEDISTARFIGHTERANAKIN"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "RAVENSCLAW"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "JEDISTARFIGHTERCONSULAR"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "PADMEAMIDALA"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "STARKILLER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "TALIA"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FIRSTORDEREXECUTIONER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "EMPERORPALPATINE"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BADBATCHECHO"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "FIRSTORDERTIEECHELON"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "HYENABOMBER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "NIGHTSISTERINITIATE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GRANDINQUISITOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "DAKA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "CHEWBACCALEGENDARY"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 8,
+					"starRequirement": 7,
+					"relicRequirement": 9,
+					"locationSpecifier": "mid",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase05_conflict01_recon01",
+					"affiliation": "Light",
+					"ordinal": 2,
+					"phaseOrdinal": 4,
+					"name": "Ring of Kafrene (right)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "50RT"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "ZAALBAR"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "XWINGRED2"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BOUSHH"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BASTILASHAN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "EETHKOTH"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "LOBOT"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "MILLENNIUMFALCON"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "CT7567"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "EETHKOTH"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "ARC170CLONESERGEANT"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "T3_M4"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "C3POLEGENDARY"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ARMORER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BADBATCHTECH"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "XWINGRED2"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BADBATCHECHO"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BARRISSOFFEE"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "MONMOTHMA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BAZEMALBUS"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "CAPITALNEGOTIATOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CHOPPERS3"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "CLONEWARSCHEWBACCA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "AMILYNHOLDO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "RESISTANCETROOPER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "C3POLEGENDARY"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "SMUGGLERCHEWBACCA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "50RT"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALPROFUNDITY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BAZEMALBUS"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "R2D2_LEGENDARY"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BODHIROOK"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HOTHREBELSOLDIER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "CHEWBACCALEGENDARY"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BADBATCHOMEGA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "IMAGUNDI"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "CHIRRUTIMWE"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "GENERALSKYWALKER"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "ADMINISTRATORLANDO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BADBATCHTECH"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "GHOST"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "JEDIKNIGHTLUKE"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "UMBARANSTARFIGHTER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "ROSETICO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "COMMANDERLUKESKYWALKER"
+									}
+								]
+							],
+							"platoonBonus": 33264000,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 8,
+					"starRequirement": 7,
+					"relicRequirement": 9,
+					"locationSpecifier": "right",
+					"allowPartialAssignments": false
+				}
+			],
+			"phaseLabel": "5"
+		},
+		{
+			"ordinal": 5,
+			"phaseTop": 0,
+			"phaseMiddle": 0,
+			"phaseBottom": 0,
+			"starRequirement": 7,
+			"relicRequirement": 9,
+			"missionTemplates": [
+				{
+					"cgId": "tb3_mixed_phase06_conflict02_recon01",
+					"affiliation": "Dark",
+					"ordinal": 0,
+					"phaseOrdinal": 5,
+					"name": "Death Star (left)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "HONDO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SAVAGEOPRESS"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "UGNAUGHT"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "CAPITALSTARDESTROYER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "NIGHTSISTERACOLYTE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "IMPERIALSUPERCOMMANDO"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HYENABOMBER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "NINTHSISTER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "GEONOSIANSTARFIGHTER3"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "NIGHTSISTERSPIRIT"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "B1BATTLEDROIDV2"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "EMPERORSSHUTTLE"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "IMPERIALSUPERCOMMANDO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CAPITALMALEVOLENCE"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "KRRSANTAN"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "UGNAUGHT"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "ROYALGUARD"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "COUNTDOOKU"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "IG88"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "CAPITALMALEVOLENCE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HONDO"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "HYENABOMBER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "JAWAENGINEER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "URORRURRR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHTALON"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "MARAJADE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "HOUNDSTOOTH"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GENERALHUX"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "JAWA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "MAUL"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COUNTDOOKU"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "SHORETROOPER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "RANGETROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GEONOSIANBROODALPHA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "MAGNAGUARD"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "ASAJVENTRESS"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "TUSKENRAIDER"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "FOSITHTROOPER"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "GEONOSIANSOLDIER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "FIFTHBROTHER"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "GEONOSIANSPY"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "HK47"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GRANDMOFFTARKIN"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "EMPERORSSHUTTLE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "NIGHTSISTERACOLYTE"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "JAWASCAVENGER"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "B2SUPERBATTLEDROID"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "HONDO"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GEONOSIANBROODALPHA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ZAMWESELL"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "KYLORENUNMASKED"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "HYENABOMBER"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "IG86SENTINELDROID"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "IG88"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 4,
+					"starRequirement": 7,
+					"relicRequirement": 9,
+					"locationSpecifier": "left",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase06_conflict03_recon01",
+					"affiliation": "Mixed",
+					"ordinal": 1,
+					"phaseOrdinal": 5,
+					"name": "Hoth (mid)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "SANASTARROS"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "MAGNAGUARD"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "FOSITHTROOPER"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "NINTHSISTER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "DAKA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "MAULS7"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "IMPERIALPROBEDROID"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "SITHTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "OUTRIDER"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "MAULS7"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "CLONESERGEANTPHASEI"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "DARKTROOPER"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "CAPITALEXECUTOR"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "YOUNGLANDO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "SMUGGLERCHEWBACCA"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "SITHPALPATINE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DARTHTRAYA"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "EMPERORSSHUTTLE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "BOBAFETTSCION"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "FIRSTORDEROFFICERMALE"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "B1BATTLEDROIDV2"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "HK47"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "FIRSTORDERTIEECHELON"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "WATTAMBOR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "JEDIKNIGHTCONSULAR"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "ASAJVENTRESS"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BOBAFETTSCION"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "SANASTARROS"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "SUPREMELEADERKYLOREN"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "MAULS7"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "NUTEGUNRAY"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "PAO"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "SCYTHE"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "AURRA_SING"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "DENGAR"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "LORDVADER"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "DARTHMALGUS"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "RESISTANCEPILOT"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "CHIEFNEBIT"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "ADMIRALRADDUS"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "NIGHTSISTERINITIATE"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 4,
+					"starRequirement": 7,
+					"relicRequirement": 9,
+					"locationSpecifier": "mid",
+					"allowPartialAssignments": false
+				},
+				{
+					"cgId": "tb3_mixed_phase06_conflict01_recon01",
+					"affiliation": "Light",
+					"ordinal": 2,
+					"phaseOrdinal": 5,
+					"name": "Scarif (right)",
+					"missionCombatType": "Mixed",
+					"boardTemplates": [
+						{
+							"ordinal": 0,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "XWINGRED3"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "GENERALKENOBI"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BASTILASHAN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "POE"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "DASHRENDAR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "CORUSCANTUNDERWORLDPOLICE"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "RAVENSCLAW"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-1"
+						},
+						{
+							"ordinal": 1,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "THEMANDALORIAN"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "KANANJARRUSS3"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "IMAGUNDI"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "REY"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "LOBOT"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BASTILASHAN"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "DASHRENDAR"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "OUTRIDER"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "RAVENSCLAW"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-2"
+						},
+						{
+							"ordinal": 2,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "PADMEAMIDALA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BASTILASHAN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "CHEWBACCALEGENDARY"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "DASHRENDAR"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "GRANDMASTERYODA"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "RAVENSCLAW"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-3"
+						},
+						{
+							"ordinal": 3,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "L3_37"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "COMMANDERAHSOKA"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BASTILASHAN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "XANADUBLOOD"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "MARAJADE"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "KIADIMUNDI"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "REY"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "DASHRENDAR"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-4"
+						},
+						{
+							"ordinal": 4,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "BADBATCHTECH"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "IMAGUNDI"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "LOGRAY"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "ZAALBAR"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "BASTILASHAN"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "XWINGRESISTANCE"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "UNDERCOVERLANDO"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-5"
+						},
+						{
+							"ordinal": 5,
+							"slotTemplates": [
+								[
+									{
+										"ordinal": 0,
+										"unitId": "GLREY"
+									},
+									{
+										"ordinal": 1,
+										"unitId": "HANSOLO"
+									},
+									{
+										"ordinal": 2,
+										"unitId": "RAZORCREST"
+									},
+									{
+										"ordinal": 3,
+										"unitId": "MILLENNIUMFALCON"
+									},
+									{
+										"ordinal": 4,
+										"unitId": "BASTILASHAN"
+									}
+								],
+								[
+									{
+										"ordinal": 5,
+										"unitId": "JEDIMASTERKENOBI"
+									},
+									{
+										"ordinal": 6,
+										"unitId": "HOTHLEIA"
+									},
+									{
+										"ordinal": 7,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 8,
+										"unitId": "JEDIKNIGHTREVAN"
+									},
+									{
+										"ordinal": 9,
+										"unitId": "UNDERCOVERLANDO"
+									}
+								],
+								[
+									{
+										"ordinal": 10,
+										"unitId": "GRANDMASTERLUKE"
+									},
+									{
+										"ordinal": 11,
+										"unitId": "HERMITYODA"
+									},
+									{
+										"ordinal": 12,
+										"unitId": "BENSOLO"
+									},
+									{
+										"ordinal": 13,
+										"unitId": "BB8"
+									},
+									{
+										"ordinal": 14,
+										"unitId": "DASHRENDAR"
+									}
+								]
+							],
+							"platoonBonus": 86486400,
+							"cgId": "tb3-platoon-6"
+						}
+					],
+					"numberOfTerritoriesAffected": 4,
+					"starRequirement": 7,
+					"relicRequirement": 9,
+					"locationSpecifier": "right",
+					"allowPartialAssignments": false
+				}
+			],
+			"phaseLabel": "6"
+		}
+	],
+	"missionCounts": "3,3,3,3,3,3"
+}
