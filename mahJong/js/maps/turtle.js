@@ -3,8 +3,8 @@
 if (typeof window.maps === "undefined") {
 	window.maps = { };
 }
-if (typeof window.maps.dragon === "undefined") {
-	window.maps.dragon = function() {
+if (typeof window.maps.turtle === "undefined") {
+	window.maps.turtle = function() {
 		var map = [ ];
 
 		var addTile = function(x, y, z, w, h) {
@@ -36,5 +36,5 @@ if (typeof window.maps.dragon === "undefined") {
 		return map;
 	};
 
-	window.maps.dragon.displayName = "Drago";
+	window.maps.turtle.displayName = "Tartaruga";
 }
