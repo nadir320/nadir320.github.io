@@ -32,7 +32,7 @@
 				background-color: white;
 				border-radius: 0.5em;
 				display: grid;
-				grid-template-columns: max-content max-content;
+				grid-template-columns: max-content;
 				grid-gap: 0.5em;
 				margin-bottom: 0.5em;
 			}
@@ -41,17 +41,18 @@
 			fieldset input { margin-left: 1em; width: 15em; }
 
 			fieldset label.interactive::after {
-				background-color: pink;
-				border: 1px solid red;
-				border-radius: 50%;
-				content: "";
+				background-color: silver;
+				border: 1px solid gray;
+				border-radius: 3px;
+				content: "Select";
 				cursor: pointer;
 				height: 1em;
-				-opacity: 0.75;
 				position: absolute;
 				right: 3px;
+				text-align: center;
 				top: 3px;
-				width: 1em;
+				-width: 1.5em;
+				padding: 0 0.5em;
 			}
 
 			button[type=submit] {
@@ -61,22 +62,24 @@
 				cursor: pointer;
 				padding: 0.5em;
 			}
+
+			#user-agent-label { display: none; }
 		</style>
 	</head>
 	<body>
 		<form id="project-data">
 			<fieldset>
-				<label>Id:<input id="id" value="TestProject1"/></label>
-				<label>Name:<input id="name" value="Test Project (Google)"/></label>
-				<label>Package:<input id="package-name" value="com.test.project.new"/></label>
+				<label>Id:<input id="id" value="TestProject"/></label>
+				<label>Name:<input id="name" value="Test Project"/></label>
+				<label>Package:<input id="package-name" value="com.test.project"/></label>
 				<label>Url:<input id="url"/ value="https://google.com/"/></label>
-				<label>User agent:<input id="user-agent" disabled/></label>
-				<label id="image-label" class="interactive" for="image-reader">Image (PNG):<input id="image-data" disabled/></label>
+				<label id="user-agent-label">User agent:<input id="user-agent" disabled/></label>
+				<label id="image-label" class="interactive" for="image-reader">Image (PNG):<input id="image-data" value="iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAA7SURBVHhe7cExAQAAAMKg9U9tCF8gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgVAOQYAABhBJ4bAAAAABJRU5ErkJggg==" disabled/></label>
 				<label>Version code:<input id="version-code" type="number" value="1"/></label>
-				<label>Version:<input id="version-name" value="1.0.0.0"/></label>
-				<label id="primary-color-label" class="-interactive" qfor="color-selector">Primary color:<input id="primary-color" type="color" value="#52bb52"/></label>
-				<label id="dark-color-label" class="-interactive">Dark color:<input id="dark-color" type="color" value="#228b22"/></label>
-				<label id="accent-color-label" class="-interactive">Accent color:<input id="accent-color" type="color" value="#225b22"/></label>
+				<label>Version:<input id="version-name" value="0.0.0.1"/></label>
+				<label id="primary-color-label">Primary color:<input id="primary-color" type="color" value="#8282bb"/></label>
+				<label id="dark-color-label">Dark color:<input id="dark-color" type="color" value="#52528b"/></label>
+				<label id="accent-color-label">Accent color:<input id="accent-color" type="color" value="#52525b"/></label>
 			</fieldset>
 			<button id="create-project" type="submit" disabled>Create</button>
 		</form>
