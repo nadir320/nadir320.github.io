@@ -1,16 +1,13 @@
 ﻿"use strict";
 
-window.tumblr = function() {
-	var
-		  API_KEY = "XxD0MaqyUiqkaTATyhoi1T2uZDgwYxX8s0UUywYtzgd8XrYKdr"
-		, API_URL_FORMAT = "https://api.tumblr.com/v2/blog/{0}/{1}"
-		, AUDIO_URL_FORMAT = "https://a.tumblr.com/{0}o1.mp3"/*#_=_"*/
-		, SECRET = "Hrgv1NQS2lwRe9uxmJ8jI6E1rowS7LKC18QO5pCACpqOsu3DXU"
-		, TOKEN = "tB4jfzUgKbLkqQwE2ENQZHu6YBd2IYyScTwsmZwN61HRaQTdO9"
-		/* , TOKEN = "8WwB9HUBPj0RVH21akbStfVzwViSB1b0k1ORiOPkXWz7iRblTD" */
-		, TOKEN_SECRET = "PIgTwsjFPh3E3gq2LsBiiF0qOhAq1TByMDKrTICkwTWuSmgtip"
-		/* , TOKEN_SECRET = "YlKPTU60vS8xqQ1cHHHoRvtvgRez32FYvCb8LXnMZqOJO7wJQy" */
-		;
+window.tumblr = function(auth) {
+	var API_URL_FORMAT = "https://api.tumblr.com/v2/blog/{0}/{1}",
+		AUDIO_URL_FORMAT = "https://a.tumblr.com/{0}o1.mp3"/*#_=_"*/;
+
+	var API_KEY = auth.api_key,
+		SECRET = auth.oauth_secret,
+		TOKEN = auth.oauth_token,
+		TOKEN_SECRET = auth.oauth_token_secret;
 
 	var _oauth = OAuth({
 		"consumer": {
@@ -468,7 +465,10 @@ window.tumblr = function() {
 			};
 		},
 		"ignoreErrors": false,
-		"isLoginSupported": window.CryptoJS !== undefined
+		"isLoginSupported": window.CryptoJS !== undefined &&
+			SECRET && SECRET.length &&
+			TOKEN && TOKEN.length &&
+			TOKEN_SECRET && TOKEN_SECRET.length,
 	};
 	return instance;
 };

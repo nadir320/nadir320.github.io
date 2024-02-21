@@ -68,9 +68,8 @@ var BLANK_PAGE = "about:blank",
 		"withCredentials" in new window.XMLHttpRequest() &&
 		window.URL;
 
-var APP_CUSTOM_TOKEN/* = "VUrbbIlEtfdFoqvKfxxWBN8dOaDUuMt9KQzlWjOQ"*/,
-	DATASTORE3_API_KEY = "AIzaSyA4dckJaCSBB1R7gJVuWCeYXjr7P6Oi9DM",
-	DATASTORE_ID = 7537,
+var DATASTORE3_API_KEY = "AIzaSyA4dckJaCSBB1R7gJVuWCeYXjr7P6Oi9DM",
+	DATASTORE_ID = "glowing-fire-7537",
 	FULLHD = {
 		"height": 1080,
 		"horizontalImage": "images/fullHD.png",
@@ -1179,6 +1178,7 @@ $().ready(function() {
 		_readLater,
 		_store,
 		_textTable,
+		_tumblrAuth,
 		_usageModes = [{
 			"_icon": "home",
 			"name": "home_daily",
@@ -2406,7 +2406,7 @@ $().ready(function() {
 	};
 
 	var createTumblr = function() {
-		var t = new window.tumblr();
+		var t = new window.tumblr(_tumblrAuth);
 
 		t.proxy = getProxy();
 		return t;
@@ -6453,17 +6453,11 @@ $().ready(function() {
 
 	var reconnect = function(force) {
 		var createDataStore = function() {
-			var store;
+			var store = new firebaseDataStore8(DATASTORE3_API_KEY, DATASTORE_ID);
 
-			if (window.firebaseDataStore3) {
-				store = new firebaseDataStore3(DATASTORE3_API_KEY, DATASTORE_ID);
-				store.getKey = window.firebaseDataStore3.getKey;
-				if ((store.cleanup = window.firebaseDataStore3.cleanup) && CLEANUP_DATASTORE) {
-					store.cleanup(DATASTORE_CLEANUP_INTERVAL);
-				}
-			} else if (window.firebaseDataStore) {
-				store = new firebaseDataStore(DATASTORE_ID);
-				store.getKey = window.firebaseDataStore.getKey;
+			store.getKey = window.firebaseDataStore8.getKey;
+			if ((store.cleanup = window.firebaseDataStore8.cleanup) && CLEANUP_DATASTORE) {
+				store.cleanup(DATASTORE_CLEANUP_INTERVAL);
 			}
 
 			for (var name in store.messages) {
@@ -6553,35 +6547,38 @@ $().ready(function() {
 				if (restoreMessage) {
 					_store.messages.downloading = getLocalizedText("dataStorageConnected");
 				}
-				return $.when(_store.open(username, password, APP_CUSTOM_TOKEN,
+				return $.when(_store.open(username, password, undefined,
 					_store.getKey((username || String.empty).toLowerCase()))).then(function() {
 
-					var changed = false;
+					return $.when(_store.getItem("tumblr_auth")).then(function(tumblrAuth) {
+						var changed = false;
 
-					window.sessionStorage.setItem("lastUsername", username);
-					window.sessionStorage.setItem("lastPassword", password);
-					if (_options.rememberMe) {
-						if (_options.lastUsername !== username) {
-							_options.lastUsername = username;
-							changed = true;
+						_tumblrAuth = tumblrAuth;
+						window.sessionStorage.setItem("lastUsername", username);
+						window.sessionStorage.setItem("lastPassword", password);
+						if (_options.rememberMe) {
+							if (_options.lastUsername !== username) {
+								_options.lastUsername = username;
+								changed = true;
+							}
+							if (_options.lastPassword !== password) {
+								_options.lastPassword = password;
+								changed = true;
+							}
+						} else {
+							if (_options.lastUsername !== _defaults.lastUsername) {
+								_options.lastUsername = _defaults.lastUsername;
+								changed = true;
+							}
+							if (_options.lastPassword !== _defaults.lastPassword) {
+								_options.lastPassword = _defaults.lastPassword;
+								changed = true;
+							}
 						}
-						if (_options.lastPassword !== password) {
-							_options.lastPassword = password;
-							changed = true;
+						if (changed) {
+							saveOptions();
 						}
-					} else {
-						if (_options.lastUsername !== _defaults.lastUsername) {
-							_options.lastUsername = _defaults.lastUsername;
-							changed = true;
-						}
-						if (_options.lastPassword !== _defaults.lastPassword) {
-							_options.lastPassword = _defaults.lastPassword;
-							changed = true;
-						}
-					}
-					if (changed) {
-						saveOptions();
-					}
+					});
 				}).always(function() {
 					if (restoreMessage) {
 						_store.messages.downloading = message;
@@ -6691,9 +6688,7 @@ $().ready(function() {
 				});
 			};
 
-			if (force || (!(APP_CUSTOM_TOKEN && APP_CUSTOM_TOKEN.length) &&
-				!(username && username.length && password && password.length))) {
-
+			if (force || !(username && username.length && password && password.length)) {
 				return showLogin();
 			} else if (_store && _store.isOpen) {
 				return loginSucceeded();
