@@ -34,7 +34,7 @@
 				display: grid;
 				grid-template-columns: max-content;
 				grid-gap: 0.5em;
-				margin-bottom: 0.5em;
+				margin: 0 0.5em 0.5em;
 			}
 
 			fieldset label { margin-right: 1em; position: relative; text-align:right; }
@@ -100,52 +100,49 @@
 					if (templateRequest.status >= 200 && templateRequest.status < 300) {
 						JSZip.loadAsync(templateRequest.response).then(function(template) {
 							document.getElementById("project-data").addEventListener("submit", function(e2) {
-								var id = document.getElementById("id").value,
-									imageData = document.getElementById("image-data").value,
-									name = document.getElementById("name").value,
-									packageName = document.getElementById("package-name").value,
-									url = document.getElementById("url").value,
-									userAgent = document.getElementById("user-agent").value,
-									versionCode = document.getElementById("version-code").value,
-									versionName = document.getElementById("version-name").value,
-									primaryColor = "#ff" + document.getElementById("primary-color").value.substring(1),
-									darkColor = "#ff" + document.getElementById("dark-color").value.substring(1),
-									accentColor = "#ff" + document.getElementById("accent-color").value.substring(1);
+								var imageData = document.getElementById("image-data").value,
+									projectId = document.getElementById("id").value,
+									values = {
+										projectName: document.getElementById("name").value,
+										packageName: document.getElementById("package-name").value,
+										url: document.getElementById("url").value,
+										userAgent: document.getElementById("user-agent").value,
+										versionCode: document.getElementById("version-code").value,
+										versionName: document.getElementById("version-name").value,
+										primaryColor: "#ff" + document.getElementById("primary-color").value.substring(1),
+										darkColor: "#ff" + document.getElementById("dark-color").value.substring(1),
+										accentColor: "#ff" + document.getElementById("accent-color").value.substring(1)
+									};
 
 								var zip = new JSZip();
 
 								Promise.all(Object.keys(template.files).map(function(key) {
 									var file = template.files[key],
-										fileName = file.name;
+										fullName = file.name;
 
 									if (!file.dir) {
 										return file.async("string").then(function(content) {
+											var path = fullName.split("/"),
+												fileName = path.pop();
+
 											switch (fileName) {
 												case "MainActivity.java":
-													fileName = [ "src" ].concat(packageName.split(".")).concat([ fileName ]).join("/");
+													fullName = path.concat(values.packageName.split(".")).concat([ fileName ]).join("/");
 													break;
 											}
-											zip.file(fileName, content
-												.replace(/{{ACCENT}}/g, accentColor)
-												.replace(/{{DARK}}/g, darkColor)
-												.replace(/{{NAME}}/g, name)
-												.replace(/{{PACKAGE}}/g, packageName)
-												.replace(/{{PRIMARY}}/g, primaryColor)
-												.replace(/{{USERAGENT}}/g, userAgent)
-												.replace(/{{URL}}/g, url)
-												.replace(/{{VERSIONCODE}}/g, versionCode)
-												.replace(/{{VERSIONNAME}}/g, versionName)
-											);
+											zip.file(fullName, Object.keys(values).reduce(function(a, b) {
+												return a.replace(new RegExp("{{" + b + "}}", "gi"), values[b]);
+											}, content));
 										});
 									}
 								})).then(function() {
-									zip.file(".project", "NAME=" + id);
+									zip.file(".project", "NAME=" + projectId);
 									zip.file("res/mipmap-xhdpi/ic_launcher.png", imageData, { base64: true });
 
 									zip.generateAsync({ type: "blob" })
 										.then(function(content) {
 											try {
-												saveAs(content, id + ".zip");
+												saveAs(content, projectId + ".zip");
 											} catch (error) {
 												alert(error);
 											}
