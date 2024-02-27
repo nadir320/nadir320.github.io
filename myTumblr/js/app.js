@@ -1175,6 +1175,41 @@ $().ready(function() {
 		_nextPageCheckTimeout,
 		_options = $.extend({ }, _defaults),
 		_originalOptions,
+		_pageIconManager = (function() {
+			var _count,
+				_interval,
+				_frame,
+				icons = $("#favicon")
+					.add("#shortcutIcon");
+
+			return {
+				"refresh": function(count) {
+					// icons.attr("href", (count) ? "../images/loader.gif" : icons.data("icon"));
+					if (_count = count) {
+						if (!_interval) {
+							_frame = 0;
+							_interval = window.setInterval(function() {
+								var tempCanvas = document.createElement("canvas");
+
+								tempCanvas.width = tempCanvas.height = 192;
+								createLoaderImage(tempCanvas, _frame++, (_count > 1) ? _count : String.empty);
+								icons.attr({
+									"href": tempCanvas.toDataURL()
+								});
+							}, 200);
+						}
+					} else {
+						icons.attr({
+							"href": icons.data("icon")
+						});
+						if (_interval) {
+							window.clearInterval(_interval);
+							_interval = undefined;
+						}
+					}
+				}
+			};
+		})(),
 		_readLater,
 		_store,
 		_textTable,
@@ -1955,40 +1990,6 @@ $().ready(function() {
 		setDocumentLoading(0);
 	};
 
-	var setDocumentLoading = function(n) {
-		var pageElement = $(document.body),
-			loadingCount = parseInt(pageElement.data("loading")) || 0,
-			n = parseInt(n),
-			setIcon = function(loading) {
-				var icons = $("#favicon").add("#shortcutIcon");
-
-				icons.attr("href", (loading) ? "../images/loader.gif" : icons.data("icon"));
-			};
-
-		if (!isNaN(n)) {
-			pageElement.data({
-				"loading": loadingCount + n
-			});
-
-			if (n > 0) {
-				if (loadingCount === 0) {
-					pageElement.addClass("loading");
-					setIcon(true);
-				}
-			} else if (n < 0) {
-				if (loadingCount + n === 0) {
-					pageElement.removeClass("loading");
-					setIcon();
-				}
-			} else {
-				pageElement
-					.removeClass("loading")
-					.removeData("loading");
-				setIcon();
-			}
-		}
-	};
-
 	var clearSession = function() {
 		window.sessionStorage.removeItem("blog");
 		window.sessionStorage.removeItem("blogLoginRequired");
@@ -2272,6 +2273,60 @@ $().ready(function() {
 				"items": items
 			}).addClass(buttonClass));
 		}
+	};
+
+	var createLoaderImage = function(canvas, frame, count, color) {
+		var width = canvas.width,
+			height = canvas.height,
+			context = canvas.getContext("2d");
+
+		//context.reset();
+		context.clearRect(0, 0, width, height);
+
+		/*
+		context.fillStyle = "white";
+		context.fillRect(0, 0, width, height);
+		context.fillStyle = "black";
+		*/
+
+		var N = 12,
+			r = 30,
+			g = 144,
+			b = 255;
+
+		frame %= N;
+		for (var i = 0; i < N; i++) {
+			var a = i / (N - 1);
+
+			context.translate(width / 2, height / 2);
+			context.rotate((frame + i) / N * 2 * Math.PI);
+			context.translate(width / 3.5, -height / 40);
+			context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+			context.fillRect(0, 0, width / 7, height / 15);
+			context.strokeRect(0, 0, width / 7, height / 15);
+			context.resetTransform();
+		}
+
+		context.fillStyle = color || "rgba(255, 255, 255, 0.75)";
+		context.textAlign = "center";
+		context.textBaseline = "top";
+
+		var text = count.toLocaleString(),
+			textMaxWidth = width * 0.75,
+			textMaxHeight = height * 0.75;
+
+		var bounds,
+			size = Math.min(textMaxWidth, textMaxHeight);
+
+		size++;
+		do {
+			size--;
+			context.font = (--size) + "px sans serif";
+			bounds = context.measureText(text);
+			bounds.height = bounds.actualBoundingBoxDescent - bounds.actualBoundingBoxAscent;
+		} while (bounds.height >= textMaxHeight || bounds.width >= textMaxWidth);
+
+		context.fillText(text, width / 2, height / 2 - bounds.height / 2);
 	};
 
 	var createPopoverButton = function(options) {
@@ -7631,6 +7686,37 @@ $().ready(function() {
 		}
 	};
 
+	var setDocumentLoading = function(n) {
+		var pageElement = $(document.body),
+			loadingCount = parseInt(pageElement.data("loading")) || 0,
+			n = parseInt(n);
+
+		if (!isNaN(n)) {
+			pageElement.data({
+				"loading": loadingCount + n
+			});
+			pageElement.find(".header").find(".loader").button({
+				"label": loadingCount + n,
+				"text": loadingCount + n > 1
+			});
+
+			if (n > 0) {
+				if (loadingCount === 0) {
+					pageElement.addClass("loading");
+				}
+			} else if (n < 0) {
+				if (loadingCount + n === 0) {
+					pageElement.removeClass("loading");
+				}
+			} else {
+				pageElement
+					.removeClass("loading")
+					.removeData("loading");
+			}
+			_pageIconManager.refresh(pageElement.data("loading"));
+		}
+	};
+
 	var setFileDownloaded = function(url, post, localOnly, reset) {
 		var afterUpdate,
 			download,
@@ -7899,13 +7985,22 @@ $().ready(function() {
 			postElement.data({
 				"loading": ++loadingCount
 			});
-			setDocumentLoading(1);
+			postElement.find(".postIndex").find(".loader").button({
+				label: loadingCount,
+				text: loadingCount > 1
+			});
+			setDocumentLoading(+1);
 		} else {
 			postElement.data({
 				"loading": --loadingCount
 			});
 			if (loadingCount === 0) {
 				postElement.removeClass("loading");
+			} else {
+				postElement.find(".postIndex").find(".loader").button({
+					label: loadingCount,
+					text: loadingCount > 1
+				});
 			}
 			setDocumentLoading(-1);
 		}

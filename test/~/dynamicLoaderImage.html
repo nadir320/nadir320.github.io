@@ -1,0 +1,169 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="data:image/png;base64,
+		iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+		YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmV
+		AAAADUlEQVQYV2P4//8/AwAI/AL+iF8G4AAAAABJRU5ErkJggg==" id="page-icon">
+		<title>Dynamic Page Icon</title>
+		<style type="text/css">
+			html, body {
+				height: 100vh;
+				margin: 0;
+			}
+
+			body {
+				align-items: center;
+				background-color: aliceBlue;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				gap: 1em;
+			}
+
+			canvas {
+				border: 1px solid silver;
+			}
+
+			img {
+				border: 1px solid red;
+			}
+		</style>
+	</head>
+	<body>
+		<label>Frame:<input type="number" id="frame" value="0" min="0"/></label>
+		<label>Count:<input type="number" id="count" value="5" min="1"/></label>
+		<!-- <button type="button" id="draw-button">Draw</button> -->
+		<canvas id="temp" width="300" height="150"></canvas>
+		<button type="button" id="to-image">To Image</button>
+		<img id="final-image" src="data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"/>
+		<button type="button" id="test">Test</button>
+		<script type="text/javascript">
+			"use strict";
+
+			var drawLoader = function(canvas, frame, count, color) {
+				var width = canvas.width,
+					height = canvas.height,
+					context = canvas.getContext("2d");
+
+				//context.reset();
+				context.clearRect(0, 0, width, height);
+
+				/*
+				context.fillStyle = "white";
+				context.fillRect(0, 0, width, height);
+				context.fillStyle = "black";
+				*/
+
+				var N = 12,
+					r = 30,
+					g = 144,
+					b = 255;
+
+				frame %= N;
+				for (var i = 0; i < N; i++) {
+					var a = i / (N - 1);
+
+					context.translate(width / 2, height / 2);
+					context.rotate((frame + i) / N * 2 * Math.PI);
+					context.translate(width / 3.5, -height / 40);
+					context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+					context.fillRect(0, 0, width / 7, height / 15);
+					context.strokeRect(0, 0, width / 7, height / 15);
+					context.resetTransform();
+				}
+
+				context.fillStyle = color || "rgba(255, 255, 255, 0.75)";
+				context.textAlign = "center";
+				context.textBaseline = "top";
+
+				var text = count.toLocaleString(),
+					textMaxWidth = width * 0.75,
+					textMaxHeight = height * 0.75;
+
+				var bounds,
+					size = Math.min(textMaxWidth, textMaxHeight);
+
+				size++;
+				do {
+					size--;
+					context.font = (--size) + "px sans serif";
+					bounds = context.measureText(text);
+					bounds.height = bounds.actualBoundingBoxDescent - bounds.actualBoundingBoxAscent;
+				} while (bounds.height >= textMaxHeight || bounds.width >= textMaxWidth);
+
+				context.fillText(text, width / 2, height / 2 - bounds.height / 2);
+			};
+		</script>
+		<script type="text/javascript">
+			"use strict";
+
+			var [f, n, d, c2, i, m, p, t] = ["frame", "count", "draw-button", "temp", "to-image", "final-image", "page-icon", "test"]
+				.map(function(id) { return document.getElementById(id); });
+
+			(function() {
+				var W = 96,
+					H = 96;
+
+				c2.width = W;
+				c2.height = H;
+			})();
+
+			var $d = function() {
+				drawLoader(c2, f.value, n.value, "black");
+			};
+
+			//d.addEventListener("click", draw);
+			f.addEventListener("input", $d);
+			n.addEventListener("input", $d);
+			i.addEventListener("click", function(e) {
+				var href = c2.toDataURL();
+
+				m.setAttribute("src", href);
+				p.setAttribute("href", href);
+			});
+			$d();
+
+			(function() {
+				var _t;
+
+				var _o = p.getAttribute("href"),
+					_r = function() {
+						clearInterval(_t);
+						_t = undefined;
+						p.setAttribute("href", _o);
+					};
+
+				t.addEventListener("click", function(e) {
+					if (_t) {
+						_r();
+					} else {
+						(function() {
+							var _f = 0,
+								_c = Math.trunc(Math.random() * 50);
+
+							_t = setInterval(function() {
+								if (Math.random() * 4 < 1) {
+									_c--;
+								}
+
+								if (_c > 0) {
+									var tempCanvas = document.createElement("canvas");
+
+									tempCanvas.width = tempCanvas.height = 96;
+									drawLoader(tempCanvas, _f++, _c);
+									p.setAttribute("href", tempCanvas.toDataURL());
+								} else {
+									_r();
+								}
+							}, 200);
+						})();
+					}
+				});
+			})();
+		</script>
+	</body>
+</html>

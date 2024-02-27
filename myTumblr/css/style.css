@@ -80,6 +80,17 @@ div:focus {
 	visibility: visible;
 }
 
+.loading .header .loader .ui-button-text,
+#blogPage .blogPost.loading .loader .ui-button-text {
+	opacity: 0.35;
+}
+
+.loading .header .loader .ui-button-text {
+	font-size: 30%;
+	padding-top: 1em;
+	padding-left: 3.5em;
+}
+
 .peekMode .header .title .localizedText {
 	opacity: 0.333;
 	text-decoration: line-through;
@@ -468,7 +479,7 @@ img.ui-state-highlight {
 	width: auto;
 }
 
-.pageOptionsDialog button.ui-button-text-icon-primary .ui-button-text{
+.pageOptionsDialog button.ui-button-text-icon-primary .ui-button-text {
 	padding-top: 0.1em;
 }
 
