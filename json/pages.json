@@ -1,5 +1,9 @@
 [
-	  { "text": "Codice fiscale", "url": "codiceFiscale/index.html", "icon": "./codiceFiscale/images/code.png" }
+	  { "text": "Android", "url": "./android", "pages": [
+		  { "text": "Crea progetto Audio", "url": "audio.html", "icon": "./android/images/audio.png" }
+		, { "text": "Crea progetto WebView", "url": "webView.html", "icon": "./android/images/webView.png" }
+	  ] }
+	, { "text": "Codice fiscale", "url": "codiceFiscale/index.html", "icon": "./codiceFiscale/images/code.png" }
 	, { "text": "CORS", "url": "cors/index.html", "icon": "./cors/images/cors.png" }
 	, { "text": "Foto del giorno", "url": "natGeo/tv.html", "icon": "./natGeo/images/natGeo.png" }
 	, { "text": "Foto del giorno (NASA)", "url": "nasa/apod.html", "icon": "./nasa/images/apod.png" }
@@ -11,7 +15,8 @@
 	, { "text": "Test", "url": "./test", "pages": [
 		  { "text": "Caccia al tesoro", "url": "treasure-hunt.html", "icon": "./images/treasure.png" }
 		, { "text": "Calcio a Genova", "url": "calcio.html", "icon": "./images/ball.png" }
-		, { "text": "Crea progetto WebView", "url": "../webView/creator.html", "icon": "./images/project.png" }
+		, { "text": "Crea progetto Audio", "url": "../android/audio.html", "icon": "./images/project.png" }
+		, { "text": "Crea progetto WebView", "url": "../android/webView.html", "icon": "./images/project.png" }
 		, { "text": "Download", "url": "download.html", "icon": "./images/download.png" }
 		, { "text": "CryptoJS", "url": "cryptoJS.html", "icon": "./images/padlock.png" }
 		, { "text": "ECCAIRS 5 Web API", "url": "eccairs5", "icon": "./eccairs5/favicon.ico", "forceHTTP": true }
