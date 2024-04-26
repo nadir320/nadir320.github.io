@@ -15,8 +15,6 @@
 	, { "text": "Test", "url": "./test", "pages": [
 		  { "text": "Caccia al tesoro", "url": "treasure-hunt.html", "icon": "./images/treasure.png" }
 		, { "text": "Calcio a Genova", "url": "calcio.html", "icon": "./images/ball.png" }
-		, { "text": "Crea progetto Audio", "url": "../android/audio.html", "icon": "./images/project.png" }
-		, { "text": "Crea progetto WebView", "url": "../android/webView.html", "icon": "./images/project.png" }
 		, { "text": "Download", "url": "download.html", "icon": "./images/download.png" }
 		, { "text": "CryptoJS", "url": "cryptoJS.html", "icon": "./images/padlock.png" }
 		, { "text": "ECCAIRS 5 Web API", "url": "eccairs5", "icon": "./eccairs5/favicon.ico", "forceHTTP": true }
