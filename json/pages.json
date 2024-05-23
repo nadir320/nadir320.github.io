@@ -24,8 +24,9 @@
 		, { "text": "Note", "url": "notes.html", "icon": "./images/notes.png" }
 		, { "text": "Un, due, BUE!", "url": "unDueBue.html", "icon": "./images/ox.png" }
 		, { "text": "Tabella espandibile", "url": "collapsibleRow.html", "icon": "./images/row.png" }
-		, { "text": "Testo Binario", "url": "binary.html", "icon": "./images/binary.png" }
 		, { "text": "Temi jQuery UI", "url": "uiThemes.html", "icon": "./images/themeRoller.png" }
+		, { "text": "Testo Binario", "url": "binary.html", "icon": "./images/binary.png" }
+		, { "text": "Tetris", "url": "../tetris", "icon": "./tetris/images/tetris.png" }
 		, { "text": "Swipe", "url": "swipe.html", "icon": "./images/swipe.png" }
 	] }
 ]

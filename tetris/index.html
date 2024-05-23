@@ -1,0 +1,53 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="images/tetris.png">
+		<title>Tetris</title>
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	</head>
+	<body>
+		<div id="messageBackdrop" class="backdrop fade hidden"></div>
+		<div id="message" class="message fade hidden">
+			<span id="messageText"></span>
+			<br/>
+			<button class="newGame">Nuova</button>
+			<button class="cancel">Annulla</button>
+		</div>
+		<div id="menu" class="message fade hidden">
+			<span>Scegli le opzioni:</span>
+			<br/>
+			<form>
+				<!-- -->
+			</form>
+			<button class="accept">OK</button>
+			<button class="cancel">Annulla</button>
+		</div>
+		<div class="status">
+			<div>Livello: <span class="level"></span></div>
+			<div>Tempo: <span class="time"></span></div>
+			<div>Linee: <span class="lines"></span></div>
+			<div>Pezzi: <span class="pieces"></span></div>
+			<div>Base: <span class="base-lines"></span></div>
+			<button class="newGame">Nuova</button>
+			<hr/>
+			<div>Prossimo:</div>
+			<div><img class="next-piece"></div>
+			<hr/>
+			<div>Pezzi:</div>
+			<div class="piece-stats"></div>
+		</div>
+		<div class="scaler">
+			<div class="board"></div>
+		</div>
+		<form>
+			<input type="hidden" id="wonMessage" value="Hai vinto!"/>
+			<input type="hidden" id="lostMessage" value="Hai perso..."/>
+			<input type="hidden" id="askNewMessage" value="Iniziare una nuova partita?"/>
+		</form>
+		<script type="text/javascript" src="js/tetris.js" -storage="no"></script>
+	</body>
+</html>
