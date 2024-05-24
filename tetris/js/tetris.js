@@ -1,5 +1,18 @@
 ﻿"use strict";
 
+/*
+	 1. show paused state
+	 2. show base-cleared state
+	 3. auto pause on hide / tab switch
+	 4. boss key
+	 5. line history
+	 6. save / restore game
+	 7. new game options (base lines)
+	 8. rotation matrices
+	 9. polish css
+	10. mobile version
+*/
+
 (function() {
 	var _stateKey = "tetris-game-state",
 		_storageName = "session";
@@ -219,60 +232,15 @@
 
 	(function() {
 		var constants = {
-				get baseMoveTime() { return 300; },
+				get baseMoveTime() { return 500; },
 				get boardHeight() { return 20; },
 				get boardWidth() { return 10; },
 				get linesPerLevel() { return 10; },
-				get moveTimeStep() { return 25; },
+				get moveTimeStep() { return 50; },
 				get padding() { return 8; },
-				get randomTiles() { return 6; },
+				get randomTiles() { return 4; },
 				get tileHeight() { return 30; },
 				get tileWidth() { return 30; }
-			},
-			faces,
-			getShadow = function(width, height) {
-				var canvas = document.createElement("canvas"),
-					gradient,
-					w = width + constants.depth,
-					h = height + constants.depth;
-
-				canvas.setAttribute("width", w);
-				canvas.setAttribute("height", h);
-
-				var context = canvas.getContext("2d");
-
-				context.fillStyle = "";
-
-				gradient = context.createLinearGradient(0, height, 0, h);
-				gradient.addColorStop(0, "rgba(0, 0, 0, 0.25)");
-				gradient.addColorStop(1, "rgba(0, 0, 0, 0.75)");
-				context.fillStyle = gradient;
-
-				context.beginPath();
-				context.moveTo(0, height);
-				context.lineTo(constants.depth, h);
-				context.lineTo(w, h);
-				context.lineTo(width, height);
-				context.closePath();
-				context.fill();
-
-				gradient = context.createLinearGradient(width, 0, w, 0);
-				gradient.addColorStop(0, "rgba(0, 0, 0, 0.25)");
-				gradient.addColorStop(1, "rgba(0, 0, 0, 0.75)");
-				context.fillStyle = gradient;
-
-				context.beginPath();
-				context.moveTo(width, 0);
-				context.lineTo(width, height);
-				context.lineTo(w, h);
-				context.lineTo(w, constants.depth);
-				context.closePath();
-				context.fill();
-
-				return canvas.toDataURL();
-			},
-			init = function(callback) {
-				callback();
 			},
 			tetrominoes = {
 				I: { name: "I", basePosition: [[0, 0], [0, 1], [0, 2], [0, 3]] },
@@ -481,7 +449,7 @@
 			};
 		});
 
-		var Tetromino = function() {
+		var Tetromino = function(type) {
 			var className, rotation = 0, locked, tiles;
 
 			var xs = function(t) { return (t || tiles).map(function(tile) { return tile[1]; }) },
@@ -499,7 +467,7 @@
 				}
 			};
 
-			var tetromino = _randomTetromino();
+			var tetromino = (type) ? tetrominoes[type] : _randomTetromino();
 
 			className = tetromino.name;
 			tiles = tetromino.basePosition;
@@ -519,18 +487,18 @@
 			return {
 				className: className,
 				createPreview: function() {
-					var canvas = document.createElement("canvas");
+					/* var canvas = document.createElement("canvas");
 
 					canvas.setAttribute("width", constants.tileWidth * 4);
 					canvas.setAttribute("height", constants.tileHeight * 4);
 
 					var context = canvas.getContext("2d");
 
-					context.strokeStyle = "gray";
+					context.strokeStyle = "gray"; */
 
 					var initialTiles = centerTiles(tetrominoes[className].basePosition, 4);
 
-					initialTiles.forEach(function(tile) {
+					/* initialTiles.forEach(function(tile) {
 						var rect = [
 							tile[1] * constants.tileWidth,
 							tile[0] * constants.tileHeight,
@@ -541,18 +509,54 @@
 						context.fillRect.apply(context, rect);
 						context.strokeRect.apply(context, rect);
 					});
-					return canvas.toDataURL();
+
+					return canvas.toDataURL(); */
+
+					var baseXs = xs(initialTiles),
+						baseYs = ys(initialTiles),
+						minX = _min(baseXs),
+						minY = _min(baseYs),
+						xTiles = _max(baseXs) - minX + 1,
+						yTiles = _max(baseYs) - minY + 1;
+
+					var container = document.createElement("div");
+
+					for (var i = 0; i < yTiles; i++) {
+						for (var j = 0; j < xTiles; j++) {
+							if (initialTiles.filter(function(tile) {
+								return tile[0] === i + minY && tile[1] === j + minX;
+							}).length) {
+								var tile = document.createElement("div");
+
+								tile.classList.add(className);
+								tile.style.gridColumn = j + 1;
+								tile.style.gridRow = i + 1;
+								tile.style.width = constants.tileWidth + "px";
+								tile.style.height = constants.tileHeight + "px";
+								container.appendChild(tile);
+							}
+						}
+					}
+					return container;
 				},
 				drop: function() {
 					var t = this;
 
 					if (!locked) {
-						var diff = _min(tiles.map(function(tile) { return t.findEmptyTiles.apply(t, tile); }));
+						var dropped = t.getShadow();
 
-						if (diff) {
-							tiles = tiles.map(function(tile) { return [tile[0] + diff, tile[1]]; });
+						if (dropped) {
+							tiles = dropped;
 						}
 						checkLocked(this.findEmptyTiles);
+					}
+				},
+				getShadow: function() {
+					var t = this,
+						diff = _min(tiles.map(function(tile) { return t.findEmptyTiles.apply(t, tile); }));
+
+					if (diff) {
+						return tiles.map(function(tile) { return [tile[0] + diff, tile[1]]; });
 					}
 				},
 				get locked() { return locked; },
@@ -622,6 +626,7 @@
 				paused = options && options.paused,
 				allTiles,
 				baseTiles = 0,
+				remainingBaseTiles = 0,
 				piece,
 				timer;
 
@@ -695,7 +700,7 @@
 									item.locked = from.locked;
 									if (item.baseTile) {
 										item.baseTile = false;
-										baseTiles--;
+										remainingBaseTiles--;
 									}
 								});
 							}
@@ -788,6 +793,7 @@
 					classes.remove("Z");
 					classes.remove("locked");
 					classes.remove("base-tile");
+					classes.remove("shadow");
 					classes.add(tile.className);
 					if (tile.locked) {
 						classes.add("locked");
@@ -796,16 +802,33 @@
 						classes.add("base-tile");
 					}
 					if (piece) {
-						piece.tiles.forEach(function(pieceTile) {
-							if (pieceTile[0] === tile.row && pieceTile[1] === tile.column) {
-								classes.add(piece.className);
+						(function() {
+							var classSet;
+
+							piece.tiles.forEach(function(pieceTile) {
+								if (pieceTile[0] === tile.row && pieceTile[1] === tile.column) {
+									classes.add(piece.className);
+									classSet = true;
+								}
+							});
+
+							if (options && options.shadow && !classSet) {
+								var shadow = piece.getShadow();
+
+								if (shadow) {
+									shadow.forEach(function(shadowTile) {
+										if (shadowTile[0] === tile.row && shadowTile[1] === tile.column) {
+											classes.add("shadow");
+										}
+									});
+								}
 							}
-						});
+						})();
 					}
 				});
-			}
+			};
 
-			init(function() {
+			(function() {
 				_clear(board);
 
 				board.style.padding = constants.padding + "px";
@@ -840,9 +863,10 @@
 					}
 				})();
 
-				if (options && options.lines) {
+				if (options && options.lines > 0) {
 					(function() {
-						for (var i = 0; i < options.lines; i++) {
+						var m = Math.min(options.lines, constants.boardHeight - 4);
+						for (var i = 0; i < m; i++) {
 							var tilesPerRow = Object.keys(allTiles)
 								.map(function(key) { return allTiles[key]; })
 								.filter(function(tile) { return tile.row === constants.boardHeight - i - 1; });
@@ -854,36 +878,47 @@
 								tilesPerRow[k].baseTile = true;
 								tilesPerRow.splice(k, 1);
 								baseTiles++;
+								remainingBaseTiles++;
 							}
 						}
 					})();
 				}
 
 				board.appendChild(levelContainer);
-				if (ready) {
-					level = 1;
-					pieces = lines = 0;
+
+				level = 1;
+				pieces = lines = 0;
+				levelMoveTime = constants.baseMoveTime;
+				updateBoard();
+
+				if (!paused) {
 					start = Date.now();
-					lastMove = undefined;
-					levelMoveTime = constants.baseMoveTime;
 					getNextPiece();
-
-					ready();
-					timer = window.setInterval(function() {
-						if (!end && !paused) {
-							var now = Date.now();
-
-							if (!lastMove || now - lastMove >= levelMoveTime) {
-								if (lastMove) {
-									piece.moveDown();
-								}
-								lastMove = now;
-								checkStatus();
-							}
-						}
-					}, 50);
 				}
-			});
+
+				if (ready) {
+					ready();
+				}
+				timer = window.setInterval(function() {
+					if (!end && !paused) {
+						if (!start) {
+							start = Date.now();
+							getNextPiece();
+							board.dispatchEvent(new Event("game.changed"));
+						}
+
+						var now = Date.now();
+
+						if (!lastMove || now - lastMove >= levelMoveTime) {
+							if (lastMove) {
+								piece.moveDown();
+							}
+							lastMove = now;
+							checkStatus();
+						}
+					}
+				}, 50);
+			})();
 
 			return {
 				get baseLines() { return baseTiles / constants.randomTiles; },
@@ -894,16 +929,17 @@
 				get constants() { return constants; },
 				dropPiece: function() { if (!paused && !end && piece) { piece.drop(); checkStatus(); } },
 				get end() { return end; },
-				getNextPiecePreview: function() { return nextPiece && nextPiece.createPreview(); },
+				getNextPiecePreview: function() { if (nextPiece) { return nextPiece.createPreview(); } },
 				get level() { return level; },
 				get lines() { return lines; },
 				movePieceDown: function() { if (!paused && !end && piece) { piece.moveDown(); checkStatus(); } },
 				movePieceLeft: function() { if (!paused && !end && piece) { piece.moveLeft(); checkStatus(); } },
 				movePieceRight: function() { if (!paused && !end && piece) { piece.moveRight(); checkStatus(); } },
-				pause: function() { paused = !paused; },
+				pause: function() { paused = true; },
 				get paused() { return paused; },
 				get pieces() { return pieces; },
 				get pieceStats() { return pieceStats; },
+				get remainingBaseLines() { return remainingBaseTiles / constants.randomTiles; },
 				resume: function() { paused = false; },
 				rotatePiece: function() { if (!paused && !end && piece) { piece.rotate(); checkStatus(); } },
 				get start() { return start; },
@@ -913,6 +949,17 @@
 					timer = undefined;
 				}
 			};
+		};
+
+		Game.createPreviews = function() {
+			return Object.keys(tetrominoes).map(function(key) {
+				var tetromino = tetrominoes[key];
+
+				return {
+					name: tetromino.name,
+					preview: new Tetromino(tetromino.name).createPreview(),
+				};
+			});
 		};
 	})();
 
@@ -935,6 +982,14 @@
 
 		var game, resizer;
 
+		var addTileClass = function(container) {
+			Array.from(container.getElementsByTagName("div")).forEach(function(item, i) {
+				if (item.parentElement) {
+					item.classList.add("tile");
+				}
+			});
+		};
+
 		var askNewGame = function() {
 			if (!_isVisible(message)) {
 				if (game) {
@@ -954,33 +1009,39 @@
 			}
 
 			Array.from(document.getElementsByClassName("level")).forEach(function(item, i) {
-				item.innerText = game && game.level;
+				item.innerText = (game) ? game.level : undefined;
 			});
 			Array.from(document.getElementsByClassName("lines")).forEach(function(item, i) {
-				item.innerText = game && game.lines;
+				item.innerText = (game) ? game.lines : undefined;
 			});
 			Array.from(document.getElementsByClassName("pieces")).forEach(function(item, i) {
-				item.innerText = game && game.pieces;
+				item.innerText = (game) ? game.pieces : undefined;
 			});
 			Array.from(document.getElementsByClassName("base-lines")).forEach(function(item, i) {
-				item.innerText = game && game.baseLines;
+				item.innerText = (game) ? (game.remainingBaseLines.toLocaleString() + "/" + game.baseLines.toLocaleString()) : undefined;
 			});
 			Array.from(document.getElementsByClassName("next-piece")).forEach(function(item, i) {
-				var preview = game && game.getNextPiecePreview();
+				var preview = (game) ? game.getNextPiecePreview() : undefined;
 
 				if (typeof preview === "string") {
 					item.setAttribute("src", preview);
 				} else {
 					_clear(item);
-					item.appendChild(preview);
+					if (preview) {
+						addTileClass(preview);
+						item.appendChild(preview);
+					}
 				}
 			});
-			Array.from(document.getElementsByClassName("piece-stats")).forEach(function(item, i) {
-				var stats;
 
-				if (game) {
-					stats = game.pieceStats;
-					stats = Object.keys(stats).map(function(key) {
+
+			var stats;
+
+			if (game) {
+				stats = game.pieceStats;
+
+				Array.from(document.getElementsByClassName("piece-stats")).forEach(function(item) {
+					/* stats = Object.keys(stats).map(function(key) {
 						return [key, stats[key]];
 					});
 					stats.sort(function(a, b) {
@@ -988,10 +1049,26 @@
 					});
 					stats = stats.map(function(stat) {
 						return stat[0] + ": " + stat[1].toLocaleString();
-					}).join("\n");
-				}
-				item.innerText = stats;
-			});
+					}).join("\n"); */
+
+					Array.from(item.getElementsByClassName("stat-table")).forEach(function(table) {
+						var rows = Array.from(table.getElementsByClassName("stat-row"));
+
+						rows.forEach(function(row, j) {
+							Array.from(row.getElementsByClassName("stat-value")).forEach(function(cell, k) {
+								cell.innerText = stats[row.dataset.type];
+							});
+						});
+
+						rows.sort(function(a, b) {
+							return stats[b.dataset.type] - stats[a.dataset.type];
+						});
+						rows.forEach(function(row) {
+							table.appendChild(row);
+						});
+					});
+				});
+			}
 		};
 
 		var hideMessage = function() {
@@ -1008,8 +1085,9 @@
 			}
 
 			game = new Game(board, {
-					lines: 7,
-					paused: paused
+					lines: _params()["base"] || 0,
+					paused: paused,
+					shadow: _param("shadow")
 				}, function() {
 				board.addEventListener("game.changed", checkGame);
 				setTimeout(function() {
@@ -1019,8 +1097,14 @@
 			}, state);
 		};
 
-		var nextHint = function() {
-			game.nextHint();
+		var pauseGame = function() {
+			if (game) {
+				if (game.paused) {
+					game.resume();
+				} else {
+					game.pause();
+				}
+			}
 		};
 
 		var refreshTime = function() {
@@ -1051,7 +1135,9 @@
 		};
 
 		var showMessage = function(messageText, type) {
-			game && game.pause();
+			if (game) {
+				game.pause();
+			}
 			document.getElementById("messageText").innerText = messageText;
 			_show(document.getElementById("messageBackdrop"));
 			_show(message);
@@ -1064,6 +1150,7 @@
 			board.addEventListener("game.wrong", function() { showMessage(document.getElementById("wrongGameMessage").value); });
 
 			_bindClickByClassName(status, "newGame", askNewGame);
+			_bindClickByClassName(status, "pauseGame", pauseGame);
 
 			document.getElementById("messageBackdrop").addEventListener("click", function(e) {
 				hideMessage();
@@ -1080,40 +1167,50 @@
 					if (_isVisible(message)) {
 						hideMessage();
 						newGame();
-					} else {
-						game && game.dropPiece();
+					} else if (game) {
+						game.dropPiece();
 					}
 					break;
 				case 19:				/* Pause */
 				case 80:				/* P */
-					game && game.pause();
+					pauseGame();
 					break;
 				case 27:				/* Escape */
 					if (_isVisible(message)) {
 						hideMessage();
 					} else {
-						game && game.pause();
+						pauseGame();
 					}
 					break;
 				case 32:				/* Space */
-					game && game.dropPiece();
+					if (game) {
+						game.dropPiece();
+					}
 					break;
 				case 37:				/* Left */
 				case 65:				/* A */
-					game && game.movePieceLeft();
+					if (game) {
+						game.movePieceLeft();
+					}
 					break;
 				case 38:				/* Top */
 				case 75:				/* K */
 				case 87:				/* W */
-					game && game.rotatePiece();
+					if (game) {
+						game.rotatePiece();
+					}
 					break;
 				case 39:				/* Right */
 				case 68:				/* D */
-					game && game.movePieceRight();
+					if (game) {
+						game.movePieceRight();
+					}
 					break;
 				case 40:				/* Down */
 				case 83:				/* S */
-					game && game.movePieceDown();
+					if (game) {
+						game.movePieceDown();
+					}
 					break;
 				case 71:				/* G */
 					showMessage(new Date().toLocaleString());
@@ -1122,7 +1219,7 @@
 					askNewGame();
 					break;
 				default:
-					console.info(e.which);
+					/* console.info(e.which); */
 					break;
 			}
 		});
@@ -1152,6 +1249,36 @@
 		window.setInterval(refreshTime, 100);
 
 		document.addEventListener("DOMContentLoaded", function() {
+			var previews = Game.createPreviews();
+
+			Array.from(document.getElementsByClassName("piece-stats")).forEach(function(item, i) {
+				_clear(item);
+
+				var table = document.createElement("table");
+
+				table.classList.add("stat-table");
+
+				previews.forEach(function(preview) {
+					addTileClass(preview.preview);
+					preview.preview.classList.add("preview");
+
+					var row = document.createElement("tr"),
+						cell = document.createElement("td");
+
+					row.classList.add("stat-row");
+					row.dataset["type"] = preview.name;
+
+					cell.appendChild(preview.preview);
+					row.appendChild(cell);
+
+					cell = document.createElement("td");
+					cell.classList.add("stat-value");
+
+					row.appendChild(cell);
+					table.appendChild(row);
+				});
+				item.appendChild(table);
+			});
 			newGame(_readObject(_stateKey), true);
 		});
 	})();

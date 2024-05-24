@@ -7,7 +7,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 		<link rel="shortcut icon" type="image/png" href="images/tetris.png">
 		<title>Tetris</title>
-		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
 	</head>
 	<body>
 		<div id="messageBackdrop" class="backdrop fade hidden"></div>
@@ -33,9 +33,12 @@
 			<div>Pezzi: <span class="pieces"></span></div>
 			<div>Base: <span class="base-lines"></span></div>
 			<button class="newGame">Nuova</button>
+			<button class="pauseGame">Pausa</button>
 			<hr/>
 			<div>Prossimo:</div>
-			<div><img class="next-piece"></div>
+			<div>
+				<div class="next-piece"></div>
+			</div>
 			<hr/>
 			<div>Pezzi:</div>
 			<div class="piece-stats"></div>
@@ -48,6 +51,6 @@
 			<input type="hidden" id="lostMessage" value="Hai perso..."/>
 			<input type="hidden" id="askNewMessage" value="Iniziare una nuova partita?"/>
 		</form>
-		<script type="text/javascript" src="js/tetris.js" -storage="no"></script>
+		<script type="text/javascript" src="js/tetris.min.js" -storage="no"></script>
 	</body>
 </html>
