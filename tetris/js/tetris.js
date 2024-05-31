@@ -1,21 +1,9 @@
 ﻿"use strict";
 
-/*
-	 1. show paused state
-	 2. show base-cleared state
-	 3. auto pause on hide / tab switch
-	 4. boss key
-	 5. line history
-	 6. save / restore game
-	 7. new game options (base lines)
-	 8. rotation matrices
-	 9. polish css
-	10. mobile version
-*/
-
 (function() {
 	var _stateKey = "tetris-game-state",
-		_storageName = "session";
+		_storageName = "session",
+		_styleID = "tetris-style";
 
 	var _thisScript = Array.prototype.slice.call(window.document.getElementsByTagName("script")).pop();
 
@@ -185,24 +173,6 @@
 		element.classList.remove("hidden");
 	};
 
-	var _singletonInvoke = function(f, callback) {
-		if (f.completed) {
-			callback();
-		} else if (f.executing) {
-			f.callbacks.push(callback);
-		} else {
-			f.callbacks = [ callback ];
-			f.executing = true;
-			f(function() {
-				f.completed = true;
-				f.executing = false;
-				for (var i = 0, length = f.callbacks.length; i < length; i++) {
-					f.callbacks[i]();
-				}
-			});
-		}
-	};
-
 	var _writeObject = function(key, value) {
 		if (typeof value !== "undefined") {
 			value = window.JSON.stringify(value);
@@ -226,15 +196,17 @@
 		} catch (e) { }
 	}
 
-	var _debug = _param("debug");
+	var _debug = _param("debug"),
+		_cw = _param("cw");
 
 	var Game;
 
 	(function() {
 		var constants = {
-				get baseMoveTime() { return 500; },
+				get baseMoveTime() { return 600; },
 				get boardHeight() { return 20; },
 				get boardWidth() { return 10; },
+				get levels() { return 25; },
 				get linesPerLevel() { return 10; },
 				get moveTimeStep() { return 50; },
 				get padding() { return 8; },
@@ -243,13 +215,13 @@
 				get tileWidth() { return 30; }
 			},
 			tetrominoes = {
-				I: { name: "I", basePosition: [[0, 0], [0, 1], [0, 2], [0, 3]] },
-				J: { name: "J", basePosition: [[0, 0], [0, 1], [0, 2], [1, 2]] },
-				L: { name: "L", basePosition: [[0, 0], [0, 1], [0, 2], [1, 0]] },
-				O: { name: "O", basePosition: [[0, 0], [0, 1], [1, 0], [1, 1]] },
-				S: { name: "S", basePosition: [[1, 0], [1, 1], [0, 1], [0, 2]] },
-				T: { name: "T", basePosition: [[0, 0], [0, 1], [0, 2], [1, 1]] },
-				Z: { name: "Z", basePosition: [[0, 0], [0, 1], [1, 1], [1, 2]] }
+				I: { name: "I", basePosition: [[0, 0], [0, 1], [0, 2], [0, 3]], baseRotation: 1 },
+				J: { name: "J", basePosition: [[0, 0], [0, 1], [0, 2], [1, 2]], baseRotation: 3 },
+				L: { name: "L", basePosition: [[0, 0], [0, 1], [0, 2], [1, 0]], baseRotation: 1 },
+				O: { name: "O", basePosition: [[0, 0], [0, 1], [1, 0], [1, 1]], baseRotation: 0 },
+				S: { name: "S", basePosition: [[1, 0], [1, 1], [0, 1], [0, 2]], baseRotation: 1 },
+				T: { name: "T", basePosition: [[0, 0], [0, 1], [0, 2], [1, 1]], baseRotation: 0 },
+				Z: { name: "Z", basePosition: [[0, 0], [0, 1], [1, 1], [1, 2]], baseRotation: 1 }
 			};
 
 		var _randomTetromino = function() {
@@ -467,12 +439,14 @@
 				}
 			};
 
-			var tetromino = (type) ? tetrominoes[type] : _randomTetromino();
+			var rotateAndCenter = function(t, width, r) {
+				t = t.slice();
 
-			className = tetromino.name;
-			tiles = tetromino.basePosition;
-
-			var centerTiles = function(t, width) {
+				if (r) {
+					for (var i = 0; i < r; i++) {
+						t = _rotate(className, t, i + 1);
+					}
+				}
 				var currentXs = xs(t),
 					x = Math.floor((width - _max(currentXs) - _min(currentXs) + 1) / 2) - 1;
 
@@ -482,35 +456,30 @@
 				return t;
 			};
 
-			tiles = centerTiles(tiles, constants.boardWidth);
+			var tetromino;
+
+			if (type) {
+				if (type.tiles) {
+					tetromino = tetrominoes[type.className];
+					rotation = type.rotation;
+					locked = type.locked;
+				} else {
+					tetromino = tetrominoes[type];
+					rotation = tetromino.baseRotation;
+				}
+			} else {
+				tetromino = _randomTetromino();
+				rotation = tetromino.baseRotation;
+			}
+			className = tetromino.name;
+			tiles = (type && type.tiles) ?
+				type.tiles :
+				rotateAndCenter(tetromino.basePosition, constants.boardWidth, tetromino.baseRotation);
 
 			return {
 				className: className,
-				createPreview: function() {
-					/* var canvas = document.createElement("canvas");
-
-					canvas.setAttribute("width", constants.tileWidth * 4);
-					canvas.setAttribute("height", constants.tileHeight * 4);
-
-					var context = canvas.getContext("2d");
-
-					context.strokeStyle = "gray"; */
-
-					var initialTiles = centerTiles(tetrominoes[className].basePosition, 4);
-
-					/* initialTiles.forEach(function(tile) {
-						var rect = [
-							tile[1] * constants.tileWidth,
-							tile[0] * constants.tileHeight,
-							constants.tileWidth,
-							constants.tileHeight
-						];
-
-						context.fillRect.apply(context, rect);
-						context.strokeRect.apply(context, rect);
-					});
-
-					return canvas.toDataURL(); */
+				createPreview: function(actual) {
+					var initialTiles = rotateAndCenter(tetromino.basePosition, 4, (actual) ? rotation : 0);
 
 					var baseXs = xs(initialTiles),
 						baseYs = ys(initialTiles),
@@ -538,6 +507,33 @@
 						}
 					}
 					return container;
+				},
+				createPreviewImage: function(color, actual) {
+					var canvas = document.createElement("canvas");
+
+					canvas.setAttribute("width", constants.tileWidth * 4);
+					canvas.setAttribute("height", constants.tileHeight * 4);
+
+					var context = canvas.getContext("2d");
+
+					context.fillStyle = color;
+					context.strokeStyle = color;
+
+					var initialTiles = rotateAndCenter(tetromino.basePosition, 4, (actual) ? rotation : 0);
+
+					initialTiles.forEach(function(tile) {
+						var rect = [
+							tile[1] * constants.tileWidth,
+							tile[0] * constants.tileHeight,
+							constants.tileWidth,
+							constants.tileHeight
+						];
+
+						context.fillRect.apply(context, rect);
+						context.strokeRect.apply(context, rect);
+					});
+
+					return canvas.toDataURL();
 				},
 				drop: function() {
 					var t = this;
@@ -574,7 +570,7 @@
 						var t = this,
 							x = _min(xs());
 
-						if (x > 0 && tiles.filter(function(tile) { return !t.isTileFree(tile[0], tile[1] - 1); }).length === 0) {
+						if (x > 0 && tiles.filter(function(tile) { return !t.isTileEmpty(tile[0], tile[1] - 1); }).length === 0) {
 							tiles = tiles.map(function(tile) { return [tile[0], tile[1] - 1]; });
 						}
 					}
@@ -584,48 +580,71 @@
 						var t = this,
 							x = _max(xs());
 
-						if (x < constants.boardWidth - 1 && tiles.filter(function(tile) { return !t.isTileFree(tile[0], tile[1] + 1); }).length === 0) {
+						if (x < constants.boardWidth - 1 && tiles.filter(function(tile) { return !t.isTileEmpty(tile[0], tile[1] + 1); }).length === 0) {
 							tiles = tiles.map(function(tile) { return [tile[0], tile[1] + 1]; });
 						}
 					}
 				},
-				rotate: function() {
+				rotate: function(_) {
 					if (!locked) {
-						var newRotation = (rotation + 1) % 4,
-							rotatedTiles = tetromino.rotate(tiles, newRotation),
-							newXs = xs(rotatedTiles),
-							t = this;
+						if (_cw || _) {
+							var newRotation = (rotation + 1) % 4,
+								rotatedTiles = tetromino.rotate(tiles, newRotation),
+								newXs = xs(rotatedTiles),
+								t = this;
 
-						if (_min(newXs) >= 0 &&
-							_max(newXs) < constants.boardWidth) {
+							if (_min(newXs) >= 0 &&
+								_max(newXs) < constants.boardWidth) {
 
-							if (rotatedTiles.filter(function(newTile) {
-								return newTile[0] >= 0 && !t.isTileFree.apply(this, newTile);
-							}).length === 0) {
-								rotation = newRotation;
-								tiles = rotatedTiles;
+								if (rotatedTiles.filter(function(newTile) {
+									return newTile[0] >= 0 && !t.isTileEmpty.apply(this, newTile);
+								}).length === 0) {
+									rotation = newRotation;
+									tiles = rotatedTiles;
+								}
+							}
+						} else {
+							for (var i = 0; i < 3; i++) {
+								this.rotate(true);
 							}
 						}
 					}
 				},
 				get rotation() { return rotation; },
-				get tiles() { return tiles; }
+				get tiles() { return tiles.slice(); }
 			};
 		};
 
+		(function() {
+			var css = [ ".level-container { background-color: whitesmoke; }" ],
+				x;
+
+			for (var i = 1; i <= constants.levels; i++) {
+				x = Math.min(Math.max(Math.floor(255 - ((i - 1) / constants.levels * 255)), 0), 255);
+				css.push(".level-container[level=\"" + i + "\"] { background-color: rgba(" + x + ", " + x + ", " + x + "); }");
+			}
+			_setStyle(css.join(" "), _styleID);
+		})();
+
 		Game = function(board, options, ready, state) {
 			var start,
+				elapsed = 0,
 				end,
 				lastMove,
+				lastLock,
+				lastTime,
 				level,
 				levelMoveTime,
 				lines,
+				lineHistory = [ ],
 				pieces,
 				nextPiece,
 				pieceStats = { },
 				paused = options && options.paused,
 				allTiles,
 				baseTiles = 0,
+				baseCleared,
+				baseRemoved,
 				remainingBaseTiles = 0,
 				piece,
 				timer;
@@ -640,11 +659,69 @@
 				return row + "°" + column;
 			}
 
+			var checkBaseStatus = function() {
+				if (baseTiles) {
+					if (!baseRemoved && !remainingBaseTiles) {
+						baseRemoved = true;
+					}
+					if (!baseCleared) {
+						var currentTiles = Object.keys(allTiles)
+								.map(function(key) {
+									return allTiles[key];
+								})
+								.filter(function(tile) {
+									return tile.className;
+								}),
+							remainingTiles = currentTiles
+								.filter(function(tile) {
+									return tile.baseTile;
+								});
+
+						if (remainingTiles
+							.filter(function(tile) {
+								for (var i = tile.row + 1; i < constants.boardHeight; i++) {
+									if (isTileEmpty(i, tile.column)) {
+										return true;
+									}
+								}
+
+								var isFree,
+									wasFree = isTileEmpty(tile.row - 1, tile.column),
+									changed = false;
+
+								for (var i = tile.row - 2; i >= 0; i--) {
+									isFree = isTileEmpty(i, tile.column);
+
+									if (isFree !== wasFree) {
+										if (changed) {
+											return true;
+										} else {
+											wasFree = isFree;
+										}
+									}
+								}
+								return false;
+							}).length === 0) {
+								if (currentTiles.filter(function(tile) {
+									for (var i = tile.row + 1; i < constants.boardHeight; i++) {
+										if (isTileEmpty(i, tile.column)) {
+											return true;
+										}
+									}
+									return false;
+								}).length === 0) {
+									baseCleared = true;
+								}
+							}
+					}
+				}
+			};
+
 			var checkStatus = function() {
 				updateBoard();
 
 				if (piece && piece.locked) {
-					lastMove = Date.now();
+					lastLock = lastMove = Date.now();
 					piece.tiles.forEach(function(tile, i) {
 						if (piece.isTileVisible(i)) {
 							var boardTile = getBoardTile.apply(this, tile);
@@ -678,17 +755,13 @@
 
 					if (filledLines.length) {
 						(function() {
-							var n = 0;
-
-							console.log(filledLines.length + " filled");
+							lineHistory.push(filledLines.length);
 							filledLines.sort(function(a, b) { return b - a; });
 
+							var n = 0;
+
 							for (var i = filledLines[0]; i >= 0; i--) {
-								while (filledLines.includes(i - n)) {
-									console.log("line " + i + " is filled");
-									n++;
-								}
-								console.log("moving row " + (i - n) + " to row " + i + " (" + n + " rows down)");
+								while (filledLines.includes(i - n)) { n++; }
 								tilesPerRow[i].forEach(function(item) {
 									var from = (i - n >= 0) ?
 										tilesPerRow[i - n].filter(function(subItem) {
@@ -704,6 +777,7 @@
 									}
 								});
 							}
+							checkBaseStatus();
 						})();
 						if (Math.floor(lines / constants.linesPerLevel) !==
 							Math.floor((lines + filledLines.length) / constants.linesPerLevel)) {
@@ -723,8 +797,32 @@
 				}
 
 				_writeObject(_stateKey, (end) ? undefined : {
-					//
-					start: start
+					  allTiles: Object.keys(allTiles).reduce(function(current, key) {
+						  var tile = allTiles[key];
+
+						  current[key] = {
+							  baseTile: tile.baseTile,
+							  className: tile.className,
+							  column: tile.column,
+							  locked: tile.locked,
+							  row: tile.row
+						  };
+						  return current;
+					  }, { })
+					, baseCleared: baseCleared
+					, baseRemoved: baseRemoved
+					, baseLines: (options && options.lines) || 0
+					, baseTiles: baseTiles
+					, elapsed: elapsed
+					, level: level
+					, lineHistory: lineHistory
+					, lines: lines
+					, nextPiece: nextPiece.className
+					, piece: piece
+					, pieceStats: pieceStats
+					, pieces: pieces
+					, remainingBaseTiles: remainingBaseTiles
+					, start: start
 				});
 			};
 
@@ -736,6 +834,12 @@
 							!tile.className &&
 							tile.row > row;
 					}).map(function(tile) { return tile.row; });
+
+				if (row < 0) {
+					for (var i = -1; i > row; i--) {
+						freeRows.splice(0, 0, i);
+					}
+				}
 
 				freeRows.sort(function(a, b) { return a - b; });
 				for (var i = 0; i < freeRows.length; i++) {
@@ -755,7 +859,7 @@
 					var newPiece = new Tetromino();
 
 					newPiece.findEmptyTiles = findEmptyTiles;
-					newPiece.isTileFree = isTileFree;
+					newPiece.isTileEmpty = isTileEmpty;
 					return newPiece;
 				};
 
@@ -768,18 +872,28 @@
 				nextPiece = createPiece();
 				updateBoard();
 				if (nextPiece.tiles.filter(function(tile) {
-					return !isTileFree.apply(this, tile);
+					return !isTileEmpty.apply(this, tile);
 				}).length > 0) {
 					end = Date.now();
 					updateBoard();
 				}
 			};
 
-			var isTileFree = function(row, column) {
+			var isTileEmpty = function(row, column) {
 				return row < 0 || !getBoardTile(row, column).className;
 			};
 
 			var updateBoard = function() {
+				var shadow;
+
+				Array.from(document.getElementsByClassName("level-container")).forEach(function(item) {
+					if (level > 1) {
+						item.setAttribute("level", level);
+					} else {
+						item.removeAttribute("level");
+					}
+				});
+
 				Object.keys(allTiles).forEach(function(key) {
 					var tile = allTiles[key],
 						classes = tile.tile.classList;
@@ -794,38 +908,37 @@
 					classes.remove("locked");
 					classes.remove("base-tile");
 					classes.remove("shadow");
-					classes.add(tile.className);
+					if (tile.className) {
+						classes.add(tile.className);
+					}
 					if (tile.locked) {
 						classes.add("locked");
 					}
 					if (tile.baseTile) {
 						classes.add("base-tile");
 					}
-					if (piece) {
-						(function() {
-							var classSet;
-
-							piece.tiles.forEach(function(pieceTile) {
-								if (pieceTile[0] === tile.row && pieceTile[1] === tile.column) {
-									classes.add(piece.className);
-									classSet = true;
-								}
-							});
-
-							if (options && options.shadow && !classSet) {
-								var shadow = piece.getShadow();
-
-								if (shadow) {
-									shadow.forEach(function(shadowTile) {
-										if (shadowTile[0] === tile.row && shadowTile[1] === tile.column) {
-											classes.add("shadow");
-										}
-									});
-								}
-							}
-						})();
-					}
 				});
+
+				if (piece) {
+					piece.tiles.forEach(function(pieceTile, i) {
+						if (piece.isTileVisible(i)) {
+							allTiles[k(pieceTile[0], pieceTile[1])].tile.classList.add(piece.className);
+						}
+					});
+
+					if (options && options.shadow) {
+						if (shadow = piece.getShadow()) {
+							shadow.filter(function(tile) {
+								return piece.tiles.filter(function(pieceTile) {
+									return pieceTile[0] === tile[0] && pieceTile[1] === tile[1];
+								}).length === 0;
+							})
+							.forEach(function(shadowTile) {
+								allTiles[k(shadowTile[0], shadowTile[1])].tile.classList.add("shadow");
+							});
+						}
+					}
+				}
 			};
 
 			(function() {
@@ -863,7 +976,29 @@
 					}
 				})();
 
-				if (options && options.lines > 0) {
+				if (state && state.start) {
+					Object.keys(state.allTiles)
+						.map(function(key) {
+							return state.allTiles[key];
+						})
+						.forEach(function(savedTile) {
+							var tile = allTiles[k(savedTile.row, savedTile.column)];
+
+							tile.baseTile = !!savedTile.baseTile;
+							if (savedTile.className) {
+								tile.className = savedTile.className;
+							}
+							tile.locked = !!savedTile.locked;
+						});
+
+					nextPiece = new Tetromino(state.nextPiece);
+					nextPiece.findEmptyTiles = findEmptyTiles;
+					nextPiece.isTileEmpty = isTileEmpty;
+
+					piece = new Tetromino(state.piece);
+					piece.findEmptyTiles = findEmptyTiles;
+					piece.isTileEmpty = isTileEmpty;
+				} else if (options && options.lines > 0) {
 					(function() {
 						var m = Math.min(options.lines, constants.boardHeight - 4);
 						for (var i = 0; i < m; i++) {
@@ -886,9 +1021,26 @@
 
 				board.appendChild(levelContainer);
 
-				level = 1;
-				pieces = lines = 0;
+				if (state && state.start) {
+					baseCleared = state.baseCleared;
+					baseRemoved = state.baseRemoved;
+					baseTiles = state.baseTiles;
+					elapsed = state.elapsed;
+					level = state.level;
+					lineHistory = state.lineHistory;
+					lines = state.lines;
+					pieceStats = state.pieceStats;
+					pieces = state.pieces;
+					remainingBaseTiles = state.remainingBaseTiles;
+					start = state.start;
+				} else {
+					pieces = lines = 0;
+					level = 1;
+				}
 				levelMoveTime = constants.baseMoveTime;
+				for (var i = 1; i < level; i++) {
+					levelMoveTime = Math.max(constants.moveTimeStep, levelMoveTime - constants.moveTimeStep);
+				}
 				updateBoard();
 
 				if (!paused) {
@@ -904,11 +1056,15 @@
 						if (!start) {
 							start = Date.now();
 							getNextPiece();
+							checkBaseStatus();
 							board.dispatchEvent(new Event("game.changed"));
 						}
 
 						var now = Date.now();
 
+						if (lastTime) {
+							elapsed += now - lastTime;
+						}
 						if (!lastMove || now - lastMove >= levelMoveTime) {
 							if (lastMove) {
 								piece.moveDown();
@@ -916,31 +1072,54 @@
 							lastMove = now;
 							checkStatus();
 						}
+						lastTime = now;
 					}
 				}, 50);
 			})();
 
 			return {
+				get baseCleared() { return baseCleared; },
 				get baseLines() { return baseTiles / constants.randomTiles; },
+				get baseRemoved() { return baseRemoved; },
 				board: {
 					get width() { return constants.boardWidth * constants.tileWidth; },
 					get height() { return constants.boardHeight * constants.tileHeight; }
 				},
 				get constants() { return constants; },
-				dropPiece: function() { if (!paused && !end && piece) { piece.drop(); checkStatus(); } },
+				dropPiece: function() {
+					if (!paused && !end && piece) {
+						if (!lastLock || (Date.now() - lastLock >= levelMoveTime / 2)) {
+							piece.drop();
+							checkStatus();
+						}
+					}
+				},
+				get elapsed() { return elapsed; },
 				get end() { return end; },
-				getNextPiecePreview: function() { if (nextPiece) { return nextPiece.createPreview(); } },
+				getNextPiecePreview: function(actual) { if (nextPiece) { return nextPiece.createPreview(actual); } },
 				get level() { return level; },
+				get lineHistory() { return lineHistory; },
 				get lines() { return lines; },
 				movePieceDown: function() { if (!paused && !end && piece) { piece.moveDown(); checkStatus(); } },
 				movePieceLeft: function() { if (!paused && !end && piece) { piece.moveLeft(); checkStatus(); } },
 				movePieceRight: function() { if (!paused && !end && piece) { piece.moveRight(); checkStatus(); } },
-				pause: function() { paused = true; },
+				pause: function() {
+					if (!paused && !end) {
+						paused = true;
+						board.dispatchEvent(new Event("game.paused"));
+					}
+				},
 				get paused() { return paused; },
 				get pieces() { return pieces; },
 				get pieceStats() { return pieceStats; },
 				get remainingBaseLines() { return remainingBaseTiles / constants.randomTiles; },
-				resume: function() { paused = false; },
+				resume: function() {
+					if (paused && !end) {
+						lastTime = Date.now();
+						paused = false;
+						board.dispatchEvent(new Event("game.resumed"));
+					}
+				},
 				rotatePiece: function() { if (!paused && !end && piece) { piece.rotate(); checkStatus(); } },
 				get start() { return start; },
 				stop: function() {
@@ -964,8 +1143,15 @@
 	})();
 
 	(function() {
+		var BossIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+			BossTitle = decodeURIComponent("%E3%85%A4");
+
+		var _boss,
+			_icon,
+			_safe = _param("safe") || !!parseInt(_thisScript.getAttribute("safe")),
+			_title;
+
 		var board = document.querySelector(".board"),
-			menu = document.getElementById("menu"),
 			message = document.getElementById("message"),
 			scaler = document.querySelector(".scaler"),
 			status = document.querySelector(".status");
@@ -973,7 +1159,6 @@
 		(function() {
 			if (typeof window.ShadowRoot === "undefined") {
 				message.classList.add("compatible");
-				menu.classList.add("compatible");
 			}
 			if (_param("animate")) {
 				document.querySelector("body").classList.add("animate");
@@ -994,12 +1179,42 @@
 			if (!_isVisible(message)) {
 				if (game) {
 					showMessage(document.getElementById("askNewMessage").value);
+					window.setTimeout(function() {
+						document.querySelector("[name=initial-lines]:checked").focus();
+					});
 				} else {
 					newGame();
 				}
 			} else {
 				hideMessage();
 				newGame();
+			}
+		};
+
+		var bossScreen = function(value) {
+			Array.from(document.getElementsByClassName("boss")).forEach(function(item, i) {
+				((value) ? _show : _hide)(item);
+			});
+
+			if (_boss !== value) {
+				var icon = document.querySelector("[rel='shortcut icon']");
+
+				if (_boss = value) {
+					if (game) {
+						game.pause();
+					}
+					_title = document.title;
+					document.title = BossTitle;
+					if (icon) {
+						_icon = icon.getAttribute("href");
+						icon.setAttribute("href", BossIcon);
+					}
+				} else {
+					document.title = _title;
+					if (icon) {
+						icon.setAttribute("href", _icon);
+					}
+				}
 			}
 		};
 
@@ -1012,16 +1227,58 @@
 				item.innerText = (game) ? game.level : undefined;
 			});
 			Array.from(document.getElementsByClassName("lines")).forEach(function(item, i) {
-				item.innerText = (game) ? game.lines : undefined;
+				item.innerText = ((game) ? game.lines : 0).toLocaleString();
+			});
+			Array.from(document.getElementsByClassName("line-details")).forEach(function(item, i) {
+				var details = "";
+
+				if (game && game.lines) {
+					details = game.lineHistory
+						.reduce(function(current, value) {
+							current[value] = (current[value] || 0) + 1;
+							return current;
+						}, [ ])
+						.map(function(value, i) {
+							return {
+								index: i,
+								value: value
+							};
+						});
+					details.sort(function(a, b) {
+						return b.index - a.index;
+					});
+
+					details = details
+						.filter(function(value) {
+							return value.value;
+						})
+						.map(function(value, i) {
+							return value.index + ": " + value.value.toLocaleString();
+						})
+						.join(" - ");
+				}
+				item.innerText = details;
 			});
 			Array.from(document.getElementsByClassName("pieces")).forEach(function(item, i) {
 				item.innerText = (game) ? game.pieces : undefined;
 			});
-			Array.from(document.getElementsByClassName("base-lines")).forEach(function(item, i) {
-				item.innerText = (game) ? (game.remainingBaseLines.toLocaleString() + "/" + game.baseLines.toLocaleString()) : undefined;
+			Array.from(document.getElementsByClassName("base-lines-row")).forEach(function(item, i) {
+				item.classList[(game && game.baseLines) ? "remove" : "add"]("removed");
+			});
+			if (game && game.baseLines) {
+				Array.from(document.getElementsByClassName("base-lines")).forEach(function(item, i) {
+					item.innerText = (game) ? (game.remainingBaseLines.toLocaleString() +
+					"/" +
+					game.baseLines.toLocaleString()) : undefined;
+					(item.classList)[(game && game.baseCleared) ? "add" : "remove"]("base-cleared");
+					(item.classList)[(game && game.baseRemoved) ? "add" : "remove"]("base-removed");
+				});
+			}
+			Array.from(document.getElementsByClassName("next-piece-row")).forEach(function(item, i) {
+				item.classList[(game && game.start) ? "remove" : "add"]("removed");
 			});
 			Array.from(document.getElementsByClassName("next-piece")).forEach(function(item, i) {
-				var preview = (game) ? game.getNextPiecePreview() : undefined;
+				var preview = (game) ? game.getNextPiecePreview(true) : undefined;
 
 				if (typeof preview === "string") {
 					item.setAttribute("src", preview);
@@ -1034,23 +1291,15 @@
 				}
 			});
 
-
 			var stats;
 
+			Array.from(document.getElementsByClassName("piece-stats-row")).forEach(function(item, i) {
+				item.classList[(game && game.start) ? "remove" : "add"]("removed");
+			});
 			if (game) {
 				stats = game.pieceStats;
 
 				Array.from(document.getElementsByClassName("piece-stats")).forEach(function(item) {
-					/* stats = Object.keys(stats).map(function(key) {
-						return [key, stats[key]];
-					});
-					stats.sort(function(a, b) {
-						return b[1] - a[1];
-					});
-					stats = stats.map(function(stat) {
-						return stat[0] + ": " + stat[1].toLocaleString();
-					}).join("\n"); */
-
 					Array.from(item.getElementsByClassName("stat-table")).forEach(function(table) {
 						var rows = Array.from(table.getElementsByClassName("stat-row"));
 
@@ -1071,10 +1320,22 @@
 			}
 		};
 
+		var gamePaused = function() {
+			Array.from(document.getElementsByClassName("pause")).forEach(function(item, i) {
+				_show(item);
+			});
+		};
+
+		var gameResumed = function() {
+			Array.from(document.getElementsByClassName("pause")).forEach(function(item, i) {
+				_hide(item);
+			});
+		};
+
 		var hideMessage = function() {
 			_hide(message);
-			_hide(menu);
 			_hide(document.getElementById("messageBackdrop"));
+			board.focus();
 		};
 
 		var newGame = function(state, paused) {
@@ -1084,12 +1345,25 @@
 				board.removeEventListener("game.changed", checkGame);
 			}
 
+			var lines = 0;
+
+			if (!state) {
+				lines = parseInt(Array.from(document.querySelectorAll("[name=initial-lines]")).filter(function(item) {
+					return item.checked;
+				}).pop().value);
+			}
+
 			game = new Game(board, {
-					lines: _params()["base"] || 0,
+					lines: lines || 0,
 					paused: paused,
-					shadow: _param("shadow")
+					shadow: !_param("noShadow")
 				}, function() {
 				board.addEventListener("game.changed", checkGame);
+				if (paused) {
+					gamePaused();
+				} else {
+					gameResumed();
+				}
 				setTimeout(function() {
 					resizer();
 					checkGame();
@@ -1100,7 +1374,9 @@
 		var pauseGame = function() {
 			if (game) {
 				if (game.paused) {
-					game.resume();
+					if (!_boss) {
+						game.resume();
+					}
 				} else {
 					game.pause();
 				}
@@ -1113,7 +1389,7 @@
 				text = "";
 
 			if (game && game.start) {
-				elapsed = (game.end || Date.now()) - game.start;
+				elapsed = game.elapsed;
 			}
 			elapsed = Math.floor(elapsed / 1e3);
 			if (elapsed >= 3600) {
@@ -1135,19 +1411,22 @@
 		};
 
 		var showMessage = function(messageText, type) {
-			if (game) {
-				game.pause();
+			if (!_boss) {
+				if (game) {
+					game.pause();
+				}
+				document.getElementById("messageText").innerText = messageText;
+				_show(document.getElementById("messageBackdrop"));
+				_show(message);
 			}
-			document.getElementById("messageText").innerText = messageText;
-			_show(document.getElementById("messageBackdrop"));
-			_show(message);
 		};
 
 		(function() {
 			board.addEventListener("game.changed", checkGame);
 			board.addEventListener("game.won", function() { showMessage(document.getElementById("wonMessage").value); });
 			board.addEventListener("game.lost", function() { showMessage(document.getElementById("lostMessage").value); });
-			board.addEventListener("game.wrong", function() { showMessage(document.getElementById("wrongGameMessage").value); });
+			board.addEventListener("game.paused", gamePaused);
+			board.addEventListener("game.resumed", gameResumed);
 
 			_bindClickByClassName(status, "newGame", askNewGame);
 			_bindClickByClassName(status, "pauseGame", pauseGame);
@@ -1158,7 +1437,8 @@
 			_bindClickByTagName(message, "button", hideMessage);
 			_bindClickByClassName(message, "newGame", function() { newGame(); });
 
-			_bindClickByTagName(menu, "button", hideMessage);
+			/* _bindClickByClassName(document, "boss", function() { bossScreen(false); }); */
+			_bindClickByClassName(document, "pause", function() { if (!_boss) { pauseGame(); } });
 		})();
 
 		document.addEventListener("keydown", function(e) {
@@ -1168,7 +1448,13 @@
 						hideMessage();
 						newGame();
 					} else if (game) {
-						game.dropPiece();
+						if (game.paused) {
+							if (!_boss) {
+								game.resume();
+							}
+						} else {
+							game.dropPiece();
+						}
 					}
 					break;
 				case 19:				/* Pause */
@@ -1178,13 +1464,21 @@
 				case 27:				/* Escape */
 					if (_isVisible(message)) {
 						hideMessage();
-					} else {
+					} else if (_safe) {
 						pauseGame();
+					} else {
+						bossScreen(true);
 					}
 					break;
 				case 32:				/* Space */
 					if (game) {
-						game.dropPiece();
+						if (game.paused) {
+							if (!_boss) {
+								game.resume();
+							}
+						} else {
+							game.dropPiece();
+						}
 					}
 					break;
 				case 37:				/* Left */
@@ -1211,6 +1505,9 @@
 					if (game) {
 						game.movePieceDown();
 					}
+					break;
+				case 66:				/* B */
+					bossScreen(!_boss);
 					break;
 				case 71:				/* G */
 					showMessage(new Date().toLocaleString());
@@ -1245,10 +1542,54 @@
 			}
 		})();
 		window.addEventListener("resize", resizer);
-
+		window.addEventListener("blur", function() {
+			if (_safe) {
+				if (game) {
+					game.pause();
+				}
+			} else {
+				bossScreen(true);
+			}
+		});
+		document.addEventListener("visibilitychange", function() {
+			if (document.hidden) {
+				if (_safe) {
+					if (game) {
+						game.pause();
+					}
+				} else {
+					bossScreen(true);
+				}
+			}
+		}, false);
 		window.setInterval(refreshTime, 100);
 
 		document.addEventListener("DOMContentLoaded", function() {
+			var state = _readObject(_stateKey),
+				lines = parseInt(state && state.baseLines) || parseInt(_params()["base"]) || 0,
+				e = document.getElementById("initial-lines");
+
+			[0, 4, 7, 10, 13].forEach(function(n) {
+				var l = document.createElement("label"),
+					i = document.createElement("input");
+
+				i.setAttribute("type", "radio");
+				i.setAttribute("name", "initial-lines");
+				i.value = n;
+				if (n === lines) {
+					i.checked = true;
+				}
+				l.appendChild(i);
+				l.appendChild(document.createTextNode(n.toLocaleString()));
+				e.appendChild(l);
+			});
+
+			var bossColor = _params().bossColor || _thisScript.getAttribute("boss-color");
+
+			if (typeof bossColor !== "undefined") {
+				_setStyle(".boss { background-color: " + bossColor + " !important; }");
+			}
+
 			var previews = Game.createPreviews();
 
 			Array.from(document.getElementsByClassName("piece-stats")).forEach(function(item, i) {
@@ -1279,7 +1620,7 @@
 				});
 				item.appendChild(table);
 			});
-			newGame(_readObject(_stateKey), true);
+			newGame(state, true);
 		});
 	})();
 })();
