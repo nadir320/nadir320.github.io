@@ -621,7 +621,8 @@
 
 			for (var i = 1; i <= constants.levels; i++) {
 				x = Math.min(Math.max(Math.floor(255 - ((i - 1) / constants.levels * 255)), 0), 255);
-				css.push(".level-container[level=\"" + i + "\"] { background-color: rgba(" + x + ", " + x + ", " + x + "); }");
+				css.push(".level-container[level=\"" + i + "\"] { background-color: rgba(" + x + ", " + x + ", " + x + ", 1); " +
+					"background: radial-gradient(circle, rgba(" + x + ", " + x + ", " + x + ", 1) 0%, rgba(255, 255, 255, 1) 100%); }");
 			}
 			_setStyle(css.join(" "), _styleID);
 		})();
@@ -960,7 +961,9 @@
 							var tile = document.createElement("div");
 
 							tile.classList.add("tile");
-							tile.classList.add("fade");
+							if (options.fade) {
+								tile.classList.add("fade");
+							}
 							tile.style.gridColumn = j + 1;
 							tile.style.gridRow = i + 1;
 							tile.style.width = constants.tileWidth + "px";
@@ -1007,9 +1010,14 @@
 								.filter(function(tile) { return tile.row === constants.boardHeight - i - 1; });
 
 							for (var j = 0; j < constants.randomTiles; j++) {
-								var k = Math.floor(Math.random() * tilesPerRow.length);
+								var k = Math.floor(Math.random() * tilesPerRow.length),
+									name;
 
-								tilesPerRow[k].className = _randomTetromino().name;
+								do {
+									name = _randomTetromino().name;
+								} while (name === tetrominoes.Z.name);
+
+								tilesPerRow[k].className = name;
 								tilesPerRow[k].baseTile = true;
 								tilesPerRow.splice(k, 1);
 								baseTiles++;
@@ -1147,6 +1155,7 @@
 			BossTitle = decodeURIComponent("%E3%85%A4");
 
 		var _boss,
+			_fade = !_param("noFade") && !parseInt(_thisScript.getAttribute("no-fade")),
 			_icon,
 			_safe = _param("safe") || !!parseInt(_thisScript.getAttribute("safe")),
 			_title;
@@ -1179,9 +1188,6 @@
 			if (!_isVisible(message)) {
 				if (game) {
 					showMessage(document.getElementById("askNewMessage").value);
-					window.setTimeout(function() {
-						document.querySelector("[name=initial-lines]:checked").focus();
-					});
 				} else {
 					newGame();
 				}
@@ -1354,6 +1360,7 @@
 			}
 
 			game = new Game(board, {
+					fade: _fade,
 					lines: lines || 0,
 					paused: paused,
 					shadow: !_param("noShadow")
@@ -1418,6 +1425,11 @@
 				document.getElementById("messageText").innerText = messageText;
 				_show(document.getElementById("messageBackdrop"));
 				_show(message);
+				window.setTimeout(function() {
+					try {
+						document.querySelector("[name=initial-lines]:checked").focus();
+					} catch (e) { debugger; }
+				});
 			}
 		};
 

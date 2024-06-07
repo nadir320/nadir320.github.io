@@ -35,6 +35,10 @@ input:focus,
 	outline: 0 solid transparent;
 }
 
+.scaler {
+	position: relative;
+}
+
 .board {
 	background-color: rgba(42, 50, 136, 0.4);
 	border-radius: 0.5em;
@@ -87,6 +91,7 @@ input:focus,
 
 .pause.backdrop {
 	background-color: slateBlue;
+	position: absolute;
 }
 
 .pause.message {
@@ -111,7 +116,6 @@ input:focus,
 
 .boss {
 	background-color: white;
-	cursor: pointer;
 	opacity: 1;
 	z-index: 999999;
 }
