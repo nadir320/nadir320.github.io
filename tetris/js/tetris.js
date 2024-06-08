@@ -203,26 +203,59 @@
 
 	(function() {
 		var constants = {
-				get baseMoveTime() { return 600; },
-				get boardHeight() { return 20; },
-				get boardWidth() { return 10; },
-				get levels() { return 25; },
-				get linesPerLevel() { return 10; },
-				get moveTimeStep() { return 50; },
-				get padding() { return 8; },
-				get randomTiles() { return 4; },
-				get tileHeight() { return 30; },
-				get tileWidth() { return 30; }
+			get baseMoveTime() { return 600; },
+			get boardHeight() { return 20; },
+			get boardWidth() { return 10; },
+			levelMoveTime: function(level) {
+				var time;
+
+				switch (level) {
+					case 1:
+						time = 500;
+						break;
+					case 2:
+						time = 400;
+						break;
+					case 3:
+						time = 340;
+						break;
+					case 4:
+						time = 280;
+						break;
+					case 5:
+						time = 220;
+						break;
+					case 6:
+						time = 160;
+						break;
+					case 7:
+						time = 110;
+						break;
+					case 8:
+						time = 90;
+						break;
+					default:
+						time = 70;
+						break;
+				}
+				return time;
 			},
-			tetrominoes = {
-				I: { name: "I", basePosition: [[0, 0], [0, 1], [0, 2], [0, 3]], baseRotation: 1 },
-				J: { name: "J", basePosition: [[0, 0], [0, 1], [0, 2], [1, 2]], baseRotation: 3 },
-				L: { name: "L", basePosition: [[0, 0], [0, 1], [0, 2], [1, 0]], baseRotation: 1 },
-				O: { name: "O", basePosition: [[0, 0], [0, 1], [1, 0], [1, 1]], baseRotation: 0 },
-				S: { name: "S", basePosition: [[1, 0], [1, 1], [0, 1], [0, 2]], baseRotation: 1 },
-				T: { name: "T", basePosition: [[0, 0], [0, 1], [0, 2], [1, 1]], baseRotation: 0 },
-				Z: { name: "Z", basePosition: [[0, 0], [0, 1], [1, 1], [1, 2]], baseRotation: 1 }
-			};
+			get levels() { return 25; },
+			get linesPerLevel() { return 10; },
+			get moveTimeStep() { return 50; },
+			get padding() { return 8; },
+			get randomTiles() { return 4; },
+			get tileHeight() { return 30; },
+			get tileWidth() { return 30; }
+		}, tetrominoes = {
+			I: { name: "I", basePosition: [[0, 0], [0, 1], [0, 2], [0, 3]], baseRotation: 1 },
+			J: { name: "J", basePosition: [[0, 0], [0, 1], [0, 2], [1, 2]], baseRotation: 3 },
+			L: { name: "L", basePosition: [[0, 0], [0, 1], [0, 2], [1, 0]], baseRotation: 1 },
+			O: { name: "O", basePosition: [[0, 0], [0, 1], [1, 0], [1, 1]], baseRotation: 0 },
+			S: { name: "S", basePosition: [[1, 0], [1, 1], [0, 1], [0, 2]], baseRotation: 1 },
+			T: { name: "T", basePosition: [[0, 0], [0, 1], [0, 2], [1, 1]], baseRotation: 0 },
+			Z: { name: "Z", basePosition: [[0, 0], [0, 1], [1, 1], [1, 2]], baseRotation: 1 }
+		};
 
 		var _randomTetromino = function() {
 			var names = Object.keys(tetrominoes);
@@ -784,7 +817,9 @@
 							Math.floor((lines + filledLines.length) / constants.linesPerLevel)) {
 
 							level++;
-							levelMoveTime = Math.max(constants.moveTimeStep, levelMoveTime - constants.moveTimeStep);
+							levelMoveTime = (options.slow) ?
+								Math.max(constants.moveTimeStep, levelMoveTime - constants.moveTimeStep) :
+								constants.levelMoveTime(level);
 						}
 						lines += filledLines.length;
 						updateBoard();
@@ -1045,9 +1080,13 @@
 					pieces = lines = 0;
 					level = 1;
 				}
-				levelMoveTime = constants.baseMoveTime;
-				for (var i = 1; i < level; i++) {
-					levelMoveTime = Math.max(constants.moveTimeStep, levelMoveTime - constants.moveTimeStep);
+				if (options.slow) {
+					levelMoveTime = constants.baseMoveTime;
+					for (var i = 1; i < level; i++) {
+						levelMoveTime = Math.max(constants.moveTimeStep, levelMoveTime - constants.moveTimeStep);
+					}
+				} else {
+					levelMoveTime = constants.levelMoveTime(level);
 				}
 				updateBoard();
 
@@ -1155,10 +1194,11 @@
 			BossTitle = decodeURIComponent("%E3%85%A4");
 
 		var _boss,
-			_fade = !_param("noFade") && !parseInt(_thisScript.getAttribute("no-fade")),
+			_fade = !_param("no-fade") && !parseInt(_thisScript.getAttribute("no-fade")),
 			_icon,
 			_safe = _param("safe") || !!parseInt(_thisScript.getAttribute("safe")),
-			_title;
+			_title,
+			_touch = !!_param("touch") || !!parseInt(_thisScript.getAttribute("touch"));
 
 		var board = document.querySelector(".board"),
 			message = document.getElementById("message"),
@@ -1363,7 +1403,8 @@
 					fade: _fade,
 					lines: lines || 0,
 					paused: paused,
-					shadow: !_param("noShadow")
+					shadow: !_param("no-shadow"),
+					slow: !!_param("slow")
 				}, function() {
 				board.addEventListener("game.changed", checkGame);
 				if (paused) {
@@ -1433,27 +1474,7 @@
 			}
 		};
 
-		(function() {
-			board.addEventListener("game.changed", checkGame);
-			board.addEventListener("game.won", function() { showMessage(document.getElementById("wonMessage").value); });
-			board.addEventListener("game.lost", function() { showMessage(document.getElementById("lostMessage").value); });
-			board.addEventListener("game.paused", gamePaused);
-			board.addEventListener("game.resumed", gameResumed);
-
-			_bindClickByClassName(status, "newGame", askNewGame);
-			_bindClickByClassName(status, "pauseGame", pauseGame);
-
-			document.getElementById("messageBackdrop").addEventListener("click", function(e) {
-				hideMessage();
-			});
-			_bindClickByTagName(message, "button", hideMessage);
-			_bindClickByClassName(message, "newGame", function() { newGame(); });
-
-			/* _bindClickByClassName(document, "boss", function() { bossScreen(false); }); */
-			_bindClickByClassName(document, "pause", function() { if (!_boss) { pauseGame(); } });
-		})();
-
-		document.addEventListener("keydown", function(e) {
+		var keyHandler = function(e) {
 			switch (e.which) {
 				case 13:				/* Enter */
 					if (_isVisible(message)) {
@@ -1471,7 +1492,9 @@
 					break;
 				case 19:				/* Pause */
 				case 80:				/* P */
-					pauseGame();
+					if (!_isVisible(message)) {
+						pauseGame();
+					}
 					break;
 				case 27:				/* Escape */
 					if (_isVisible(message)) {
@@ -1483,7 +1506,7 @@
 					}
 					break;
 				case 32:				/* Space */
-					if (game) {
+					if (!_isVisible(message) && game) {
 						if (game.paused) {
 							if (!_boss) {
 								game.resume();
@@ -1531,7 +1554,87 @@
 					/* console.info(e.which); */
 					break;
 			}
-		});
+		};
+
+		(function() {
+			board.addEventListener("game.changed", checkGame);
+			board.addEventListener("game.won", function() { showMessage(document.getElementById("wonMessage").value); });
+			board.addEventListener("game.lost", function() { showMessage(document.getElementById("lostMessage").value); });
+			board.addEventListener("game.paused", gamePaused);
+			board.addEventListener("game.resumed", gameResumed);
+
+			_bindClickByClassName(status, "newGame", askNewGame);
+			_bindClickByClassName(status, "pauseGame", pauseGame);
+
+			document.getElementById("messageBackdrop").addEventListener("click", function(e) {
+				hideMessage();
+			});
+			_bindClickByTagName(message, "button", hideMessage);
+			_bindClickByClassName(message, "newGame", function() { newGame(); });
+
+			/* _bindClickByClassName(document, "boss", function() { bossScreen(false); }); */
+			_bindClickByClassName(document, "pause", function(e) { if (!_boss) { pauseGame(); } });
+
+			if (_touch) {
+				(function() {
+					var container = document.createElement("div"),
+						heights = [
+							2,
+							5,
+							3,
+							1
+						],
+						total = heights.reduce(function(current, value) { current += value; return current; }, 0);
+
+					container.classList.add("touch-container");
+
+					var createTouchArea = function(className) {
+						var element = document.createElement("div");
+
+						element.classList.add("touch");
+						element.classList.add(className);
+						container.appendChild(element);
+					};
+
+					for (var i = 0; i < 5; i++) {
+						createTouchArea("touch-" + (i + 1));
+					}
+					_setStyle([
+						".touch-container { grid-template-rows: " + heights.map(function(height) { return height + "fr"; }).join(" ") + " }",
+						".touch-1 { grid-area: 1 / 1 / span 1 / span 2}",
+						".touch-2 { grid-area: 2 / 1 / span 1 / span 1}",
+						".touch-3 { grid-area: 2 / 2 / span 1 / span 1}",
+						".touch-4 { grid-area: 3 / 1 / span 1 / span 2}",
+						".touch-5 { grid-area: 4 / 1 / span 1 / span 2}"
+					].join(" "));
+
+					document.body.appendChild(container);
+
+					document.addEventListener("touchstart", function(e) {
+						var w = document.body.clientWidth,
+							h = document.body.clientHeight;
+
+						Array.from(e.touches).forEach(function(e2) {
+							/* console.log(e2.identifier + ": " + e2.clientX + "/" + w + ", " + e2.clientY + "/" + h); */
+
+							if (e2.clientY <= h * heights[0] / total) {
+								keyHandler({ which: 38 });		// up
+							} else if (e2.clientY >= h * (heights[0] + heights[1]) / total) {
+								keyHandler({ which: 13 });		// enter
+							} else if (e2.clientY >= h * (heights[0] + heights[1] + heights[2]) / total) {
+								keyHandler({ which: 40 });		// down
+							} else if (e2.clientX <= w / 2) {
+								keyHandler({ which: 37 });		// left
+							} else {
+								keyHandler({ which: 39 });		// right
+							}
+						});
+					});
+				})();
+			}
+		})();
+
+		document.addEventListener("keydown", keyHandler);
 
 		(resizer = function() {
 			if (game) {

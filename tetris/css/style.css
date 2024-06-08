@@ -47,7 +47,6 @@ input:focus,
 	position: relative;
 }
 
-
 .hidden,
 .hidden * {
 	opacity: 0 !important;
@@ -91,7 +90,9 @@ input:focus,
 
 .pause.backdrop {
 	background-color: slateBlue;
+	cursor: pointer;
 	position: absolute;
+	z-index: 9996;
 }
 
 .pause.message {
@@ -101,9 +102,14 @@ input:focus,
 	cursor: pointer;
 	display: flex;
 	justify-content: center;
+	pointer-events: none;
 	opacity: 1;
 	width: auto !important;
-	z-index: 9999;
+	z-index: 9997;
+}
+
+.pause.message * {
+	pointer-events: initial;
 }
 
 .pause>* {
@@ -239,6 +245,24 @@ input:focus,
 .tile.S { background-color: cyan; border-color: teal; }
 .tile.T { background-color: forestGreen; border-color: green; }
 .tile.Z { background-color: navajoWhite; border-color: gold; }
+
+.touch-container {
+	bottom: 0;
+	display: grid;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: -1;
+}
+
+.touch {
+	border: 1px solid darkslateBlue;
+	background-color: dodgerBlue;
+	border-radius: 0.25em;
+	margin: 0.15em;
+	opacity: 0.1;
+}
 
 @media (max-width: 36em), (max-height: 24em) {
 	.status br {

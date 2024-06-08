@@ -26,7 +26,7 @@
 		, { "text": "Tabella espandibile", "url": "collapsibleRow.html", "icon": "./images/row.png" }
 		, { "text": "Temi jQuery UI", "url": "uiThemes.html", "icon": "./images/themeRoller.png" }
 		, { "text": "Testo Binario", "url": "binary.html", "icon": "./images/binary.png" }
-		, { "text": "Tetris", "url": "../tetris", "icon": "./tetris/images/tetris.png" }
+		, { "text": "Tetris", "url": "../tetris/?base=4&safe=1&slow=1&touch=1", "icon": "./tetris/images/tetris.png" }
 		, { "text": "Swipe", "url": "swipe.html", "icon": "./images/swipe.png" }
 	] }
 ]
