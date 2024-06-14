@@ -648,11 +648,10 @@
 							box = (isVisible) ? getTileBox(tile) : undefined,
 							remainingMatches = getMatchingTiles(tile).filter(function(item) {
 								return _isVisible(item);
-							}),
-							isLast = remainingMatches.length === 1,
-							stop = false;
+							});
 
-						tile.classList[(end || !isLast) ? "remove" : "add"]("last");
+						tile.classList.remove("fatal");
+						tile.classList[(end || remainingMatches.length > 1) ? "remove" : "add"]("last");
 						tile.classList[(remainingMatches.length && remainingMatches.findIndex(function(item) {
 							return !item.classList.contains("free");
 						}) < 0) ? "add" : "remove"]("all");
@@ -749,120 +748,131 @@
 								stop |= fatal;
 							})();
 						}
-						if (!end && !stop) {
-							(function() {
-								var fatal,
+					});
+
+					if (!end) {
+						(function() {
+							var isLastOverlap = function(item, remainingMatches, over) {
+								return !!getMatchingTiles(item).filter(function(otherMatchingTile) {
+									if (_isVisible(otherMatchingTile)) {
+										var otherMatchingBox = getTileBox(otherMatchingTile);
+
+										return remainingMatches.filter(function(item) {
+											var matchBox = getTileBox(item);
+
+											return zOverlap(matchBox, otherMatchingBox) &&
+												((over) ?
+													otherMatchingBox.z < matchBox.z :
+													otherMatchingBox.z > matchBox.z);
+										}).length;
+									}
+								}).length;
+							};
+
+							allTiles.filter(function(tile) {
+								return _isVisible(tile) && tile.classList.contains("last");
+							}).forEach(function(tile) {
+								var box = getTileBox(tile),
+									fatal,
+									remainingMatches = getMatchingTiles(tile).filter(function(item) {
+										return _isVisible(item);
+									}),
 									underTiles = [ ],
 									overTiles = [ ];
 
-								var isLastOverlap = function(item, over) {
-									return !!getMatchingTiles(item).filter(function(otherMatchingTile) {
-										if (_isVisible(otherMatchingTile)) {
-											var otherMatchingBox = getTileBox(otherMatchingTile);
+								allTiles.forEach(function(otherTile) {
+									if (otherTile !== tile && otherTile.classList.contains("last")) {
+										var otherBox = getTileBox(otherTile);
 
-											return remainingMatches.filter(function(item) {
-												var matchBox = getTileBox(item);
-
-												return zOverlap(matchBox, otherMatchingBox) &&
-													((over) ?
-														otherMatchingBox.z < matchBox.z :
-														otherMatchingBox.z > matchBox.z);
-											}).length;
+										if (zOverlap(box, otherBox)) {
+											((box.z > otherBox.z) ? underTiles : overTiles).push(otherTile);
 										}
-									}).length;
-								};
+									}
+								});
 
-								if (isVisible && isLast) {
-									allTiles.forEach(function(otherTile) {
-										if (otherTile !== tile && getMatchingTiles(otherTile).filter(function(item) {
-											return _isVisible(item);
-										}).length === 1) {
-											var otherBox = getTileBox(otherTile);
-
-											if (zOverlap(box, otherBox)) {
-												((box.z > otherBox.z) ? underTiles : overTiles).push(otherTile);
-											}
-										}
-									});
-
-									fatal = underTiles.filter(function(underTile) { return isLastOverlap(underTile); }).length +
-										overTiles.filter(function(overTile) { return isLastOverlap(overTile, true); }).length;
+								fatal = underTiles.filter(function(underTile) { return isLastOverlap(underTile, remainingMatches); }).length +
+									overTiles.filter(function(overTile) { return isLastOverlap(overTile, remainingMatches, true); }).length;
+								if (fatal) {
+									tile.classList.add("fatal");
 								}
-								tile.classList[(fatal) ? "add": "remove"]("fatal");
-								stop |= fatal;
-							})();
-						}
-						if (!end && !stop) {
-							(function() {
-								var fatal,
+							});
+						})();
+						(function() {
+							allTiles.filter(function(tile) {
+								return tile.classList.contains("last");
+							}).forEach(function(tile) {
+								var box = getTileBox(tile),
+									fatal,
+									remainingMatches = getMatchingTiles(tile).filter(function(item) {
+										return _isVisible(item);
+									}),
 									matchBox,
 									maxX,
 									minX,
 									rowTiles = { };
 
-								if (isLast) {
-									matchBox = getTileBox(remainingMatches[0]);
-									if (matchBox.y === box.y && matchBox.z === box.z) {
-										allTiles.forEach(function(item) {
-											var itemBox = getTileBox(item);
+								matchBox = getTileBox(remainingMatches[0]);
+								if (matchBox.y === box.y && matchBox.z === box.z) {
+									allTiles.forEach(function(item) {
+										var itemBox = getTileBox(item);
 
-											if (_isVisible(item) &&
-												itemBox.x !== box.x &&
-												itemBox.x !== matchBox.x &&
-												itemBox.y === box.y &&
-												itemBox.z === box.z &&
-												item.dataset.type !== tile.dataset.type &&
-												getMatchingTiles(item).filter(function(subItem) {
-													return _isVisible(subItem);
-												}).length === 1) {
+										if (_isVisible(item) &&
+											itemBox.x !== box.x &&
+											itemBox.x !== matchBox.x &&
+											itemBox.y === box.y &&
+											itemBox.z === box.z &&
+											item.dataset.type !== tile.dataset.type &&
+											getMatchingTiles(item).filter(function(subItem) {
+												return _isVisible(subItem);
+											}).length === 1) {
 
-												rowTiles[item.dataset.type] = (rowTiles[item.dataset.type] || [ ]).concat([ item ]);
-											}
-										});
-
-										rowTiles = Object.keys(rowTiles)
-											.map(function(key) {
-												return rowTiles[key];
-											}).filter(function(item) {
-												return item.length > 1;
-											}).map(function(row) {
-												return row.map(function(item) {
-													return getTileBox(item).x;
-												});
-											});
-										if (rowTiles.length) {
-											minX = _min([box.x, matchBox.x]);
-											maxX = _max([box.x, matchBox.x]);
-
-											fatal = rowTiles.filter(function(row) {
-												var rowMinX = _min(row),
-													rowMaxX = _max(row);
-
-												// 1 2 1 2
-												if (minX < rowMinX && maxX < rowMaxX) {
-													return true;
-												}
-												// 2 1 2 1
-												if (minX > rowMinX && maxX > rowMaxX) {
-													return true;
-												}
-												// 1 1 2 2
-												if (minX < rowMinX && maxX < rowMinX) {
-													return true;
-												}
-												// 2 2 1 1
-												if (minX > rowMaxX && maxX > rowMaxX) {
-													return true;
-												}
-											}).length;
+											rowTiles[item.dataset.type] = (rowTiles[item.dataset.type] || [ ]).concat([ item ]);
 										}
+									});
+
+									rowTiles = Object.keys(rowTiles)
+										.map(function(key) {
+											return rowTiles[key];
+										}).filter(function(item) {
+											return item.length > 1;
+										}).map(function(row) {
+											return row.map(function(item) {
+												return getTileBox(item).x;
+											});
+										});
+									if (rowTiles.length) {
+										minX = _min([box.x, matchBox.x]);
+										maxX = _max([box.x, matchBox.x]);
+
+										fatal = rowTiles.filter(function(row) {
+											var rowMinX = _min(row),
+												rowMaxX = _max(row);
+
+											// 1 2 1 2
+											if (minX < rowMinX && maxX < rowMaxX) {
+												return true;
+											}
+											// 2 1 2 1
+											if (minX > rowMinX && maxX > rowMaxX) {
+												return true;
+											}
+											// 1 1 2 2
+											if (minX < rowMinX && maxX < rowMinX) {
+												return true;
+											}
+											// 2 2 1 1
+											if (minX > rowMaxX && maxX > rowMaxX) {
+												return true;
+											}
+										}).length;
 									}
 								}
-								tile.classList[(fatal) ? "add": "remove"]("fatal");
-								stop |= fatal;
-							})();
-						}
-					});
+								if (fatal) {
+									tile.classList.add("fatal");
+								}
+							});
+						})();
+					}
 				})();
 
 				(function() {
