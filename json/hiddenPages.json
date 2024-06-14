@@ -10,9 +10,15 @@
 	] }
 	, { "text": "Test", "url": "./test", "pages": [
 		  { "text": "Caff\u00e8", "url": "coffee.html", "icon": "./images/coffee.png" }
-		, { "text": "Foto del giorno", "url": "natGeo", "icon": "./natGeo/images/natGeo.png" }
+		, { "text": "Calcio a Genova", "url": "calcio.html", "icon": "./images/ball.png" }
+		, { "text": "ECCAIRS 5 Web API", "url": "eccairs5", "icon": "./eccairs5/favicon.ico", "forceHTTP": true }
+		, { "text": "Foto del giorno", "url": "../natGeo/", "icon": "./natGeo/images/natGeo.png" }
+		, { "text": "Indovinello", "url": "riddle.html", "icon": "./images/box.png" }
+		, { "text": "Note", "url": "notes.html", "icon": "./images/notes.png" }
 		, { "text": "Solitaire", "url": "../solitaire/", "icon": "./solitaire/images/solitaire.png" }
 		, { "text": "Soldi (\u03B1)", "url": "../money/", "icon": "./money/images/euro.png" }
+		, { "text": "Swipe", "url": "swipe.html", "icon": "./images/swipe.png" }
+		, { "text": "Tabella espandibile", "url": "collapsibleRow.html", "icon": "./images/row.png" }
 		, { "text": "Targhe", "url": "targhe.html", "icon": "./images/aa.png" }
 	] }
 ]

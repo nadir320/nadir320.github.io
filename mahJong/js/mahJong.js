@@ -409,7 +409,7 @@
 					for (var i = 1; i <= mW; i++) {
 						for (var j = 1; j <= mH; j++) {
 							if (i !== 1 || j !== 1) {
-								rules = [];
+								rules = [ ];
 
 								rules.push("background-image: url(\"" + getShadow(constants.width * i, constants.height * j) + "\")");
 								rules.push("width: " + (i * constants.width + constants.depth) + "px");
@@ -418,7 +418,7 @@
 									constants.depth + "px 100%, 0 " + (j * constants.height) + "px, 0 0)");
 								styles.push(".tile.w-" + i + ".h-" + j + " { " + rules.join("; ") + " }");
 
-								faceRules = [];
+								faceRules = [ ];
 
 								faceRules.push("background-size: " + (constants.width * 9 * i) + "px " + (constants.height * 5 * j) + "px");
 								faceRules.push("width: " + (i * constants.width) + "px");
@@ -648,9 +648,11 @@
 							box = (isVisible) ? getTileBox(tile) : undefined,
 							remainingMatches = getMatchingTiles(tile).filter(function(item) {
 								return _isVisible(item);
-							});
+							}),
+							isLast = remainingMatches.length === 1,
+							stop = false;
 
-						tile.classList[(end || remainingMatches.length > 1) ? "remove" : "add"]("last");
+						tile.classList[(end || !isLast) ? "remove" : "add"]("last");
 						tile.classList[(remainingMatches.length && remainingMatches.findIndex(function(item) {
 							return !item.classList.contains("free");
 						}) < 0) ? "add" : "remove"]("all");
@@ -744,6 +746,120 @@
 								}
 								tile.classList[(fatal) ? "add": "remove"]("fatal");
 								tile.classList[(uncovered) ? "add": "remove"]("uncovered");
+								stop |= fatal;
+							})();
+						}
+						if (!end && !stop) {
+							(function() {
+								var fatal,
+									underTiles = [ ],
+									overTiles = [ ];
+
+								var isLastOverlap = function(item, over) {
+									return !!getMatchingTiles(item).filter(function(otherMatchingTile) {
+										if (_isVisible(otherMatchingTile)) {
+											var otherMatchingBox = getTileBox(otherMatchingTile);
+
+											return remainingMatches.filter(function(item) {
+												var matchBox = getTileBox(item);
+
+												return zOverlap(matchBox, otherMatchingBox) &&
+													((over) ?
+														otherMatchingBox.z < matchBox.z :
+														otherMatchingBox.z > matchBox.z);
+											}).length;
+										}
+									}).length;
+								};
+
+								if (isVisible && isLast) {
+									allTiles.forEach(function(otherTile) {
+										if (otherTile !== tile && getMatchingTiles(otherTile).filter(function(item) {
+											return _isVisible(item);
+										}).length === 1) {
+											var otherBox = getTileBox(otherTile);
+
+											if (zOverlap(box, otherBox)) {
+												((box.z > otherBox.z) ? underTiles : overTiles).push(otherTile);
+											}
+										}
+									});
+
+									fatal = underTiles.filter(function(underTile) { return isLastOverlap(underTile); }).length +
+										overTiles.filter(function(overTile) { return isLastOverlap(overTile, true); }).length;
+								}
+								tile.classList[(fatal) ? "add": "remove"]("fatal");
+								stop |= fatal;
+							})();
+						}
+						if (!end && !stop) {
+							(function() {
+								var fatal,
+									matchBox,
+									maxX,
+									minX,
+									rowTiles = { };
+
+								if (isLast) {
+									matchBox = getTileBox(remainingMatches[0]);
+									if (matchBox.y === box.y && matchBox.z === box.z) {
+										allTiles.forEach(function(item) {
+											var itemBox = getTileBox(item);
+
+											if (_isVisible(item) &&
+												itemBox.x !== box.x &&
+												itemBox.x !== matchBox.x &&
+												itemBox.y === box.y &&
+												itemBox.z === box.z &&
+												item.dataset.type !== tile.dataset.type &&
+												getMatchingTiles(item).filter(function(subItem) {
+													return _isVisible(subItem);
+												}).length === 1) {
+
+												rowTiles[item.dataset.type] = (rowTiles[item.dataset.type] || [ ]).concat([ item ]);
+											}
+										});
+
+										rowTiles = Object.keys(rowTiles)
+											.map(function(key) {
+												return rowTiles[key];
+											}).filter(function(item) {
+												return item.length > 1;
+											}).map(function(row) {
+												return row.map(function(item) {
+													return getTileBox(item).x;
+												});
+											});
+										if (rowTiles.length) {
+											minX = _min([box.x, matchBox.x]);
+											maxX = _max([box.x, matchBox.x]);
+
+											fatal = rowTiles.filter(function(row) {
+												var rowMinX = _min(row),
+													rowMaxX = _max(row);
+
+												// 1 2 1 2
+												if (minX < rowMinX && maxX < rowMaxX) {
+													return true;
+												}
+												// 2 1 2 1
+												if (minX > rowMinX && maxX > rowMaxX) {
+													return true;
+												}
+												// 1 1 2 2
+												if (minX < rowMinX && maxX < rowMinX) {
+													return true;
+												}
+												// 2 2 1 1
+												if (minX > rowMaxX && maxX > rowMaxX) {
+													return true;
+												}
+											}).length;
+										}
+									}
+								}
+								tile.classList[(fatal) ? "add": "remove"]("fatal");
+								stop |= fatal;
 							})();
 						}
 					});
@@ -833,16 +949,16 @@
 
 			init(function() {
 				try {
+					Array.from(board.childNodes).forEach(function(node) {
+						node.parentElement.removeChild(node);
+					});
+
 					if (state) {
 						hintIndex = state.hintIndex;
 						start = state.start;
 						map = state.tileSet;
 					}
 					tilesPerType = loadFaces(tileSet = map, !state);
-
-					Array.from(board.childNodes).forEach(function(node) {
-						node.parentElement.removeChild(node);
-					});
 
 					(function() {
 						var z = 0;
@@ -1031,6 +1147,9 @@
 	})();
 
 	(function() {
+		var BossIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+			BossTitle = decodeURIComponent("%E3%85%A4");
+
 		var board = document.querySelector(".board"),
 			menu = document.getElementById("menu"),
 			message = document.getElementById("message"),
@@ -1047,7 +1166,7 @@
 			}
 		})();
 
-		var game, mapName, resizer;
+		var boss, bossActive, game, icon, mapName, resizer, title;
 
 		var askChangeMap = function() {
 			_show(menu);
@@ -1069,6 +1188,30 @@
 
 		var askRestart = function() {
 			showMessage(document.getElementById("restartMessage").value);
+		};
+
+		var bossScreen = function(value) {
+			Array.from(document.getElementsByClassName("boss")).forEach(function(item, i) {
+				((value) ? _show : _hide)(item);
+			});
+
+			if (boss !== value) {
+				var iconElement = document.querySelector("[rel='shortcut icon']");
+
+				if (boss = value) {
+					title = document.title;
+					document.title = BossTitle;
+					if (iconElement) {
+						icon = iconElement.getAttribute("href");
+						iconElement.setAttribute("href", BossIcon);
+					}
+				} else {
+					document.title = title;
+					if (iconElement) {
+						iconElement.setAttribute("href", icon);
+					}
+				}
+			}
 		};
 
 		var changeMap = function() {
@@ -1159,9 +1302,11 @@
 		};
 
 		var showMessage = function(messageText, type) {
-			document.getElementById("messageText").innerText = messageText;
-			_show(document.getElementById("messageBackdrop"));
-			_show(message);
+			if (!boss) {
+				document.getElementById("messageText").innerText = messageText;
+				_show(document.getElementById("messageBackdrop"));
+				_show(message);
+			}
 		};
 
 		var undo = function(all) {
@@ -1190,6 +1335,16 @@
 
 			_bindClickByTagName(menu, "button", hideMessage);
 			_bindClickByClassName(menu, "accept", changeMap);
+
+			/* _bindClickByClassName(document, "boss", function() { bossScreen(false); }); */
+
+			bossActive = _param("boss") || !!parseInt(_thisScript.getAttribute("boss"));
+
+			var bossColor = _params()["boss-color"] || _thisScript.getAttribute("boss-color");
+
+			if (typeof bossColor !== "undefined") {
+				_setStyle(".boss { background-color: " + bossColor + " !important; }");
+			}
 
 			(function() {
 				var allMaps, list, names;
@@ -1236,7 +1391,14 @@
 		document.addEventListener("keydown", function(e) {
 			switch (e.which) {
 				case 27:				/* Escape */
-					hideMessage();
+					if (_isVisible(message)) {
+						hideMessage();
+					} else if (bossActive) {
+						bossScreen(true);
+					}
+					break;
+				case 66:				/* B */
+					bossScreen(!boss);
 					break;
 				case 68:				/* D */
 					showMessage(new Date().toLocaleString());
@@ -1284,7 +1446,18 @@
 			}
 		})();
 		window.addEventListener("resize", resizer);
-
+		window.addEventListener("blur", function() {
+			if (bossActive) {
+				bossScreen(true);
+			}
+		});
+		document.addEventListener("visibilitychange", function() {
+			if (document.hidden) {
+				if (bossActive) {
+					bossScreen(true);
+				}
+			}
+		}, false);
 		window.setInterval(refreshTime, 100);
 
 		document.addEventListener("DOMContentLoaded", function() {

@@ -1196,7 +1196,7 @@
 		var _boss,
 			_fade = !_param("no-fade") && !parseInt(_thisScript.getAttribute("no-fade")),
 			_icon,
-			_safe = _param("safe") || !!parseInt(_thisScript.getAttribute("safe")),
+			_bossActive = _param("boss") || !!parseInt(_thisScript.getAttribute("boss")),
 			_title,
 			_touch = !!_param("touch") || !!parseInt(_thisScript.getAttribute("touch"));
 
@@ -1499,10 +1499,10 @@
 				case 27:				/* Escape */
 					if (_isVisible(message)) {
 						hideMessage();
-					} else if (_safe) {
-						pauseGame();
-					} else {
+					} else if (_bossActive) {
 						bossScreen(true);
+					} else {
+						pauseGame();
 					}
 					break;
 				case 32:				/* Space */
@@ -1658,22 +1658,18 @@
 		})();
 		window.addEventListener("resize", resizer);
 		window.addEventListener("blur", function() {
-			if (_safe) {
-				if (game) {
-					game.pause();
-				}
-			} else {
+			if (_bossActive) {
 				bossScreen(true);
+			} else if (game) {
+				game.pause();
 			}
 		});
 		document.addEventListener("visibilitychange", function() {
 			if (document.hidden) {
-				if (_safe) {
-					if (game) {
-						game.pause();
-					}
-				} else {
+				if (_bossActive) {
 					bossScreen(true);
+				} else if (game) {
+					game.pause();
 				}
 			}
 		}, false);
@@ -1699,7 +1695,7 @@
 				e.appendChild(l);
 			});
 
-			var bossColor = _params().bossColor || _thisScript.getAttribute("boss-color");
+			var bossColor = _params()["boss-color"] || _thisScript.getAttribute("boss-color");
 
 			if (typeof bossColor !== "undefined") {
 				_setStyle(".boss { background-color: " + bossColor + " !important; }");

@@ -74,11 +74,43 @@ if (typeof window.maps.test === "undefined") {
 
 		/* (function() { var b = 0; while (map.length % 4) addTile(-1, -1, b++); })(); */
 
-		addTile({i: 0});
+		/* addTile({i: 0});
 		addTile({z: 1, i: 0});
 		addTile({z: 2, i: 0});
 
-		addTile({      y: 2, i: 0});
+		addTile({      y: 2, i: 0}); */
+
+		addTile({i:  0, x: 0, y: 0});
+		addTile({i:  0, x: 1, y: 0});
+		addTile({i:  0, x: 2, y: 0});
+		addTile({i:  0, x: 3, y: 0});
+
+		addTile({i:  4, x: 0, y: 1});
+		addTile({i:  8, x: 1, y: 1});
+		addTile({i:  4, x: 2, y: 1});
+		addTile({i:  8, x: 3, y: 1});
+
+		addTile({i:  8, x: 1, y: 1, z: 1});
+		addTile({i:  4, x: 2, y: 1, z: 1});
+
+		addTile({i:  4, x: 1, y: 2});
+		addTile({i:  8, x: 2, y: 2});
+
+		addTile({i: 12, x: 0, y: 4});
+		addTile({i: 12, x: 1, y: 4});
+		addTile({i: 12, x: 2, y: 4});
+		addTile({i: 12, x: 3, y: 4});
+
+		addTile({i: 16, x: 0, y: 5});
+		addTile({i: 20, x: 1, y: 5});
+		addTile({i: 16, x: 2, y: 5});
+		addTile({i: 20, x: 3, y: 5});
+
+		addTile({i: 16, x: 1, y: 5, z: 1});
+		addTile({i: 20, x: 2, y: 5, z: 1});
+
+		addTile({i: 16, x: 1, y: 6});
+		addTile({i: 20, x: 2, y: 6});
 
 		/*addTile({      y: 3, i: 0});
 		addTile({x: 1, y: 3, i: 0});

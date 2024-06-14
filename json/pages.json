@@ -1,6 +1,7 @@
 [
 	  { "text": "Android", "url": "./android", "pages": [
 		  { "text": "Crea progetto Audio", "url": "audio.html", "icon": "./android/images/audio.png" }
+		, { "text": "Crea progetto HTML / Javascript", "url": "html.html", "icon": "./android/images/html.png" }
 		, { "text": "Crea progetto WebView", "url": "webView.html", "icon": "./android/images/webView.png" }
 	  ] }
 	, { "text": "Codice fiscale", "url": "codiceFiscale/index.html", "icon": "./codiceFiscale/images/code.png" }
@@ -14,19 +15,13 @@
 	], "disabled": true }
 	, { "text": "Test", "url": "./test", "pages": [
 		  { "text": "Caccia al tesoro", "url": "treasure-hunt.html", "icon": "./images/treasure.png" }
-		, { "text": "Calcio a Genova", "url": "calcio.html", "icon": "./images/ball.png" }
 		, { "text": "Download", "url": "download.html", "icon": "./images/download.png" }
 		, { "text": "CryptoJS", "url": "cryptoJS.html", "icon": "./images/padlock.png" }
-		, { "text": "ECCAIRS 5 Web API", "url": "eccairs5", "icon": "./eccairs5/favicon.ico", "forceHTTP": true }
-		, { "text": "Indovinello", "url": "riddle.html", "icon": "./images/box.png" }
 		, { "text": "Mah Jong", "url": "../mahJong", "icon": "./mahJong/images/greenDragon.png" }
 		, { "text": "Mobile", "url": "mobile.html", "icon": "./images/mobile.png" }
-		, { "text": "Note", "url": "notes.html", "icon": "./images/notes.png" }
 		, { "text": "Un, due, BUE!", "url": "unDueBue.html", "icon": "./images/ox.png" }
-		, { "text": "Tabella espandibile", "url": "collapsibleRow.html", "icon": "./images/row.png" }
 		, { "text": "Temi jQuery UI", "url": "uiThemes.html", "icon": "./images/themeRoller.png" }
 		, { "text": "Testo Binario", "url": "binary.html", "icon": "./images/binary.png" }
-		, { "text": "Tetris", "url": "../tetris/?base=4&safe=1&slow=1&touch=1", "icon": "./tetris/images/tetris.png" }
-		, { "text": "Swipe", "url": "swipe.html", "icon": "./images/swipe.png" }
+		, { "text": "Tetris", "url": "../tetris/?base=4&slow=1&touch=1", "icon": "./tetris/images/tetris.png" }
 	] }
 ]
