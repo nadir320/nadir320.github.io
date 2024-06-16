@@ -799,7 +799,7 @@
 						})();
 						(function() {
 							allTiles.filter(function(tile) {
-								return tile.classList.contains("last");
+								return _isVisible(tile) && tile.classList.contains("last");
 							}).forEach(function(tile) {
 								var box = getTileBox(tile),
 									fatal,
