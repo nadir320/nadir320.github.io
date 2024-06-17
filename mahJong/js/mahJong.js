@@ -650,7 +650,9 @@
 								return _isVisible(item);
 							});
 
-						tile.classList.remove("fatal");
+						if (!end) {
+							tile.classList.remove("fatal");
+						}
 						tile.classList[(end || remainingMatches.length > 1) ? "remove" : "add"]("last");
 						tile.classList[(remainingMatches.length && remainingMatches.findIndex(function(item) {
 							return !item.classList.contains("free");
