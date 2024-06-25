@@ -654,7 +654,7 @@
 							tile.classList.remove("fatal");
 						}
 						tile.classList[(end || remainingMatches.length > 1) ? "remove" : "add"]("last");
-						tile.classList[(remainingMatches.length && remainingMatches.findIndex(function(item) {
+						tile.classList[(tile.classList.contains("free") && remainingMatches.length && remainingMatches.findIndex(function(item) {
 							return !item.classList.contains("free");
 						}) < 0) ? "add" : "remove"]("all");
 
@@ -799,7 +799,7 @@
 								}
 							});
 						})();
-						(function() {
+						/* (function() {
 							allTiles.filter(function(tile) {
 								return _isVisible(tile) && tile.classList.contains("last");
 							}).forEach(function(tile) {
@@ -872,6 +872,186 @@
 								if (fatal) {
 									tile.classList.add("fatal");
 								}
+							});
+						})(); */
+						(function() {
+							var getKey = function(a, b) { return [a, b].join(); },
+								lastPairs = allTiles.filter(function(tile) {
+									return _isVisible(tile) && tile.classList.contains("last");
+								}).map(function(tile) {
+									var otherTile = getMatchingTiles(tile).filter(function(item) {
+											return _isVisible(item);
+										})[0],
+										tileBox = getTileBox(tile),
+										otherTileBox = getTileBox(otherTile),
+										swap;
+
+									if (otherTileBox.x < tileBox.x) {
+										swap = tile;
+										tile = otherTile;
+										otherTile = swap;
+
+										swap = tileBox;
+										tileBox = otherTileBox;
+										otherTileBox = swap;
+									}
+
+									return {
+										box: tileBox,
+										otherBox: otherTileBox,
+										otherTile: otherTile,
+										tile: tile,
+									};
+								}).filter(function(tile) {
+									return tile.box.y === tile.otherBox.y;
+								}).reduce(function(current, value) {
+									var key = getKey(value.tile.dataset.index, value.otherTile.dataset.index),
+										otherKey = getKey(value.otherTile.dataset.index, value.tile.dataset.index);
+
+									if (typeof current[key] === "undefined" && typeof current[otherKey] === "undefined") {
+										current[key] = value;
+									}
+									return current;
+								}, { }),
+								rows = Object.keys(lastPairs).map(function(key) { return lastPairs[key]; })
+									.reduce(function(current, value) {
+										var key = value.box.y;
+
+										if (typeof current[key] === "undefined") {
+											current[key] = [ ];
+										}
+										current[key].push(value);
+										return current;
+									}, [ ])
+									.filter(function(row) {
+										return row.length > 1;
+									});
+
+							rows.forEach(function(row) {
+								row.map(function(pair, i) {
+									var other = row[(i + 1) % row.length],
+										swap;
+
+									if (other.box.x < pair.box.x) {
+										swap = pair;
+										pair = other;
+										other = swap;
+									}
+
+									return {
+										firstPair: {
+											firstTile: { x: pair.box.x, z: pair.box.z },
+											secondTile: { x: pair.otherBox.x, z: pair.otherBox.z }
+										},
+										secondPair: {
+											firstTile: { x: other.box.x, z: other.box.z },
+											secondTile: { x: other.otherBox.x, z: other.otherBox.z }
+										},
+										tiles: [pair.tile, pair.otherTile, other.tile, other.otherTile]
+									};
+								}).forEach(function(twoPairs) {
+									var fatal;
+
+									// z1 == z2 == z3 == z4
+									if (twoPairs.firstPair.firstTile.z === twoPairs.firstPair.secondTile.z &&
+										twoPairs.firstPair.secondTile.z === twoPairs.secondPair.firstTile.z &&
+										twoPairs.secondPair.firstTile.z === twoPairs.secondPair.secondTile.z) {
+
+										var firstPairMinX = Math.min(twoPairs.firstPair.firstTile.x, twoPairs.firstPair.secondTile.x),
+											firstPairMaxX = Math.max(twoPairs.firstPair.firstTile.x, twoPairs.firstPair.secondTile.x);
+
+										var secondPairMinX = Math.min(twoPairs.secondPair.firstTile.x, twoPairs.secondPair.secondTile.x),
+											secondPairMaxX = Math.max(twoPairs.secondPair.firstTile.x, twoPairs.secondPair.secondTile.x);
+
+										fatal = (function() {
+											// 1|2|1|2
+											if (firstPairMinX < secondPairMinX && firstPairMaxX < secondPairMaxX) {
+												return true;
+											}
+											// 2|1|2|1
+											if (firstPairMinX > secondPairMinX && firstPairMaxX > secondPairMaxX) {
+												debugger;		// What? They are sorted
+												return true;
+											}
+											// 1|1|2|2
+											if (firstPairMinX < secondPairMinX && firstPairMaxX < secondPairMinX) {
+												return true;
+											}
+											// 2|2|1|1
+											if (firstPairMinX > secondPairMaxX && firstPairMaxX > secondPairMaxX) {
+												debugger;		// What? They are sorted
+												return true;
+											}
+										})();
+									} else {
+										(function() {
+											fatal = [
+												function(firstPair, secondPair) {
+													// 1|2|1^2
+													if (firstPair.firstTile.x < secondPair.firstTile.x &&
+														firstPair.firstTile.z === secondPair.firstTile.z &&
+
+														firstPair.secondTile.x > secondPair.firstTile.x &&
+														firstPair.secondTile.z === secondPair.firstTile.z &&
+
+														firstPair.secondTile.x <= secondPair.secondTile.x &&
+														firstPair.secondTile.z <= secondPair.secondTile.z) {
+
+														return true;
+													}
+												}, function(firstPair, secondPair) {
+													// 1^2|2|1
+													if (firstPair.firstTile.x >= secondPair.firstTile.x &&
+														firstPair.firstTile.z <= secondPair.firstTile.z &&
+
+														secondPair.secondTile.x > firstPair.firstTile.x &&
+														secondPair.secondTile.z === firstPair.firstTile.z &&
+
+														secondPair.secondTile.x < firstPair.secondTile.x &&
+														secondPair.secondTile.z === firstPair.secondTile.z) {
+
+														return true;
+													}
+												}, function(firstPair, secondPair) {
+													// 1^2|^2|^1
+													if (firstPair.firstTile.x >= secondPair.firstTile.x &&
+														firstPair.firstTile.z <= secondPair.firstTile.z &&
+
+														secondPair.secondTile.x > secondPair.firstTile.x &&
+														secondPair.secondTile.z === secondPair.firstTile.z &&
+
+														secondPair.secondTile.x < firstPair.secondTile.x &&
+														secondPair.secondTile.z === firstPair.secondTile.z) {
+
+														return true;
+													}
+												}, function(firstPair, secondPair) {
+													// ^1|^2|1^2
+													if (firstPair.firstTile.x < secondPair.firstTile.x &&
+														firstPair.firstTile.z === secondPair.firstTile.z &&
+
+														secondPair.firstTile.x <= firstPair.secondTile.x &&
+														secondPair.firstTile.z > firstPair.secondTile.z &&
+
+														secondPair.secondTile.x >= firstPair.secondTile.x &&
+														secondPair.secondTile.z > firstPair.secondTile.z) {
+
+														return true;
+													}
+												}
+											].findIndex(function(f) {
+												return f(twoPairs.firstPair, twoPairs.secondPair) ||
+													f(twoPairs.secondPair, twoPairs.firstPair);
+											}) >= 0;
+										})();
+									}
+
+									if (fatal) {
+										twoPairs.tiles.forEach(function(tile) {
+											tile.classList.add("fatal");
+										});
+									}
+								});
 							});
 						})();
 					}
@@ -1358,6 +1538,14 @@
 				_setStyle(".boss { background-color: " + bossColor + " !important; }");
 			}
 
+			var version = _params()["version"] || _thisScript.getAttribute("version");
+
+			if (version) {
+				Array.from(document.getElementsByClassName("version")).forEach(function(item) {
+					item.innerText = version;
+				});
+			}
+
 			(function() {
 				var allMaps, list, names;
 
@@ -1458,18 +1646,16 @@
 			}
 		})();
 		window.addEventListener("resize", resizer);
-		window.addEventListener("blur", function() {
-			if (bossActive) {
+		if (bossActive) {
+			window.addEventListener("blur", function() {
 				bossScreen(true);
-			}
-		});
-		document.addEventListener("visibilitychange", function() {
-			if (document.hidden) {
-				if (bossActive) {
+			});
+			document.addEventListener("visibilitychange", function() {
+				if (document.hidden) {
 					bossScreen(true);
 				}
-			}
-		}, false);
+			}, false);
+		}
 		window.setInterval(refreshTime, 100);
 
 		document.addEventListener("DOMContentLoaded", function() {

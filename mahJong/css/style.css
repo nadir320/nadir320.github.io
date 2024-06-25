@@ -191,7 +191,7 @@ button:focus {
 }
 
 .tile.fatal {
-	box-shadow: inset 0 0 0.75em red;
+	box-shadow: inset 0 0 0.75em red !important;
 }
 
 .boss {
@@ -203,6 +203,17 @@ button:focus {
 	top: 0;
 	user-select: none;
 	z-index: 999999;
+}
+
+.version {
+	bottom: 0.5em;
+	font-size: 65%;
+	opacity: 0.35;
+	pointer-events: none;
+	position: fixed;
+	right: 0.5em;
+	user-select: none;
+	z-index: -1;
 }
 
 @media (max-width: 36em), (max-height: 24em) {
