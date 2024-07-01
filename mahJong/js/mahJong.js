@@ -1590,10 +1590,15 @@
 
 		document.addEventListener("keydown", function(e) {
 			switch (e.which) {
-				case 27:				/* Escape */
+				case 13:				/* Enter */
 					if (_isVisible(message)) {
+						message.getElementsByTagName("button")[0].click();
+					}
+					break;
+				case 27:				/* Escape */
+					if (!boss && _isVisible(message)) {
 						hideMessage();
-					} else if (bossActive) {
+					} else if (bossActive && !boss) {
 						bossScreen(true);
 					}
 					break;
