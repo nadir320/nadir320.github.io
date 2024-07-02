@@ -191,8 +191,13 @@ button:focus {
 }
 
 .tile.fatal {
-	box-shadow: inset 0 0 0.75em red !important;
+	/* box-shadow: inset 0 0 0.75em red !important; */
 }
+
+.tile.fatal.last-sandwich  { box-shadow: inset 0 0 1.5em red !important; }
+.tile.fatal.cross-sandwich { box-shadow: inset 0 0 1.5em orange !important; }
+.tile.fatal.flat-crossed   { box-shadow: inset 0 0 1.5em mediumPurple !important; }
+.tile.fatal.cross-fatal    { box-shadow: inset 0 0 1.5em hotPink !important; }
 
 .boss {
 	background-color: white;
