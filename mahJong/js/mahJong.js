@@ -652,6 +652,7 @@
 
 						if (!end) {
 							tile.classList.remove("fatal");
+							delete tile.dataset.fatalType;
 						}
 						tile.classList[(end || remainingMatches.length > 1) ? "remove" : "add"]("last");
 						tile.classList[(tile.classList.contains("free") && remainingMatches.length && remainingMatches.findIndex(function(item) {
@@ -739,15 +740,14 @@
 									}
 									if (!fatal) {
 										type = parseInt(tile.dataset.type);
-										/* uncovered = history.findIndex(function(item) {
-											return parseInt(item[0].dataset.type) === type;
-										}) >= 0; */
 										uncovered = !overlapping.length;
 									}
 								}
 								tile.classList[(fatal) ? "add": "remove"]("fatal");
 								tile.classList[(uncovered) ? "add": "remove"]("uncovered");
-								stop |= fatal;
+								if (fatal) {
+									tile.dataset.fatalType = 1;
+								}
 							})();
 						}
 					});
@@ -772,7 +772,7 @@
 							};
 
 							allTiles.filter(function(tile) {
-								return _isVisible(tile) && tile.classList.contains("last");
+								return _isVisible(tile) && tile.classList.contains("last") && !tile.classList.contains("fatal");
 							}).forEach(function(tile) {
 								var box = getTileBox(tile),
 									fatal,
@@ -796,88 +796,14 @@
 									overTiles.filter(function(overTile) { return isLastOverlap(overTile, remainingMatches, true); }).length;
 								if (fatal) {
 									tile.classList.add("fatal");
+									tile.dataset.fatalType = 2;
 								}
 							});
 						})();
-						/* (function() {
-							allTiles.filter(function(tile) {
-								return _isVisible(tile) && tile.classList.contains("last");
-							}).forEach(function(tile) {
-								var box = getTileBox(tile),
-									fatal,
-									remainingMatches = getMatchingTiles(tile).filter(function(item) {
-										return _isVisible(item);
-									}),
-									matchBox,
-									maxX,
-									minX,
-									rowTiles = { };
-
-								matchBox = getTileBox(remainingMatches[0]);
-								if (matchBox.y === box.y && matchBox.z === box.z) {
-									allTiles.forEach(function(item) {
-										var itemBox = getTileBox(item);
-
-										if (_isVisible(item) &&
-											itemBox.x !== box.x &&
-											itemBox.x !== matchBox.x &&
-											itemBox.y === box.y &&
-											itemBox.z === box.z &&
-											item.dataset.type !== tile.dataset.type &&
-											getMatchingTiles(item).filter(function(subItem) {
-												return _isVisible(subItem);
-											}).length === 1) {
-
-											rowTiles[item.dataset.type] = (rowTiles[item.dataset.type] || [ ]).concat([ item ]);
-										}
-									});
-
-									rowTiles = Object.keys(rowTiles)
-										.map(function(key) {
-											return rowTiles[key];
-										}).filter(function(item) {
-											return item.length > 1;
-										}).map(function(row) {
-											return row.map(function(item) {
-												return getTileBox(item).x;
-											});
-										});
-									if (rowTiles.length) {
-										minX = _min([box.x, matchBox.x]);
-										maxX = _max([box.x, matchBox.x]);
-
-										fatal = rowTiles.filter(function(row) {
-											var rowMinX = _min(row),
-												rowMaxX = _max(row);
-
-											// 1 2 1 2
-											if (minX < rowMinX && maxX < rowMaxX) {
-												return true;
-											}
-											// 2 1 2 1
-											if (minX > rowMinX && maxX > rowMaxX) {
-												return true;
-											}
-											// 1 1 2 2
-											if (minX < rowMinX && maxX < rowMinX) {
-												return true;
-											}
-											// 2 2 1 1
-											if (minX > rowMaxX && maxX > rowMaxX) {
-												return true;
-											}
-										}).length;
-									}
-								}
-								if (fatal) {
-									tile.classList.add("fatal");
-								}
-							});
-						})(); */
 						(function() {
 							var getKey = function(a, b) { return [a, b].join(); },
 								lastPairs = allTiles.filter(function(tile) {
-									return _isVisible(tile) && tile.classList.contains("last");
+									return _isVisible(tile) && tile.classList.contains("last") && !tile.classList.contains("fatal");
 								}).map(function(tile) {
 									var otherTile = getMatchingTiles(tile).filter(function(item) {
 											return _isVisible(item);
@@ -950,7 +876,8 @@
 										tiles: [pair.tile, pair.otherTile, other.tile, other.otherTile]
 									};
 								}).forEach(function(twoPairs) {
-									var fatal;
+									var fatal,
+										fatalType;
 
 									// z1 == z2 == z3 == z4
 									if (twoPairs.firstPair.firstTile.z === twoPairs.firstPair.secondTile.z &&
@@ -963,7 +890,7 @@
 										var secondPairMinX = Math.min(twoPairs.secondPair.firstTile.x, twoPairs.secondPair.secondTile.x),
 											secondPairMaxX = Math.max(twoPairs.secondPair.firstTile.x, twoPairs.secondPair.secondTile.x);
 
-										fatal = (function() {
+										if (fatal = (function() {
 											// 1|2|1|2
 											if (firstPairMinX < secondPairMinX && firstPairMaxX < secondPairMaxX) {
 												return true;
@@ -982,10 +909,12 @@
 												debugger;		// What? They are sorted
 												return true;
 											}
-										})();
+										})()) {
+											fatalType = 3;
+										}
 									} else {
 										(function() {
-											fatal = [
+											if (fatal = [
 												function(firstPair, secondPair) {
 													// 1|2|1^2
 													if (firstPair.firstTile.x < secondPair.firstTile.x &&
@@ -1042,13 +971,16 @@
 											].findIndex(function(f) {
 												return f(twoPairs.firstPair, twoPairs.secondPair) ||
 													f(twoPairs.secondPair, twoPairs.firstPair);
-											}) >= 0;
+											}) >= 0) {
+												fatalType = 4;
+											}
 										})();
 									}
 
 									if (fatal) {
 										twoPairs.tiles.forEach(function(tile) {
 											tile.classList.add("fatal");
+											tile.dataset.fatalType = fatalType;
 										});
 									}
 								});
@@ -1056,6 +988,28 @@
 						})();
 					}
 				})();
+
+				Array.from(board.querySelectorAll(".tile.fatal")).forEach(function(tile) {
+					tile.classList.remove("last-sandwich");
+					tile.classList.remove("cross-sandwich");
+					tile.classList.remove("flat-crossed");
+					tile.classList.remove("cross-fatal");
+
+					switch (parseInt(tile.dataset.fatalType)) {
+						case 1:		// Last sandwich
+							tile.classList.add("last-sandwich");
+							break;
+						case 2:		// Cross sandwich
+							tile.classList.add("cross-sandwich");
+							break;
+						case 3:		// Flat crossed
+							tile.classList.add("flat-crossed");
+							break;
+						case 4:		// Crossed
+							tile.classList.add("cross-fatal");
+							break;
+					}
+				});
 
 				(function() {
 					var newHints = [ ],
