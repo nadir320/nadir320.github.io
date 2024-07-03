@@ -918,10 +918,10 @@
 												function(firstPair, secondPair) {
 													// 1|2|1^2
 													if (firstPair.firstTile.x < secondPair.firstTile.x &&
-														firstPair.firstTile.z === secondPair.firstTile.z &&
+														firstPair.firstTile.z >= secondPair.firstTile.z &&
 
 														firstPair.secondTile.x > secondPair.firstTile.x &&
-														firstPair.secondTile.z === secondPair.firstTile.z &&
+														firstPair.secondTile.z <= secondPair.firstTile.z &&
 
 														firstPair.secondTile.x <= secondPair.secondTile.x &&
 														firstPair.secondTile.z <= secondPair.secondTile.z) {
@@ -934,10 +934,10 @@
 														firstPair.firstTile.z <= secondPair.firstTile.z &&
 
 														secondPair.secondTile.x > firstPair.firstTile.x &&
-														secondPair.secondTile.z === firstPair.firstTile.z &&
+														secondPair.secondTile.z <= firstPair.firstTile.z &&
 
 														secondPair.secondTile.x < firstPair.secondTile.x &&
-														secondPair.secondTile.z === firstPair.secondTile.z) {
+														secondPair.secondTile.z >= firstPair.secondTile.z) {
 
 														return true;
 													}
@@ -947,17 +947,17 @@
 														firstPair.firstTile.z <= secondPair.firstTile.z &&
 
 														secondPair.secondTile.x > secondPair.firstTile.x &&
-														secondPair.secondTile.z === secondPair.firstTile.z &&
+														secondPair.secondTile.z <= secondPair.firstTile.z &&
 
 														secondPair.secondTile.x < firstPair.secondTile.x &&
-														secondPair.secondTile.z === firstPair.secondTile.z) {
+														secondPair.secondTile.z <= firstPair.secondTile.z) {
 
 														return true;
 													}
 												}, function(firstPair, secondPair) {
 													// ^1|^2|1^2
 													if (firstPair.firstTile.x < secondPair.firstTile.x &&
-														firstPair.firstTile.z === secondPair.firstTile.z &&
+														firstPair.firstTile.z <= secondPair.firstTile.z &&
 
 														secondPair.firstTile.x <= firstPair.secondTile.x &&
 														secondPair.firstTile.z > firstPair.secondTile.z &&
