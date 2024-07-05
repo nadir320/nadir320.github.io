@@ -212,7 +212,7 @@
 		var constants = {
 			get boardWidth() { return 16; },
 			get boardHeight() { return 10; },
-			get colors() { return 5/5*5; },
+			get colors() { return 5/5*3; },
 			get levels() { return 7; },
 			get padding() { return 8; },
 			get tileWidth() { return 40; },
@@ -245,48 +245,6 @@
 
 				_setStyle(rules.join("\n"), _styleID);
 			})();
-
-			var adjustSingleTiles = function() {
-				var i,
-					lastTilePerColor = Array(constants.colors),
-					tilesPerColor = Array(constants.colors);
-					
-				var ac = 0,
-					nac = 0;
-
-				for (i = 0; i < tileSet.length; i++) {
-					var tile = tileSet[i];
-
-					if (isTileSingle(tile)) {
-						if (Math.random() < 0.75) {
-							tile.color = getColorIndexFromRandomSibling(tile);
-							tile.adjusted = true;
-							ac++;
-						} else nac++;
-					}
-					lastTilePerColor[tile.color] = tile;
-					tilesPerColor[tile.color]++;
-				}
-				
-				console.log({ac, nac});
-				
-				for (i = 0; i < tilesPerColor.Length; i++) {
-					if (tilesPerColor[i] == 0) {
-						if (constants.boardWidth * constants.boardHeight >= tilesPerColor.Length * tilesPerColor.length) {
-							return false;
-						}
-					} else if (tilesPerColor[i] == 1) {
-						lastTilePerColor[i].color = getColorIndexFromRandomSibling(lastTilePerColor[i]);
-					}
-				}
-				return true;
-			}
-			
-			var createTiles = function() {
-				do {
-					tileSet = getTiles(level);
-				} while (!adjustSingleTiles());
-			};
 
 			var checkStatus = function() {
 				var checkedTiles = { },
@@ -334,8 +292,7 @@
 					if (!end) {
 						if (level < constants.levels) {
 							setTimeout(function() {
-								level++;
-								createTiles();
+								tileSet = getTiles(++level);
 								bombs = getBombsPerLevel(level, bombs);
 								updateBoard();
 								checkStatus();
@@ -391,25 +348,17 @@
 			};
 
 			var getBombsPerLevel = function(level, bombs) {
-				return 0 * ((level === 1) ? 3 : 2);
+				return (level === 1) ? 3 : 2;
 			}
 
-			var getColorIndexFromRandomSibling = function(startingTile, t) {
-				var siblings = getSiblings(startingTile, t).filter(function(tile) { return tile.visible; });
-
-				return siblings.length && siblings[Math.floor(Math.random() * siblings.length)].color;
-			};
-
-			var getSiblings = function(startingTile, t) {
-				t = t || tileSet;
-
+			var getSiblings = function(startingTile) {
 				return [
 					[startingTile.x, startingTile.y - 1],	// Up
 					[startingTile.x - 1, startingTile.y],	// Left
 					[startingTile.x + 1, startingTile.y],	// Right
 					[startingTile.x, startingTile.y + 1]	// Down
 				].map(function(xy) {
-					return t.filter(function(item) {
+					return tileSet.filter(function(item) {
 						return item.x === xy[0] && item.y === xy[1];
 					}).pop();
 				}).filter(function(x) { return !!x; });
@@ -420,29 +369,15 @@
 
 				for (var i = 0; i < constants.boardWidth; i++) {
 					for (var j = 0; j < constants.boardHeight; j++) {
-						var tile = {
+						t.push({
 							x: i,
 							y: j,
 							color: Math.floor(Math.random() * constants.colors),
 							visible: true
-						};
-
-						t.push(tile);
-						if (Math.random() < 2.0 / 3.0 * (constants.levels + 1 - level) / constants.levels) {
-							var c = getColorIndexFromRandomSibling(tile, t);
-
-							if (c >= 0 && c != tile.color) {
-								/* tile.adjusted = true; */
-								tile.color = c;
-							}
-						}
+						});
 					}
 				}
 				return t;
-			};
-
-			var isTileSingle = function(tile) {
-				return getBlock(tile).length === 1;
 			};
 
 			var moveTiles = function() {
@@ -490,7 +425,6 @@
 					});
 					moves.forEach(function(move) {
 						move.column[move.tile.y + move.steps].color = move.tile.color;
-						move.column[move.tile.y + move.steps].adjusted = move.tile.adjusted;
 						move.column[move.tile.y + move.steps].visible = true;
 						move.tile.visible = false;
 					});
@@ -529,7 +463,6 @@
 						moves.forEach(function(move) {
 							move.column.forEach(function(tile) {
 								columns[move.i - move.steps][tile.y].color = tile.color;
-								columns[move.i - move.steps][tile.y].adjusted = tile.adjusted;
 								columns[move.i - move.steps][tile.y].visible = tile.visible;
 								tile.visible = false;
 							});
@@ -571,11 +504,9 @@
 					tile.classList.add("color-" + (tileSet.filter(function(item) {
 						if (item.x === x && item.y === y) {
 							(item.visible ? _show : _hide)(tile);
-							tile.classList[(item.adjusted) ? "add" : "remove"]("adjusted");
 							return true;
 						}
 					}).pop().color + 1).toString());
-
 
 					tile.innerText = blocks[_getKey(x, y)] || "";
 
@@ -604,8 +535,7 @@
 					}
 
 					(function() {
-						createTiles();
-						tileSet.forEach(function(item) {
+						(tileSet = getTiles(level)).forEach(function(item) {
 							var getTileBlock = function() {
 								return getBlock(tileSet.filter(function(t) {
 									return t.x === item.x && t.y === item.y;

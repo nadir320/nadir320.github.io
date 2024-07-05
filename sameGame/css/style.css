@@ -176,6 +176,8 @@ button:focus {
 .tile.color-4 { background-color: goldenRod; background-image: linear-gradient(to bottom right, goldenRod, white 200%); }
 .tile.color-5 { background-color: hotPink; background-image: linear-gradient(to bottom right, hotPink, white 200%); }
 
+/* .tile.adjusted { color: rgba(0, 0, 0, 0.25) !important; } */
+
 .boss {
 	background-color: white;
 	bottom: 0;
