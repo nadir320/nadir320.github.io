@@ -7,7 +7,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 		<link rel="shortcut icon" type="image/png" href="images/sameGame.png">
 		<title>SameGame</title>
-		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
 		<script type="text/javascript" src="../js/pancake.min.js"></script>
 		<script type="text/javascript" src="../js/000webhost.min.js"></script>
 	</head>
@@ -23,12 +23,13 @@
 		<div class="status">
 			<div>Tempo: <span id="time"></span></div>
 			<div>Livello: <span class="level"></span></div>
-			<div>Bombe: <span class="bombs"></span></div>
 			<div>Visibili: <span class="remaining"></span></div>
 			<div>Mosse: <span class="moves"></span></div>
 			<button class="newGame">Nuova</button>
 			<br/>
 			<button class="undo">Annulla</button>
+			<br/>
+			<button class="bombs"></div>
 		</div>
 		<div class="scaler">
 			<div class="board"></div>
@@ -45,6 +46,6 @@
 			<input type="hidden" id="askNewMessage" value="Iniziare una nuova partita?"/>
 			<input type="hidden" id="restartMessage" value="Riiniziare la partita?"/>
 		</form>
-		<script type="text/javascript" src="js/sameGame.js" -storage="no" -boss="1" -boss-color="white" -version="*"></script>
+		<script type="text/javascript" src="js/sameGame.min.js" palette="1" -storage="no" -boss="1" -boss-color="white" -version="*"></script>
 	</body>
 </html>

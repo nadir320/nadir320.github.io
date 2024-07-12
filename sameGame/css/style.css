@@ -29,6 +29,10 @@ body {
 	justify-content: center;
 }
 
+button {
+	user-select: none;
+}
+
 button:focus {
 	outline: 0 solid transparent;
 }
@@ -50,6 +54,7 @@ button:focus {
 	display: flex;
 	left: 0;
 	justify-content: center;
+	overflow: hidden;
 	pointer-events: none;
 	position: absolute;
 	right: 0;
@@ -59,7 +64,6 @@ button:focus {
 
 .scaler .level {
 	background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.5), white 100%);
-	font-size: 1500%;
 	text-shadow: 0px 0px 1em rgba(128, 128, 128, 1);
 	user-select: none;
 	-webkit-background-clip: text;
@@ -135,6 +139,24 @@ button:focus {
 	width: 100%;
 }
 
+.no-bomb .bombs {
+	display: none;
+}
+
+button.bombs {
+	background-image: url("../images/bomb.png");
+	background-repeat: no-repeat;
+	height: 4em;
+	width: 4em;
+	background-size: 100%;
+}
+
+button.bombs.active {
+	background-color: rgba(0, 0, 0, 0.25);
+	border-style: inset;
+	font-weight: bold;
+}
+
 .message button {
 	margin-top: 1em;
 	width: 7em;
@@ -162,6 +184,9 @@ button:focus {
 	justify-content: center;
 	position: absolute;
 	user-select: none;
+
+	width: 80px;
+	height: 80px;
 }
 
 .tile.pressed {
@@ -170,11 +195,21 @@ button:focus {
 	color: rgba(0, 0, 0, 0.5);
 }
 
-.tile.color-1 { background-color: deepSkyBlue; background-image: linear-gradient(to bottom right, deepSkyBlue, white 200%); }
-.tile.color-2 { background-color: crimson; background-image: linear-gradient(to bottom right, crimson, white 200%); }
-.tile.color-3 { background-color: greenYellow; background-image: linear-gradient(to bottom right, greenYellow, white 200%); }
-.tile.color-4 { background-color: goldenRod; background-image: linear-gradient(to bottom right, goldenRod, white 200%); }
-.tile.color-5 { background-color: hotPink; background-image: linear-gradient(to bottom right, hotPink, white 200%); }
+.tile.last {
+	border: ridge 0.35em rgba(255, 0, 0, 0.5);
+}
+
+.palette-0 .tile.color-1 { background-color: deepSkyBlue	;	background-image: linear-gradient(to bottom right, deepSkyBlue		, white 200%); }
+.palette-0 .tile.color-2 { background-color: crimson		;	background-image: linear-gradient(to bottom right, crimson			, white 200%); }
+.palette-0 .tile.color-3 { background-color: greenYellow	; 	background-image: linear-gradient(to bottom right, greenYellow		, white 200%); }
+.palette-0 .tile.color-4 { background-color: goldenRod		; 	background-image: linear-gradient(to bottom right, goldenRod		, white 200%); }
+.palette-0 .tile.color-5 { background-color: hotPink		;	background-image: linear-gradient(to bottom right, hotPink			, white 200%); }
+
+.palette-1 .tile.color-1 { background-color: #768FEB		;	background-image: linear-gradient(to bottom right, #768FEB			, white 200%); }
+.palette-1 .tile.color-2 { background-color: #46004F		;	background-image: linear-gradient(to bottom right, #46004F			, white 200%); }
+.palette-1 .tile.color-3 { background-color: #8BB70D		;	background-image: linear-gradient(to bottom right, #8BB70D			, white 200%); }
+.palette-1 .tile.color-4 { background-color: #D9CF76		;	background-image: linear-gradient(to bottom right, #D9CF76			, white 200%); }
+.palette-1 .tile.color-5 { background-color: #AB6191		;	background-image: linear-gradient(to bottom right, #AB6191			, white 200%); }
 
 /* .tile.adjusted { color: rgba(0, 0, 0, 0.25) !important; } */
 
@@ -216,6 +251,12 @@ button:focus {
 		width: 36px;
 	}
 
+	.status button.bombs {
+		color: initial;
+		height: 4em;
+		width: 4em;
+	}
+
 	.status button.newGame { background-image: url("../images/new.png"); }
 
 	.status button.hint { background-image: url("../images/hint.png"); }
@@ -227,34 +268,56 @@ button:focus {
 	.status button.map { background-image: url("../images/map.png"); }
 }
 
-@-ms-keyframes pulse-contrast { from { -ms-filter: contrast(0); } to { -ms-filter: contrast(500%); } }
-@-moz-keyframes pulse-contrast { from { -moz-filter: contrast(0); } to { -moz-filter: contrast(500%); } }
-@-o-keyframes pulse-contrast { from { -o-filter: contrast(0); } to { -o-filter: contrast(500%); } }
-@-webkit-keyframes pulse-contrast { from { -webkit-filter: contrast(0); } to { -webkit-filter: contrast(500%); } }
-@keyframes pulse-contrast { from { filter: contrast(0); } to { filter: contrast(500%); } }
-
 .animate .fade {
-	-ms-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
-	-moz-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
-	-o-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
-	-webkit-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
-	transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+	ms-transition: opacity 0.1s;
+	moz-transition: opacity 0.1s;
+	o-transition: opacity 0.1s;
+	webkit-transition: opacity 0.1s;
+	transition: opacity 0.1s;
 }
 
-.animate .tile.free.all .face {
-	-ms-animation: pulse-contrast 1s linear infinite alternate;
-	-moz-animation: pulse-contrast 1s linear infinite alternate;
-	-o-animation: pulse-contrast 1s linear infinite alternate;
-	-webkit-animation: pulse-contrast 1s linear infinite alternate;
-	animation: pulse-contrast 1s linear infinite alternate;
+.animate .move {
+	ms-transition: left 0.2s, top 0.2s;
+	moz-transition: left 0.2s, top 0.2s;
+	o-transition: left 0.2s, top 0.2s;
+	webkit-transition: left 0.2s, top 0.2s;
+	transition: left 0.2s, top 0.2s;
+}
+
+.animate .fade.move {
+	ms-transition: opacity 0.1s, left 0.2s, top 0.2s;
+	moz-transition: opacity 0.1s, left 0.2s, top 0.2s;
+	o-transition: opacity 0.1s, left 0.2s, top 0.2s;
+	webkit-transition: opacity 0.1s, left 0.2s, top 0.2s;
+	transition: opacity 0.1s, left 0.2s, top 0.2s;
 }
 
 @media (min-width: 56em), (min-height: 36em) {
+	body {
+		--screen: "large";
+	}
+
 	.fade {
-		-ms-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
-		-moz-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
-		-o-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
-		-webkit-transition: opacity 0.5s, background-color 0.2s, color 0.2s;
-		transition: opacity -0.5s, background-color 0.2s, color 0.2s, left 0.5s, top 0.5s;
+		ms-transition: opacity 0.1s;
+		moz-transition: opacity 0.1s;
+		o-transition: opacity 0.1s;
+		webkit-transition: opacity 0.1s;
+		transition: opacity 0.1s;
+	}
+
+	.move {
+		ms-transition: left 0.2s, top 0.2s;
+		moz-transition: left 0.2s, top 0.2s;
+		o-transition: left 0.2s, top 0.2s;
+		webkit-transition: left 0.2s, top 0.2s;
+		transition: left 0.2s, top 0.2s;
+	}
+
+	.fade.move {
+		ms-transition: opacity 0.1s, left 0.2s, top 0.2s;
+		moz-transition: opacity 0.1s, left 0.2s, top 0.2s;
+		o-transition: opacity 0.1s, left 0.2s, top 0.2s;
+		webkit-transition: opacity 0.1s, left 0.2s, top 0.2s;
+		transition: opacity 0.1s, left 0.2s, top 0.2s;
 	}
 }
