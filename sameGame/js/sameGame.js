@@ -229,18 +229,22 @@
 				lastTilePerColor = Array(constants.colors),
 				tilesPerColor = Array(constants.colors);
 
-			for (i = 0; i < tileSet.length; i++) {
-				var tile = tileSet[i];
-
-				if (isTileSingle(tile)) {
-					if (Math.random() <= constants.singleTileAdjustFactor) {
-						tile.color = _getColorIndexFromRandomSibling(tileSet, tile);
-						tile.adjusted = true;
+			Object.keys(tileSet)
+				.map(function(key) { return tileSet[key]; })
+				.forEach(function(tile) {
+					if (_isTileSingle(tileSet, tile)) {
+						if (Math.random() <= constants.singleTileAdjustFactor) {
+							var color = _getColorIndexFromRandomSibling(tileSet, tile);
+							
+							if (color >= 0 && color != tile.color) {
+								tile.adjusted = true;
+								tile.color = color;
+							}
+						}
 					}
-				}
-				lastTilePerColor[tile.color] = tile;
-				tilesPerColor[tile.color]++;
-			}
+					lastTilePerColor[tile.color] = tile;
+					tilesPerColor[tile.color]++;
+				});
 
 			for (i = 0; i < tilesPerColor.Length; i++) {
 				if (tilesPerColor[i] == 0) {
@@ -300,7 +304,7 @@
 		};
 
 		var _isTileSingle = function(tileSet, tile) {
-			return getBlock(tileSet, tile).length === 1;
+			return _getBlock(tileSet, tile).length === 1;
 		};
 
 		var _getTiles = function(level) {
@@ -309,13 +313,17 @@
 
 			for (var i = 0; i < constants.boardWidth; i++) {
 				for (var j = 0; j < constants.boardHeight; j++) {
-					var tile = {
+					tileSet[_getKey(i, j)] = {
 						n: n++,
 						x: i,
 						y: j,
 						color: Math.floor(Math.random() * constants.colors),
 					};
-
+				}
+			}
+			Object.keys(tileSet)
+				.map(function(key) { return tileSet[key]; })
+				.forEach(function(tile) {
 					if (Math.random() <= constants.tileAdjustFactor * (constants.levels + 1 - level) / constants.levels) {
 						var color = _getColorIndexFromRandomSibling(tileSet, tile);
 
@@ -324,9 +332,7 @@
 							tile.color = color;
 						}
 					}
-					tileSet[_getKey(tile.x, tile.y)] = tile;
-				}
-			}
+				});
 			return tileSet;
 		};
 
@@ -415,7 +421,7 @@
 								history.splice(0, history.length);
 								updateBoard(true);
 								checkStatus();
-							});
+							}, 2e2);
 						} else {
 							end = Date.now();
 							board.dispatchEvent(new Event("game.won"));
@@ -830,7 +836,7 @@
 			}
 		})();
 
-		var boss, bossActive, game, icon, noBomb, resizer, title;
+		var boss, bossActive, game, icon, large, noBomb, resizer, title;
 
 		var askNewGame = function() {
 			if (!_isVisible(message)) {
@@ -954,6 +960,7 @@
 
 		var restart = function() {
 			undo(true);
+			hideMessage();
 		};
 
 		var showMessage = function(messageText, type) {
@@ -1017,6 +1024,7 @@
 			});
 
 			_setClass(document.body, "no-bomb", noBomb = _param("no-bomb") || !!parseInt(_thisScript.getAttribute("no-bomb")));
+			large = _param("large") || !!parseInt(_thisScript.getAttribute("large"))
 		})();
 
 		document.addEventListener("keydown", function(e) {
@@ -1080,7 +1088,7 @@
 				if (board.clientHeight) {
 					if (x < 1 || y < 1) {
 						z = Math.min(x, y);
-					} else {
+					} else if (!large) {
 						if ((window.getComputedStyle(document.body).getPropertyValue("--screen") || "").match(/large/i)) {
 							z /= 2;
 						}

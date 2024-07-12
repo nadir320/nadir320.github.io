@@ -211,6 +211,12 @@ button.bombs.active {
 .palette-1 .tile.color-4 { background-color: #D9CF76		;	background-image: linear-gradient(to bottom right, #D9CF76			, white 200%); }
 .palette-1 .tile.color-5 { background-color: #AB6191		;	background-image: linear-gradient(to bottom right, #AB6191			, white 200%); }
 
+.palette-2 .tile.color-1 { background-color: #6151EE		;	background-image: linear-gradient(to bottom right, #6151EE			, white 200%); }
+.palette-2 .tile.color-2 { background-color: #481B59		;	background-image: linear-gradient(to bottom right, #481B59			, white 200%); }
+.palette-2 .tile.color-3 { background-color: #8EAC98		;	background-image: linear-gradient(to bottom right, #8EAC98			, white 200%); }
+.palette-2 .tile.color-4 { background-color: #B3850D		;	background-image: linear-gradient(to bottom right, #B3850D			, white 200%); }
+.palette-2 .tile.color-5 { background-color: #FA65CE		;	background-image: linear-gradient(to bottom right, #FA65CE			, white 200%); }
+
 /* .tile.adjusted { color: rgba(0, 0, 0, 0.25) !important; } */
 
 .boss {
