@@ -116,6 +116,22 @@ if (typeof window.maps.test === "undefined") {
 		addTile({i: 16, x: 1, y: 6});
 		addTile({i: 20, x: 2, y: 6});
 
+		addTile({i: 28, x: 1, y: 8});
+		addTile({i: 28, x: 2, y: 8});
+
+		addTile({i: 36, x: 0, y: 9});
+		addTile({i: 36, x: 1, y: 9});
+		addTile({i: 32, x: 2, y: 9});
+		addTile({i: 28, x: 3, y: 9});
+
+		addTile({i: 32, x: 1, y: 9, z: 1});
+		addTile({i: 28, x: 2, y: 9, z: 1});
+
+		addTile({i: 32, x: 1, y: 10});
+		addTile({i: 32, x: 2, y: 10});
+		addTile({i: 36, x: 1, y: 11});
+		addTile({i: 36, x: 2, y: 11});
+
 		/*addTile({      y: 3, i: 0});
 		addTile({x: 1, y: 3, i: 0});
 		addTile({      y: 4, i: 0});

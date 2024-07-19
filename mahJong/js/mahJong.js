@@ -944,7 +944,7 @@
 												}, function(firstPair, secondPair) {
 													// 1^2|^2|^1
 													if (firstPair.firstTile.x >= secondPair.firstTile.x &&
-														firstPair.firstTile.z <= secondPair.firstTile.z &&
+														firstPair.firstTile.z < secondPair.firstTile.z &&
 
 														secondPair.secondTile.x > secondPair.firstTile.x &&
 														secondPair.secondTile.z <= secondPair.firstTile.z &&
