@@ -924,14 +924,14 @@
 														firstPair.secondTile.z <= secondPair.firstTile.z &&
 
 														firstPair.secondTile.x <= secondPair.secondTile.x &&
-														firstPair.secondTile.z <= secondPair.secondTile.z) {
+														firstPair.secondTile.z < secondPair.secondTile.z) {
 
 														return true;
 													}
 												}, function(firstPair, secondPair) {
 													// 1^2|2|1
 													if (firstPair.firstTile.x >= secondPair.firstTile.x &&
-														firstPair.firstTile.z <= secondPair.firstTile.z &&
+														firstPair.firstTile.z < secondPair.firstTile.z &&
 
 														secondPair.secondTile.x > firstPair.firstTile.x &&
 														secondPair.secondTile.z <= firstPair.firstTile.z &&
@@ -1060,25 +1060,33 @@
 				})();
 
 				board.dispatchEvent(new Event("game.changed"));
-				if (board.getElementsByClassName("tile").length === board.getElementsByClassName("hidden").length) {
-					if (!end) {
-						end = Date.now();
-						board.dispatchEvent(new Event("game.won"));
-					}
-				} else if (
-						/* (board.querySelector(".tile.sandwich.last:not(.hidden):not(.uncovered)")) */
-						(board.querySelector(".tile.fatal"))
-						||
-						(!hasMoves/* && !(!history.length && board.getElementsByClassName("tile").length < tileSet.length)*/)
-					) {
+				(function() {
+					var fatalTiles;
 
-					if (!end) {
-						end = Date.now();
-						/* if (start) { */
-							board.dispatchEvent(new Event("game.lost"));
-						/* } */
+					if (board.getElementsByClassName("tile").length === board.getElementsByClassName("hidden").length) {
+						if (!end) {
+							end = Date.now();
+							board.dispatchEvent(new Event("game.won"));
+						}
+					} else if (
+							/* (board.querySelector(".tile.sandwich.last:not(.hidden):not(.uncovered)")) */
+							((fatalTiles = board.querySelectorAll(".tile.fatal")).length)
+							||
+							(!hasMoves/* && !(!history.length && board.getElementsByClassName("tile").length < tileSet.length)*/)
+						) {
+
+						if (!end) {
+							end = Date.now();
+							/* if (start) { */
+								board.dispatchEvent(new CustomEvent("game.lost", {
+									detail: {
+										fatal: !!fatalTiles.length
+									}
+								}));
+							/* } */
+						}
 					}
-				}
+				})();
 
 				_writeObject(_stateKey, (end) ? undefined : {
 					hintIndex: hintIndex,
@@ -1463,7 +1471,28 @@
 		(function() {
 			board.addEventListener("game.changed", checkGame);
 			board.addEventListener("game.won", function() { showMessage(document.getElementById("wonMessage").value); });
-			board.addEventListener("game.lost", function() { showMessage(document.getElementById("lostMessage").value); });
+			board.addEventListener("game.lost", function(e) {
+				var disabledButtons = [ ];
+
+				if (e && e.detail && e.detail.fatal) {
+					disabledButtons = Array.from(document.getElementsByClassName("newGame"))
+						.concat(Array.from(document.getElementsByClassName("restart")));
+				}
+
+				if (disabledButtons.length) {
+					disabledButtons.forEach(function(item) {
+						item.disabled = "disabled";
+					});
+				}
+				showMessage(document.getElementById("lostMessage").value);
+				if (disabledButtons.length) {
+					window.setTimeout(function() {
+						disabledButtons.forEach(function(item) {
+							item.disabled = "";
+						});
+					}, 1e3);
+				}
+			});
 			board.addEventListener("game.wrong", function() { showMessage(document.getElementById("wrongGameMessage").value); });
 
 			_bindClickByClassName(status, "newGame", askNewGame);
