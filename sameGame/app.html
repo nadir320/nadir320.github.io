@@ -20,20 +20,30 @@
 		</div>
 		<div class="status">
 			<div>Tempo: <span id="time"></span></div>
+			<div>Livello: <span class="level"></span></div>
+			<div>Visibili: <span class="remaining"></span></div>
+			<div>Mosse: <span class="moves"></span></div>
 			<button class="newGame">Nuova</button>
 			<br/>
 			<button class="undo">Annulla</button>
+			<br/>
+			<button class="bombs"></div>
 		</div>
 		<div class="scaler">
 			<div class="board"></div>
+			<div class="level-container">
+				<div class="level"></div>
+			</div>
 		</div>
 		<div class="version"></div>
+		<div class="boss hidden"></div>
 		<form>
 			<input type="hidden" id="wonMessage" value="Hai vinto!"/>
 			<input type="hidden" id="lostMessage" value="Hai perso..."/>
+			<input type="hidden" id="wrongGameMessage" value="Impossibile iniziare la partita"/>
 			<input type="hidden" id="askNewMessage" value="Iniziare una nuova partita?"/>
 			<input type="hidden" id="restartMessage" value="Riiniziare la partita?"/>
 		</form>
-		<script type="text/javascript" src="js/sameGame.min.js" palette="1" storage="local"></script>
+		<script type="text/javascript" src="js/sameGame.min.js" -palette="0" storage="local"></script>
 	</body>
 </html>
