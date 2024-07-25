@@ -71,6 +71,35 @@
 		element.classList.add("hidden");
 	};
 
+	var _hslToRgb = function(hsla) {
+		var hueToRgb = function(t1, t2, h) {
+			if (h < 0) h += 6;
+			if (h >= 6) h -= 6;
+			if (h < 1) return (t2 - t1) * h + t1;
+			else if (h < 3) return t2;
+			else if (h < 4) return (t2 - t1) * (4 - h) + t1;
+			return t1;
+		};
+
+		var temp1, temp2, r, g, b, hue = hsla.h / 60;
+
+		if (hsla.l <= 0.5) {
+			temp2 = hsla.l * (hsla.s + 1);
+		} else {
+			temp2 = hsla.l + hsla.s - (hsla.l * hsla.s);
+		}
+		temp1 = hsla.l * 2 - temp2;
+		r = hueToRgb(temp1, temp2, hue + 2) * 0xff;
+		g = hueToRgb(temp1, temp2, hue) * 0xff;
+		b = hueToRgb(temp1, temp2, hue - 2) * 0xff;
+		return {
+			r : Math.floor(r),
+			g : Math.floor(g),
+			b : Math.floor(b),
+			a: hsla.a
+		};
+	};
+
 	var _isVisible = function(element) {
 		return !element.classList.contains("hidden");
 	};
@@ -151,6 +180,51 @@
 		} catch (e) { }
 	};
 
+	var _rgbToHsl = function(rgba) {
+		var r = rgba.r,
+			g = rgba.g,
+			b = rgba.b;
+
+		var min, max, i, l, s, maxcolor, h, rgb = [];
+
+		rgb[0] = r / 0xff;
+		rgb[1] = g / 0xff;
+		rgb[2] = b / 0xff;
+		min = rgb[0];
+		max = rgb[0];
+		maxcolor = 0;
+		for (i = 0; i < rgb.length - 1; i++) {
+			if (rgb[i + 1] <= min) {min = rgb[i + 1];}
+			if (rgb[i + 1] >= max) {max = rgb[i + 1];maxcolor = i + 1;}
+		}
+		if (maxcolor === 0) {
+			h = (rgb[1] - rgb[2]) / (max - min);
+		}
+		if (maxcolor === 1) {
+			h = 2 + (rgb[2] - rgb[0]) / (max - min);
+		}
+		if (maxcolor === 2) {
+			h = 4 + (rgb[0] - rgb[1]) / (max - min);
+		}
+		if (isNaN(h)) {h = 0;}
+		h = h * 60;
+		if (h < 0) {h += 360;}
+		l = (min + max) / 2;
+		if (min == max) {
+			s = 0;
+		} else  if (l < 0.5) {
+			s = (max - min) / (max + min);
+		} else {
+			s = (max - min) / (2 - max - min);
+		}
+		return {
+			h: h,
+			s: s,
+			l: l,
+			a: rgba.a
+		};
+	};
+
 	var _setClass = function(element, className, condition) {
 		if (condition) {
 			if (!element.classList.contains(className)) {
@@ -174,6 +248,24 @@
 			}
 			cssElement.innerText = css;
 			document.querySelector("head").appendChild(cssElement);
+		}
+	};
+
+	var _singletonInvoke = function(f, callback) {
+		if (f.completed) {
+			callback();
+		} else if (f.executing) {
+			f.callbacks.push(callback);
+		} else {
+			f.callbacks = [ callback ];
+			f.executing = true;
+			f(function() {
+				f.completed = true;
+				f.executing = false;
+				for (var i = 0, length = f.callbacks.length; i < length; i++) {
+					f.callbacks[i]();
+				}
+			});
 		}
 	};
 
@@ -235,7 +327,7 @@
 					if (_isTileSingle(tileSet, tile)) {
 						if (Math.random() <= constants.singleTileAdjustFactor) {
 							var color = _getColorIndexFromRandomSibling(tileSet, tile);
-							
+
 							if (color >= 0 && color != tile.color) {
 								tile.adjusted = true;
 								tile.color = color;
@@ -337,6 +429,109 @@
 		};
 
 		Game = function(board, options, ready, state) {
+			var init = function(callback) {
+				_singletonInvoke(initEngine, callback);
+			},
+			initEngine = function(callback) {
+				var local = !window.location.protocol.match(/http/i),
+					palette = new Image();
+
+				palette.onerror = function(e) { debugger; callback(); };
+				palette.onload = function() {
+					var context,
+						imageWidth = this.width,
+						imageHeight = this.height;
+
+					Object.defineProperty(constants, "colors", { get: function() { return imageWidth * imageHeight; } });
+
+					var rules = [ ],
+						k = 0;
+
+					if (!local) {
+						(function(image) {
+							var canvas = document.createElement("canvas");
+
+							canvas.width = imageWidth;
+							canvas.height = imageHeight;
+
+							context = canvas.getContext("2d", {
+								willReadFrequently: true
+							});
+
+							context.drawImage(image, 0, 0);
+						})(this);
+					}
+
+					var decodePixel = function(imageData) {
+						return {
+							r: imageData.data[0],
+							g: imageData.data[1],
+							b: imageData.data[2],
+							a: imageData.data[3]
+						};
+					},
+					encodeColor = function(rgba) {
+						if (typeof rgba.a !== "undefined" && rgba.a < 0xff) {
+							return "rgba(" + [rgba.r, rgba.g, rgba.b,
+								Math.round((rgba.a / 0xff + (Number.EPSILON || 0)) * 1e3) / 1e3].join(", ") + ")";
+						} else {
+							return "#" + [rgba.r, rgba.g, rgba.b].map(function(value) {
+								return ("0" + value.toString(16)).slice(-2);
+							}).join("");
+						}
+					};
+
+					if (local) {
+						rules.push(".tile { background-image: url(\"" + this.src + "\") !important; background-repeat: no-repeat; background-size: cover; border: none; }");
+					}
+					for (var i = 0; i < imageWidth; i++) {
+						for (var j = 0; j < imageHeight; j++) {
+							if (local) {
+								rules.push(".tile.color-" + (++k).toString() + " { background-position: " + -(i * constants.tileWidth) + "px " + -(j * constants.tileHeight) + "px }");
+							} else {
+								(function() {
+									var c1 = decodePixel(context.getImageData(i, j, 1, 1)),
+										c2 = _rgbToHsl(c1);
+
+									c2.l += Math.min(((c2.l + 0.945) / 2 - c2.l) * 0.6, 1);
+
+									rules.push(".tile.color-" + (++k).toString() + " " +
+										"{ background-color: " + encodeColor(c1) +
+										"; background-image: linear-gradient(to bottom right, " + encodeColor(c1) + ", " +
+											encodeColor(_hslToRgb(c2)) + " 100%); }");
+								})();
+							}
+						}
+					}
+
+					_setStyle(rules.join("\n"));
+					callback();
+				}
+
+				var paletteIndex = parseInt(_params()["palette"] || _thisScript.getAttribute("palette"));
+
+				if (!isNaN(paletteIndex)) {
+					Array.from(document.getElementsByClassName("board")).forEach(function(item) {
+						item.classList.add("default-palette");
+						item.classList.add("palette-" + paletteIndex.toString());
+					});
+					callback();
+				} else {
+					var src = _params()["palette"] ||
+						_thisScript.getAttribute("palette") ||
+						_params(_thisScript.getAttribute("src")).palette;
+
+					if (src) {
+						if (!local) {
+							palette.setAttribute("crossOrigin", "Anonymous");
+						}
+						palette.src = "images/palettes/" + src + ".png";
+					} else {
+						callback();
+					}
+				}
+			};
+
 			var availableMoves = 0,
 				bomb = false,
 				bombs,
@@ -668,7 +863,7 @@
 				}
 			};
 
-			(function() {
+			init(function() {
 				try {
 					Array.from(board.childNodes).forEach(function(node) {
 						node.parentElement.removeChild(node);
@@ -779,7 +974,7 @@
 				} catch (e) {
 					board.dispatchEvent(new Event("game.wrong"));
 				}
-			})();
+			});
 
 			return {
 				get availableMoves() { return availableMoves; },
@@ -1017,13 +1212,7 @@
 				});
 			}
 
-			var palette = parseInt(_params()["palette"] || _thisScript.getAttribute("palette")) || 0;
-
-			Array.from(document.getElementsByClassName("board")).forEach(function(item) {
-				item.classList.add("palette-" + palette.toString());
-			});
-
-			_setClass(document.body, "no-bomb", noBomb = _param("no-bomb") || !!parseInt(_thisScript.getAttribute("no-bomb")));
+			_setClass(document.body, "no-bomb", noBomb = !(_param("bombs") || !!parseInt(_thisScript.getAttribute("bombs"))));
 			large = _param("large") || !!parseInt(_thisScript.getAttribute("large"))
 		})();
 
@@ -1081,7 +1270,8 @@
 
 		(resizer = function() {
 			if (game) {
-				var x = ((window.innerWidth - 16 * 16) - 2 * game.constants.padding) / game.board.width,
+				var statusWidthEm = 16,
+					x = ((window.innerWidth - statusWidthEm * 16) - 2 * game.constants.padding) / game.board.width,
 					y = (window.innerHeight - 2 * game.constants.padding) / game.board.height,
 					z = 1;
 
@@ -1090,7 +1280,7 @@
 						z = Math.min(x, y);
 					} else if (!large) {
 						if ((window.getComputedStyle(document.body).getPropertyValue("--screen") || "").match(/large/i)) {
-							z /= 2;
+							z *= 0.55;
 						}
 					}
 
