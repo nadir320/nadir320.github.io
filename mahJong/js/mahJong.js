@@ -943,7 +943,7 @@
 													}
 												}, function(firstPair, secondPair) {
 													// 1^2|^2|^1
-													if (firstPair.firstTile.x >= secondPair.firstTile.x &&
+													if (firstPair.firstTile.x === secondPair.firstTile.x &&
 														firstPair.firstTile.z < secondPair.firstTile.z &&
 
 														secondPair.secondTile.x > secondPair.firstTile.x &&
