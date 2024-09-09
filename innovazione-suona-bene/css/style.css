@@ -1,0 +1,110 @@
+﻿* {
+	box-sizing: border-box;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	background-color: whitesmoke;
+	margin: 0 !important;
+
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: -webkit-flex;
+	display: flex;
+
+	-ms-align-items: center;
+	-moz-align-items: center;
+	-o-align-items: center;
+	-webkit-align-items: center;
+	align-items: center;
+
+	-ms-justify-content: center;
+	-moz-justify-content: center;
+	-o-justify-content: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+}
+
+button {
+	border: 1px solid silver;
+	border-radius: 0.5em;
+	padding: 1em;
+}
+
+.panel {
+	bottom: 0;
+	display: flex;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+}
+
+.background {
+	background-image: url("../images/innovazione-suona-bene.png");
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	opacity: 0.1;
+	z-index: -1;
+}
+
+.backdrop {
+	background-color: black;
+	opacity: 0.5;
+}
+
+.starter {
+	align-items: center;
+	justify-content: center;
+}
+
+.start {
+	background-color: silver;
+	background: radial-gradient(circle, #dddddd 0%, black 200%);
+	font-size: 200%;
+	padding: 3em;
+}
+
+.grid {
+	background-color: #82C9BB;
+	border-radius: 0.5em;
+	box-shadow: 0 0 1em 1em rgba(30, 255, 144, 0.35);
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1em;
+	padding: 1em;
+}
+
+.grid > * {
+	background-color: lightYellow;
+}
+
+.controls {
+	align-items: center;
+	background-color: transparent;
+	border-bottom: groove;
+	display: flex;
+	grid-column: 1 / span 2;
+	justify-content: center;
+	padding-bottom: 0.5em;
+}
+
+.grid > *.muted {
+	background-color: darkGray;
+	background-image: url("../images/muted.png");
+	background-repeat: no-repeat;
+    background-position: left;
+    background-position-x: 0.5em;
+    background-size: 25%;
+    text-indent: 1em;
+}
+}
+
+.grid > *.error {
+	background-color: red;
+}
