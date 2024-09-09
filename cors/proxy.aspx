@@ -9,12 +9,13 @@
 	private const string Header_CORS_Headers = @"Access-Control-Allow-Headers",
 		Header_CORS_Origin = @"Access-Control-Allow-Origin";
 
-	private const string HttpResponseHeader_ContentDisposition = @"content-disposition",
+	private const string HttpResponseHeader_ContentDisposition = @"Content-Disposition",
 		HttpResponseHeader_ContentDisposition_Format = @"attachment; filename=""{0}""",
-		HttpResponseHeader_ContentLength = @"Content-length";
+		HttpResponseHeader_ContentLength = @"Content-Length";
 
 	private const string MimeType_Audio = @"audio",
 		MimeType_Image = @"image",
+		MimeType_Pdf = @"pdf",
 		MimeType_Stream = @"stream",
 		MimeType_Video = @"video";
 
@@ -65,12 +66,12 @@
 	private void LoadPage() {
 		/* if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break(); */
 
-		/* ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
+		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls |
 			SecurityProtocolType.Tls11 |
 			SecurityProtocolType.Tls12 |
 			SecurityProtocolType.Ssl3;
 
-		ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true; */
+		ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
 		Response.Headers[Header_CORS_Headers] = ((char)0x002A).ToString();
 		Response.Headers[Header_CORS_Origin] = ((char)0x002A).ToString();
@@ -210,6 +211,9 @@
 
 				Response.ContentEncoding = encoding;
 				Response.ContentType = contentType;
+				if (!string.IsNullOrEmpty(fileName)) {
+					Response.Headers[HttpResponseHeader_ContentDisposition] = string.Format(HttpResponseHeader_ContentDisposition_Format, fileName);
+				}
 
 				using (Stream stream = response.GetResponseStream()) {
 					if (!headers &&
@@ -217,6 +221,7 @@
 						contentType.IndexOf(MimeType_Audio, StringComparison.InvariantCultureIgnoreCase) >= 0 ||
 						contentType.IndexOf(MimeType_Stream, StringComparison.InvariantCultureIgnoreCase) >= 0 ||
 						contentType.IndexOf(MimeType_Image, StringComparison.InvariantCultureIgnoreCase) >= 0 ||
+						contentType.IndexOf(MimeType_Pdf, StringComparison.InvariantCultureIgnoreCase) >= 0 ||
 						contentType.IndexOf(MimeType_Video, StringComparison.InvariantCultureIgnoreCase) >= 0) {
 
 						byte[] buffer = new byte[bufferSize];

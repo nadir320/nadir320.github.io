@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Lightbox</title>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			button {
+				cursor: pointer;
+			}
+
+			label > *:not(input) {
+				display: inline-block;
+				font-weight: bold;
+				margin-right: 0.5rem;
+				width: 8rem;
+			}
+
+			.url {
+				width: 50%;
+			}
+
+			.overlay {
+				background-color: gray;
+				bottom: 0;
+				left: 0;
+				opacity: 0.75;
+				position: fixed;
+				right: 0;
+				top: 0;
+				z-index: 10000;
+			}
+
+			.container {
+				align-items: center;
+				bottom: 1rem;
+				display: flex;
+				justify-content: center;
+				left: 1rem;
+				overflow: hidden;
+				position: fixed;
+				right: 1rem;
+				top: 1rem;
+				z-index: 10001;
+			}
+
+			.zoomable {
+				background-color: red;
+			}
+
+			.zoomable.zoomed {
+				overflow: auto;
+				max-height: 100%;
+				max-width: 100%;
+			}
+
+			.buttons {
+				position: absolute;
+				right: 0;
+				top: 0;
+			}
+
+			.buttons button {
+				border: 1px solid silver;
+				border-radius: 0.25rem;
+				cursor: pointer;
+				height: 2rem;
+				width: 2rem;
+			}
+
+			.image {
+				cursor: zoom-out;
+			}
+
+			.zoomable:not(.zoomed) {
+				-display: contents;
+			}
+
+			.zoomable:not(.zoomed) .image {
+				cursor: zoom-in;
+				max-height: 100%;
+				max-width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Image Lightbox</h1>
+		<label>
+			<div>Large:</div>
+			<input type="text" class="url url1" value="../images/blueMarble.jpg"/>
+		</label>
+		<button class="open" data-url="url1">Open</button>
+		<br/>
+		<br/>
+		<label>
+			<div>Small:</div>
+			<input type="text" class="url url2" value="../images/collage.png"/>
+		</label>
+		<button class="open" data-url="url2">Open</button>
+		<div class="overlay"></div>
+		<div class="container">
+			<div class="buttons">
+				<button class="zoom">+</button>
+				<button class="close">&times;</button>
+			</div>
+			<div class="zoomable">
+				<img class="image" src="//:0"/>
+			</div>
+		</div>
+		<script>
+			const q = (n) => document.querySelector("." + n);
+
+			var zoom = false;
+
+			const openButtons = Array.from(document.getElementsByClassName("open")),
+				zoomButton = q("zoom"),
+				closeButton = q("close"),
+				overlay = q("overlay"),
+				container = q("container"),
+				zoomable = q("zoomable"),
+				image = q("image");
+
+			const refresh = () => {
+				zoomable.classList[zoom ? "add" : "remove"]("zoomed");
+				zoomButton.innerText = zoom ? "-" : "+";
+			};
+
+			const toggle = () => {
+				zoom = !zoom;
+				refresh();
+			};
+
+			zoomButton.addEventListener("click", toggle);
+			image.addEventListener("click", toggle);
+
+			openButtons.forEach(b => b.addEventListener("click", () =>  {
+				image.src = q(b.dataset.url).value;
+				overlay.style.display = "";
+				container.style.display = "";
+				image.style.display = "";
+				zoom = false;
+				refresh();
+			}));
+
+			const close = () => {
+				overlay.style.display = "none";
+				container.style.display = "none";
+			};
+
+			closeButton.addEventListener("click", close);
+			overlay.addEventListener("click", close);
+			container.addEventListener("click", function(e)  {
+				if (e.target === this) {
+					close();
+				}
+			});
+
+			document.addEventListener("keydown", (e) => {
+				if (e.which === 27) {
+					close();
+				}
+			});
+
+			close();
+			refresh();
+		</script>
+	</body>
+</html>
