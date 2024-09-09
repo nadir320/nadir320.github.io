@@ -90,6 +90,7 @@
 				var e = document.createElement("button");
 
 				e.setAttribute("type", "button");
+				e.classList.add("image-button");
 				e.classList.add("audio");
 
 				var item = audio[name];

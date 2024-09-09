@@ -32,6 +32,7 @@ body {
 button {
 	border: 1px solid silver;
 	border-radius: 0.5em;
+	cursor: pointer;
 	padding: 1em;
 }
 
@@ -84,7 +85,7 @@ button {
 	background-color: lightYellow;
 }
 
-.controls {
+.grid .controls {
 	align-items: center;
 	background-color: transparent;
 	border-bottom: groove;
@@ -94,17 +95,34 @@ button {
 	padding-bottom: 0.5em;
 }
 
-.grid > *.muted {
+.grid .error {
+	background-color: red;
+}
+
+.grid .audio.muted {
 	background-color: darkGray;
-	background-image: url("../images/muted.png");
+}
+
+.image-button {
 	background-repeat: no-repeat;
     background-position: left;
     background-position-x: 0.5em;
     background-size: 25%;
     text-indent: 1em;
 }
+
+.image-button.audio {
+	background-image: url("../images/audio.png");
 }
 
-.grid > *.error {
-	background-color: red;
+.image-button.muted {
+	background-image: url("../images/muted.png");
+}
+
+.image-button.play {
+	background-image: url("../images/play.png");
+}
+
+.image-button.stop {
+	background-image: url("../images/stop.png");
 }
