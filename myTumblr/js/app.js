@@ -8665,7 +8665,7 @@ $().ready(function() {
 						allPosts = true;
 					}
 					if (!addLabel || item.isNewPost || allPosts) {
-						hasLink |= !!createLink(item);
+						hasLink ||= !!createLink(item);
 					} else {
 						oldies.push(item);
 					}

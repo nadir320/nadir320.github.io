@@ -603,7 +603,7 @@
 					hasMoves = singleTileCount <= bombs;
 
 				if (bombs <= 0) {
-					hasMoves &= availableMoves > 0;
+					hasMoves &&= availableMoves > 0;
 				}
 
 				board.dispatchEvent(new Event("game.changed"));
@@ -622,7 +622,7 @@
 							board.dispatchEvent(new Event("game.won"));
 						}
 					}
-				} else if (board.querySelector(".tile.fatal") || !hasMoves) {
+				} else if (board.querySelector(".tile.last") || !hasMoves) {
 					if (!end) {
 						end = Date.now();
 						/* if (start) { */
@@ -1046,10 +1046,6 @@
 			}
 		};
 
-		var askRestart = function() {
-			showMessage(document.getElementById("restartMessage").value);
-		};
-
 		var bossScreen = function(value) {
 			Array.from(document.getElementsByClassName("boss")).forEach(function(item, i) {
 				((value) ? _show : _hide)(item);
@@ -1179,7 +1175,6 @@
 
 			_bindClickByClassName(status, "newGame", askNewGame);
 			_bindClickByClassName(status, "undo", function() { undo(); });
-			_bindClickByClassName(status, "restart", askRestart);
 			_bindClickByClassName(status, "bombs", function(e) {
 				if (game && game.bombs > 0) {
 					game.bomb = !game.bomb;
