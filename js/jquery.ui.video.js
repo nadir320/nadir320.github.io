@@ -53,7 +53,13 @@ if (window.jQuery && window.jQuery.ui) {
 		};
 
 		var _playClick = function(video) {
-			if ((video = _getVideo(video)).paused) {
+			video = _getVideo(video);
+
+			var jVideo = window.jQuery(video);
+
+			if (jVideo.data("__rateIncreased")) {
+				jVideo.removeData("__rateIncreased");
+			} else if (video.paused) {
 				video.play();
 			} else {
 				video.pause();
@@ -68,6 +74,25 @@ if (window.jQuery && window.jQuery.ui) {
 					video.webkitRequestFullscreen ||
 					(function() { })).call(video);
 			} catch (e) { }
+		};
+
+		var _startRateTimer = function(video) {
+			video = _getVideo(video);
+			if (!video.paused) {
+				window.jQuery(video)
+					.data("__rateTimer", window.setTimeout(function() {
+						window.jQuery(video).data("__rateIncreased", 1);
+						_find(".rate-label", video).fadeIn();
+						video.playbackRate = 2;
+					}, 5 * __TIMER_INTERVAL));
+			}
+		};
+
+		var _stopRateTimer = function(video) {
+			window.clearTimeout(window.jQuery(video = _getVideo(video))
+				.data("__rateTimer"));
+			_find(".rate-label", video).fadeOut();
+			video.playbackRate = 1;
 		};
 
 		var _startUpdateTimer = function(video) {
@@ -114,6 +139,9 @@ if (window.jQuery && window.jQuery.ui) {
 			}
 			_find(".video-duration", video).text(_getDurationText(video.currentTime) +
 				"/"  + _getDurationText(video.duration));
+			_find(".video-loop", video)[(video.loop) ?
+				"addClass" :
+				"removeClass"]("looping");
 		};
 
 		window.jQuery.fn.video = function(command) {
@@ -140,7 +168,28 @@ if (window.jQuery && window.jQuery.ui) {
 									_update(e, true);
 								},
 								"click.uiVideo": function(e) {
+									_stopRateTimer(e);
 									_playClick(e);
+								},
+								"mousedown.uiVideo": function(e) {
+									if (e.which === 1) {
+										_startRateTimer(e);
+									}
+								},
+								"touchstart.uiVideo": function(e) {
+									window.jQuery(_getVideo(e)).removeData("__rateIncreased");
+									_startRateTimer(e);
+								},
+								"mouseup.uiVideo": function(e) {
+									if (e.which === 1) {
+										_stopRateTimer(e);
+									}
+								},
+								"touchend.uiVideo": function(e) {
+									if (window.jQuery(_getVideo(e)).data("__rateIncreased")) {
+										e.preventDefault();
+									}
+									_stopRateTimer(e);
 								},
 								"pause.uiVideo": function(e) {
 									_stopUpdateTimer(e);
@@ -164,6 +213,11 @@ if (window.jQuery && window.jQuery.ui) {
 									_getVideo(e).play();
 								}
 							}))
+						.append(window.jQuery(document.createElement("div"))
+							.addClass("rate-label")
+							.append(window.jQuery(document.createElement("div"))
+								.text("2x"))
+							.hide())
 						.append(window.jQuery(document.createElement("div"))
 							.addClass("ui-widget-header")
 							.addClass("video-toolbar")
@@ -213,6 +267,21 @@ if (window.jQuery && window.jQuery.ui) {
 								.on({
 									"click": function(e) {
 										_requestFullScreen(e);
+									}
+								}))
+							.append(window.jQuery(document.createElement("button"))
+								.addClass("video-button")
+								.addClass("video-loop")
+								.attr({
+									"type": "button"
+								})
+								.on({
+									"click": function(e) {
+										var video = _getVideo(e);
+
+										video.loop = !video.loop;
+										window.jQuery(item).trigger("loopchanged");
+										_update(e, true);
 									}
 								}))
 							.append(window.jQuery(document.createElement("input"))

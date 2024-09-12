@@ -22,6 +22,27 @@
 	z-index: 100;
 }
 
+.ui-video .rate-label {
+    align-items: center;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    padding-top: 2em;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.ui-video .rate-label > * {
+    background-color: silver;
+    border-radius: 1em;
+    font-size: 75%;
+    opacity: 0.75;
+    padding: 0.5em 2em;
+}
+
 .ui-video .video-toolbar {
 	border: none;
 	bottom: 0;
@@ -51,7 +72,7 @@
 	background-color: transparent;
 	float: left;
 	margin: .75em .3em;
-	max-width: 18.5% !important;
+	max-width: 14.5% !important;
 	-webkit-appearance: none;
 }
 
@@ -111,4 +132,13 @@
 .ui-video .video-toolbar .video-fullscreen {
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAyElEQVR42mNkoDFgHLWAJAuCgoL+4LBUZ926ddfR1GoCqStY1P4HqmXBZcE/HBZo4bDgGg4LmAhZ8BqIdyBJVQA1PUNTKwWkOpCEPIBYlFgLjgIV2ZAS1kC9R4CU9YBbcAvKPAdUFEGiBSuAlBGIDdSrhtUCWoBRC0izABhRt6FiZ4ERFU6KQUC9K4GUMQMkFanismDo5wPkomIXklQZjqKiC0nIjYGEogIdUK2w+4XDAl2gphtoajWA1GUcFrBhtYAWYNQCggAAY197GYFnz2oAAAAASUVORK5CYII=");
 	float: right;
+}
+
+.ui-video .video-toolbar .video-loop {
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYBAMAAAASWSDLAAAAJFBMVEUAAABHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADmfSdFAAAADHRSTlN/AFENASiFrdGX+HeMVFqIAAAAJElEQVQY02MQRAIM9OdEGCJxJEsYFBhggG01KgdFGQ4D6OcFAKDdFM81znz2AAAAAElFTkSuQmCC");
+	float: right;
+}
+
+.ui-video .video-toolbar .video-loop.looping {
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAdVBMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB2/7JwAAAAJ3RSTlMAvgbaT3uEf34BLVma40x6ErVmp8sHbvmwXMME+4afhZ55iJmJeJthnPpCAAAAiUlEQVQoz2NgoDvg5MQhISmBQ0ZaShXBYWJhZYcDHhkVdlYWJpA4FzMjGwccKMsocbAxMnMxMAjwcqMYpQiiuHkFGPh5sFmuxs8gyIfNuXyCCAkULwAl4EYJCyFJ8PDDLRcTEUWIgyyHOldeXAHuZIhzoR6UFZeDexLqQShAMQoFoFhOVIjTDgAASrUG8pX8QPgAAAAASUVORK5CYII=");
 }
