@@ -967,6 +967,17 @@
 
 														return true;
 													}
+												}, function(firstPair, secondPair) {
+													// 1|1|2|^2
+													if (firstPair.firstTile.z === firstPair.secondTile.z &&
+
+														firstPair.secondTile.x < secondPair.firstTile.x &&
+														firstPair.secondTile.z >= secondPair.firstTile.z &&
+
+														secondPair.firstTile.z < secondPair.secondTile.z) {
+
+														return true;
+													}
 												}
 											].findIndex(function(f) {
 												return f(twoPairs.firstPair, twoPairs.secondPair) ||
