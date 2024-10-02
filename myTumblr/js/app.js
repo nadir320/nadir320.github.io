@@ -30,6 +30,7 @@ var PARAMETERS = {
 	, "poolSize": "poolSize"
 	, "postsPerPageStep": "postsPerPageStep"
 	, "preloadTimeout": "preloadTimeout"
+	, "storage": "storage"
 	, "title": "title"
 	, "username": "username"
 };
@@ -57,7 +58,8 @@ var BLANK_PAGE = "about:blank",
 		"local": "Local CORS Proxy",
 		"remote": "allOrigins"
 	},
-	STORAGE_NAME_OPTIONS = window.location.get(PARAMETERS.optionsKey) || "my_tumblr",
+	STORAGE_NAME = window.location.get(PARAMETERS.optionsKey) || "my_tumblr",
+	TEMPORARY_STORAGE_TYPE = window.location.get(PARAMETERS.storage) || "session",
 	THEME_ID = "pageTheme",
 	THEMECOLOR_ID = "themeColor",
 	VIBRATIONS = {
@@ -85,8 +87,8 @@ var DATASTORE3_API_KEY = "AIzaSyA4dckJaCSBB1R7gJVuWCeYXjr7P6Oi9DM",
 	IDLE_INTERVAL = 5 * 60 * 1000,						// 5 minutes
 	MAXIMUM_DOWNLOAD_FILENAME = 160,
 	OLD_BLOG_INTERVAL = 90 * 24 * 60 * 60 * 1000,		// 90 days
-	STORAGE_NAME_READLATER = "my_tumblr_readLater",
-	STORAGE_NAME_USELESS = "my_tumblr_useless",
+	STORAGE_NAME_READLATER = STORAGE_NAME + "_readLater",
+	STORAGE_NAME_USELESS = STORAGE_NAME + "_useless",
 	PASSWORD = window.location.get(PARAMETERS.password),
 	TABLE_DATES = "dates",
 	TABLE_DOWNLOADS = "downloads",
@@ -1211,6 +1213,31 @@ $().ready(function() {
 			};
 		})(),
 		_readLater,
+        _storage = (function() {
+			var storage = window[TEMPORARY_STORAGE_TYPE + "Storage"] || window.sessionStorage;
+
+			if (storage === window.localStorage) {
+				storage = (function() {
+					var getKey = function(key) {
+						return [STORAGE_NAME, key].join("_");
+					},
+					s = storage;
+
+					return {
+						"getItem": function(key) {
+							return s.getItem(getKey(key));
+						},
+						"removeItem": function(key){
+							s.removeItem(getKey(key));
+						},
+						"setItem": function(key, val) {
+							s.setItem(getKey(key), val);
+						}
+					};
+				})();
+			}
+			return storage;
+		})(),
 		_store,
 		_textTable,
 		_tumblrAuth,
@@ -1843,18 +1870,24 @@ $().ready(function() {
 				.on({
 					"mutechanged volumechanged": function(e) {
 						if (e.target.muted) {
-							window.sessionStorage.removeItem("videoUnmuted");
+							try {
+								_storage.removeItem("videoUnmuted");
+							} catch (e) { }
 						} else {
-							window.sessionStorage.setItem("videoUnmuted", true);
+							try {
+								_storage.setItem("videoUnmuted", true);
+							} catch (e) { }
 						}
-						window.sessionStorage.setItem("videoVolume", e.target.volume.toString());
+						try {
+							_storage.setItem("videoVolume", e.target.volume.toString());
+						} catch (e) { }
 					},
 					"play durationchange": function(e) {
 						try {
-							e.target.muted = !window.sessionStorage.getItem("videoUnmuted");
+							e.target.muted = !_storage.getItem("videoUnmuted");
 						} catch (e) { }
 						try {
-							e.target.volume = parseFloat(window.sessionStorage.getItem("videoVolume"));
+							e.target.volume = parseFloat(_storage.getItem("videoVolume"));
 						} catch (e) { }
 						$(e.target).video("update");
 					}
@@ -4228,7 +4261,7 @@ $().ready(function() {
 	};
 
 	var loadOptions = function() {
-		var localOptions = window.localStorage.getItem(STORAGE_NAME_OPTIONS);
+		var localOptions = window.localStorage.getItem(STORAGE_NAME);
 
 		if (localOptions && localOptions.length) {
 			localOptions = $.parseJSON(window.decodeURIComponent(localOptions));
@@ -7487,7 +7520,7 @@ $().ready(function() {
 					}
 				}
 			}
-			window.localStorage.setItem(STORAGE_NAME_OPTIONS, window.encodeURIComponent(window
+			window.localStorage.setItem(STORAGE_NAME, window.encodeURIComponent(window
 				.JSON.stringify(localOptions)));
 		}
 	};
@@ -8665,7 +8698,9 @@ $().ready(function() {
 						allPosts = true;
 					}
 					if (!addLabel || item.isNewPost || allPosts) {
-						hasLink ||= !!createLink(item);
+						if (createLink(item)) {
+							hasLink = true;
+						}
 					} else {
 						oldies.push(item);
 					}
