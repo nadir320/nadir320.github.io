@@ -96,6 +96,8 @@ if (typeof window.maps.test === "undefined") {
 		addTile({i:  4, x: 1, y: 2});
 		addTile({i:  8, x: 2, y: 2});
 
+		// ------------------------------
+
 		addTile({i: 24, x: -1, y: 4});
 		addTile({i: 12, x: 0, y: 4});
 		addTile({i: 12, x: 1, y: 4});
@@ -116,6 +118,8 @@ if (typeof window.maps.test === "undefined") {
 		addTile({i: 16, x: 1, y: 6});
 		addTile({i: 20, x: 2, y: 6});
 
+		// ------------------------------
+
 		addTile({i: 28, x: 1, y: 8});
 		addTile({i: 28, x: 2, y: 8});
 
@@ -131,6 +135,8 @@ if (typeof window.maps.test === "undefined") {
 		addTile({i: 32, x: 2, y: 10});
 		addTile({i: 36, x: 1, y: 11});
 		addTile({i: 36, x: 2, y: 11});
+
+		// ------------------------------
 
 		addTile({i: 40, x: 0, y: 13});
 		addTile({i: 40, x: 1, y: 13});
@@ -152,6 +158,8 @@ if (typeof window.maps.test === "undefined") {
 		addTile({i: 52, x: 1, y: 16});
 		addTile({i: 52, x: 2, y: 16});
 
+		// ------------------------------
+
 		addTile({i: 56, x: 10, y: 0});
 		addTile({i: 56, x: 11, y: 0});
 		addTile({i: 60, x: 12, y: 0});
@@ -165,6 +173,22 @@ if (typeof window.maps.test === "undefined") {
 		addTile({i: 64, x: 10, y: 4});
 		addTile({i: 64, x: 11, y: 4});
 		addTile({i: 64, x: 12, y: 4});
+
+		// ------------------------------
+
+		addTile({i: 68, x: 10, y: 6});
+		addTile({i: 72, x: 10, y: 6, z: 1});
+		addTile({i: 72, x: 11, y: 6});
+		addTile({i: 76, x: 12, y: 6});
+		addTile({i: 68, x: 13, y: 6});
+		addTile({i: 76, x: 13, y: 6, z: 1});
+
+		addTile({i: 68, x: 10, y: 8});
+		addTile({i: 68, x: 11, y: 8});
+		addTile({i: 72, x: 10, y: 9});
+		addTile({i: 72, x: 11, y: 9});
+		addTile({i: 76, x: 10, y: 10});
+		addTile({i: 76, x: 11, y: 10});
 
 		/*addTile({      y: 3, i: 0});
 		addTile({x: 1, y: 3, i: 0});

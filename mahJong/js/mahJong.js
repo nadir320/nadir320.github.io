@@ -753,6 +753,8 @@
 					});
 
 					if (!end) {
+						// Last sandwich
+
 						(function() {
 							var isLastOverlap = function(item, remainingMatches, over) {
 								return !!getMatchingTiles(item).filter(function(otherMatchingTile) {
@@ -800,6 +802,9 @@
 								}
 							});
 						})();
+
+						// Rows
+
 						(function() {
 							var getKey = function(a, b) { return [a, b].join(); },
 								lastPairs = allTiles.filter(function(tile) {
@@ -921,11 +926,12 @@
 														firstPair.firstTile.z >= secondPair.firstTile.z &&
 
 														firstPair.secondTile.x > secondPair.firstTile.x &&
-														firstPair.secondTile.z <= secondPair.firstTile.z &&
+														// firstPair.secondTile.z <= secondPair.firstTile.z && // ?
 
 														firstPair.secondTile.x <= secondPair.secondTile.x &&
 														firstPair.secondTile.z < secondPair.secondTile.z) {
 
+														debugger;
 														return true;
 													}
 												}, function(firstPair, secondPair) {
@@ -939,6 +945,7 @@
 														secondPair.secondTile.x < firstPair.secondTile.x &&
 														secondPair.secondTile.z >= firstPair.secondTile.z) {
 
+														debugger;
 														return true;
 													}
 												}, function(firstPair, secondPair) {
@@ -952,6 +959,7 @@
 														secondPair.secondTile.x < firstPair.secondTile.x &&
 														secondPair.secondTile.z <= firstPair.secondTile.z) {
 
+														debugger;
 														return true;
 													}
 												}, function(firstPair, secondPair) {
@@ -965,6 +973,7 @@
 														secondPair.secondTile.x >= firstPair.secondTile.x &&
 														secondPair.secondTile.z > firstPair.secondTile.z) {
 
+														debugger;
 														return true;
 													}
 												}, function(firstPair, secondPair) {
@@ -976,6 +985,7 @@
 
 														secondPair.firstTile.z < secondPair.secondTile.z) {
 
+														debugger;
 														return true;
 													}
 												}
