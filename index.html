@@ -183,6 +183,7 @@
 									}
 								});
 							}
+							contentContainer.addClass("loaded");
 							return contentContainer.fadeIn();
 						});
 					}, "Caricamento pagine...");
@@ -199,6 +200,12 @@
 
 			.contentContainer {
 				display: none;
+				overflow-x: auto;
+			}
+
+			.contentContainer.loaded {
+				display: block;
+				display: flex;
 			}
 
 			.content {
@@ -206,7 +213,7 @@
 				margin: 5% auto 0;
 				padding: 0.5em 0.2em;
 				text-align: initial;
-				white-space: nowrap;
+				/* white-space: nowrap; */
 			}
 
 			.content .link {
@@ -242,17 +249,18 @@
 			}
 
 			.link ul li {
-				height: 0;
+				max-height: 0;
 				opacity: 0;
-				overflow: hidden;
 				padding: 0;
+				/* transform: scaleY(0); */
+				transition-duration: 1s;
 				-webkit-transition-duration: 1s;
 			}
 
 			.content .expanded li {
-				height: 2.5em;
+				max-height: 5em;
 				opacity: 1;
-				overflow: visible;
+				/* transform: scaleY(1); */
 			}
 
 			.link .link {
