@@ -943,7 +943,7 @@
 														secondPair.secondTile.z <= firstPair.firstTile.z &&
 
 														secondPair.secondTile.x < firstPair.secondTile.x &&
-														secondPair.secondTile.z >= firstPair.secondTile.z) {
+														secondPair.secondTile.z === firstPair.secondTile.z) {
 
 														debugger;
 														return true;
