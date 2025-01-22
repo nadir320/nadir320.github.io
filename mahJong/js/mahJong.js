@@ -993,7 +993,7 @@
 													if (firstPair.firstTile.z >= firstPair.secondTile.z &&
 
 														firstPair.secondTile.x < secondPair.firstTile.x &&
-														firstPair.secondTile.z >= secondPair.firstTile.z &&
+														firstPair.secondTile.z <= secondPair.firstTile.z &&
 
 														secondPair.firstTile.z <= secondPair.secondTile.z) {
 
