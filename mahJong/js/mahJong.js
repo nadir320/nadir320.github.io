@@ -320,9 +320,10 @@
 					callback();
 				}
 
-				var src = _thisScript.getAttribute("palette") ||
-					_params(_thisScript.getAttribute("src")).palette ||
-					_params(window.location.href).palette;
+				var src =
+					_params(window.location.href).palette ||
+					_thisScript.getAttribute("palette") ||
+					_params(_thisScript.getAttribute("src")).palette;
 
 				palette.src = src;
 			},
