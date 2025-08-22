@@ -312,6 +312,7 @@ var textTables = {
 		, "requireDownloadsSynchronization": "Synchronize downloads list?"
 		, "reset": "Reset"
 		, "resetPostType": "Show all posts"
+		, "searchDownloads": "Search Downloads"
 		, "searching": "Searching..."
 		, "searchingInPage": "Searching in page {0}..."
 		, "searchingInPage2": "Searching in page {0}/{1}..."
@@ -587,6 +588,7 @@ var textTables = {
 		, "requireDownloadsSynchronization": "Aggiornare la lista dei download?"
 		, "reset": "Reimposta"
 		, "resetPostType": "Visualizza tutti i post"
+		, "searchDownloads": "Cerca Download"
 		, "searching": "Ricerca in corso..."
 		, "searchingInPage": "Ricerca in corso in pagina {0}..."
 		, "searchingInPage2": "Ricerca in corso in pagina {0}/{1}..."
@@ -4956,9 +4958,6 @@ $().ready(function() {
 				})();
 				$(".downloadsDialog")
 					.add($(".downloaderDialog"))
-					.attr({
-						"title": getLocalizedText("downloads")
-					})
 					.find(".nextDownloads")
 					.button();
 
@@ -7130,6 +7129,9 @@ $().ready(function() {
 			});
 
 		$(".pageOptionsDialog")
+			.find(".forceNSFWOptions")
+			[(OFFICE_MODE !== 2) ? "show" : "hide"]();
+		$(".pageOptionsDialog")
 			.find("[name=blogOptions_forceNSFW]")
 			.off()
 			.val([ (info.force_nsfw !== undefined) ?
@@ -8216,7 +8218,7 @@ $().ready(function() {
 						}
 					});
 
-					setField(".forceNSFW", (info.force_nsfw !== undefined) ?
+					setField(".forceNSFW", OFFICE_MODE !== 2 && (info.force_nsfw !== undefined) ?
 						getLocalizedText((info.force_nsfw) ? "yes" : "no") : undefined);
 					setField(".loginRequired", (info.blog.data.login_required !== undefined) ?
 						getLocalizedText((info.blog.data.login_required) ? "yes" : "no") : undefined);
@@ -8224,7 +8226,7 @@ $().ready(function() {
 						localizedFormat("two4", lastViewed, getDateIntervalFromNow(now - lastViewed.getTime())) :
 						undefined /* getLocalizedText("never") */);
 					abortables.push(new abortable(info.blog.getInfo(), function(newInfo) {
-						setField(".nsfw", getLocalizedText((newInfo.is_nsfw) ? "yes" : "no"));
+						setField(".nsfw", OFFICE_MODE !== 2 ? getLocalizedText((newInfo.is_nsfw) ? "yes" : "no") : undefined);
 						setField(".lastUpdatedOn", localizedFormat("two4", newInfo.updated,
 							getDateIntervalFromNow(now - newInfo.updated.getTime())));
 						setField(".totalPosts", newInfo.posts);
@@ -8914,7 +8916,7 @@ $().ready(function() {
 							.appendTo(downloadsListElement.empty()),
 						last = 0,
 						loaderMaximum = 1e9,
-						nsfwOnly = !!downloadsDialogElement
+						nsfwOnly = OFFICE_MODE !== 2 && !!downloadsDialogElement
 							.closest(".ui-dialog")
 							.find(".nsfwOnly")
 							.prop("checked"),
@@ -8968,7 +8970,7 @@ $().ready(function() {
 			"beforeClose": function(e, ui) {
 				var nsfwOnly;
 
-				if (allBlogs) {
+				if (allBlogs && OFFICE_MODE !== 2) {
 					if ((nsfwOnly = downloadsDialogElement
 						.closest(".ui-dialog")
 						.find(".nsfwOnly")
@@ -9074,7 +9076,7 @@ $().ready(function() {
 					.addClass("ui-button-icon-primary");
 
 				refreshDownloadsButtons();
-				if (allBlogs) {
+				if (allBlogs && OFFICE_MODE !== 2) {
 					downloadsDialogElement
 						.closest(".ui-dialog")
 						.find(".ui-dialog-buttonpane")
@@ -9100,7 +9102,8 @@ $().ready(function() {
 			"position": {
 				"my": "top",
 				"at": "top+{0}".format(Math.ceil($(window).height() * 0.05))
-			}
+			},
+			"title": getLocalizedText((allBlogs) ? "searchDownloads" : "downloads")
 		});
 	};
 
