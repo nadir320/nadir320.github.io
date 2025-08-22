@@ -25,7 +25,11 @@ window.tumblr = function(auth) {
 
 		if (text && text.length) {
 			photos = $(document.createElement("div"))
-				.html(text.replace(/ src="/gi, " data-src=\""))
+				.html(text
+					.replace(/ src="/gi, " data-src=\"")
+					.replace(/ srcset="/gi, " data-srcset=\"")
+					.replace(/ poster="/gi, " data-poster=\"")
+				)
 				.find("img")
 				.map(function(i, item) {
 					var alt_sizes,
@@ -34,7 +38,7 @@ window.tumblr = function(auth) {
 						matches,
 						photo,
 						url = (item = $(item)).data("src"),
-						srcSet = item.attr("srcset"),
+						srcSet = item.data("srcset"),
 						width;
 
 					if (window.tumblr.isPhotoURL(url, matches = { })) {
@@ -421,7 +425,10 @@ window.tumblr = function(auth) {
 											}
 											if (sourceElement && sourceElement.length) {
 												sourceElement = $(document.createElement("div"))
-													.html(sourceElement.replace(/ src="/gi, " data-src=\""));
+													.html(sourceElement
+														.replace(/ src="/gi, " data-src=\"")
+														.replace(/ srcset="/gi, " data-srcset=\"")
+														.replace(/ poster="/gi, " data-poster=\""));
 												sourceElement = sourceElement
 													.find("video>source")
 													.add(sourceElement.find("video[data-src]"));

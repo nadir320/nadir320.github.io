@@ -6067,6 +6067,7 @@ $().ready(function() {
 									"post": post
 								});
 								item.removeAttr("srcset");
+								item.removeData("srcset");
 								$(document.createElement("a"))
 									.addClass("photo-2")
 									.attr({
@@ -7460,7 +7461,10 @@ $().ready(function() {
 	var sameSource = function(html) {
 		return (html || String.empty)
 			.replace(/ src=\"https*:\/\//gi, " has-src data-src=\"//")
-			.replace(/ src=\\&quot;https*:\/\//gi, " has-src data-src=\\&quot;//");
+			.replace(/ srcset=\"https*:\/\//gi, " has-srcset data-srcset=\"//")
+			.replace(/ src=\\&quot;https*:\/\//gi, " has-src data-src=\\&quot;//")
+			.replace(/ srcset=\\&quot;https*:\/\//gi, " has-srcset data-srcset=\\&quot;//")
+		;
 	};
 
 	var saveBlogs = function(blogs) {
