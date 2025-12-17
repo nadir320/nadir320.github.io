@@ -135,6 +135,7 @@ var textTables = {
 		, "confirmNewPassword": "Confirm password:"
 		, "confirmRemoveFromGlobalUseless": "Are you sure you want to remove '{0}' from the global useless entries?"
 		, "confirmRemoveFromReadLater": "Are you sure you want to remove '{0}' from the 'Read Later' blogs?"
+		, "confirmSetDownloadsDownloaded": "Are you sure you want to set all as downloaded ({0})?"
 		, "connect": "Connect"
 		, "cssFilters": {
 			  "blur": "Blur"
@@ -320,6 +321,8 @@ var textTables = {
 		, "searchTag": "Search tag:"
 		, "seen": "Seen: {0}"
 		, "seenPosts": "Posts when seen: {0}"
+		, "setDownloadsDownloaded": "Set all as downloaded"
+		, "settingAsDownloaded": "Setting as downloaded...\n{0}/{1}"
 		, "showAllImageSizes": "Show all image sizes"
 		, "showMissingDownloads": "Show missing downloads count\ninstead of already downloaded count"
 		, "showNotes": "Show notes"
@@ -411,6 +414,7 @@ var textTables = {
 		, "confirmNewPassword": "Conferma password:"
 		, "confirmRemoveFromGlobalUseless": "Rimuovere '{0}' dai filtri globali?"
 		, "confirmRemoveFromReadLater": "Rimuovere '{0}' dai blog da leggere più tardi?"
+		, "confirmSetDownloadsDownloaded": "Segnare tutti come scaricati ({0})?"
 		, "connect": "Entra"
 		, "cssFilters": {
 			  "blur": "Sfocatura"
@@ -596,6 +600,8 @@ var textTables = {
 		, "searchTag": "Cerca tag:"
 		, "seen": "Visitato: {0}"
 		, "seenPosts": "Post quando visitato: {0}"
+		, "setDownloadsDownloaded": "Segna tutti come scaricati"
+		, "settingAsDownloaded": "Segnando come scaricati...\n{0}/{1}"
 		, "showAllImageSizes": "Mostra dimensioni delle foto"
 		, "showMissingDownloads": "Mostra il numero di donwload mancanti\ninvece che di quelli già scaricati"
 		, "showNotes": "Mostra note"
@@ -8604,6 +8610,9 @@ $().ready(function() {
 					.add(downloadsDialogElement
 						.closest(".ui-dialog")
 						.find(".xmlDownloadButton"))
+					.add(downloadsDialogElement
+						.closest(".ui-dialog")
+						.find(".setDownloadsDownloadedButton"))
 					.button((urls.length) ? "enable" : "disable");
 			},
 			createLink = function(post) {
@@ -8893,6 +8902,53 @@ $().ready(function() {
 			"class": "xmlDownloadButton",
 			"click": function(e) { }
 		}, {
+			"class": "setDownloadsDownloadedButton",
+			"click": function(e) {
+				var downloads = $(downloadsElement)
+					.find("li")
+					.filter(function(i, item) {
+						return !$(item).find("a.downloadLink").hasClass("downloaded");
+					})
+					.map(function(i, item) {
+						var a = $(item).find("a.downloadLink");
+
+						return {
+							downloaded: a.hasClass("downloaded"),
+							href: a.attr("href"),
+							post: a.data("post")
+						};
+					});
+
+				if (downloads.length > 0) {
+					$.when($.confirm(localizedFormat("confirmSetDownloadsDownloaded",
+						downloads.length.toLocaleString()), undefined, [
+							getLocalizedText("yes"),
+							getLocalizedText("no")
+						])).then(function() {
+							window.loader.cancelable(true);
+							window.loader.value(0);
+							window.loader.maximum(downloads.length);
+							window.loader.message(localizedFormat("settingAsDownloaded",
+								0,
+								downloads.length.toLocaleString()));
+							window.loading(function() {
+								return $.when($.pool(POOL_SIZE, function(globalIndex, callerID) {
+									if (!window.loader.isCanceled()) {
+										return downloads[globalIndex];
+									}
+								}, function(item, globalIndex, callerID) {
+									window.loader.value(globalIndex + 1);
+									window.loader.message(localizedFormat("settingAsDownloaded",
+										(globalIndex + 1).toLocaleString(),
+										downloads.length.toLocaleString()));
+									return setFileDownloaded(item.href, item.post);
+								}));
+							});
+						});
+				}
+				e.preventDefault();
+			}
+		}, {
 			"class": "downloads2",
 			"click": showDownloads,
 			"text": "."
@@ -8907,6 +8963,9 @@ $().ready(function() {
 				.add(downloadsDialogElement
 					.closest(".ui-dialog")
 					.find(".xmlDownloadButton"))
+				.add(downloadsDialogElement
+					.closest(".ui-dialog")
+					.find(".setDownloadsDownloadedButton"))
 				.button("disable");
 			buttons.push({
 				"class": "searchButton",
@@ -9049,9 +9108,28 @@ $().ready(function() {
 						})
 						.button({
 							"icons": {
-								"primary": "ui-icon-transferthick-e-w"
+								"primary": "ui-icon-disk"
 							},
 							"label": getLocalizedText("downloadAsXml"),
+							"text": false
+						}))
+					.appendTo(button.parent().parent());
+
+				button = downloadsDialogElement
+					.closest(".ui-dialog")
+					.find(".setDownloadsDownloadedButton")
+					.empty();
+				button
+					.append($(document.createElement("a"))	/* 'A' button: OK */
+						.addClass("setDownloadsDownloadedButton")
+						.attr({
+							"href": "#"
+						})
+						.button({
+							"icons": {
+								"primary": "ui-icon-check"
+							},
+							"label": getLocalizedText("setDownloadsDownloaded"),
 							"text": false
 						}))
 					.appendTo(button.parent().parent());
@@ -9076,6 +9154,7 @@ $().ready(function() {
 					.addClass("ui-button-icon-primary");
 
 				refreshDownloadsButtons();
+
 				if (allBlogs && OFFICE_MODE !== 2) {
 					downloadsDialogElement
 						.closest(".ui-dialog")
