@@ -4454,10 +4454,12 @@ $().ready(function() {
 				if (source.length > 1) {
 					source = window.parseArguments(source[1]).v;
 					if (source && source.length) {
+						source = source.split(/\D+/).join(String.empty);
+
 						date = new Date("{0}-{1}-{2}".format(source.substr(0, 4), source.substr(4, 2), source.substr(6, 2)));
 
 						return localizedFormat("version", (!isNaN(date.getTime())) ?
-							date.toLocaleDateString ? date.toLocaleDateString() : date.toLocaleString() :
+							(date.toLocaleDateString ? date.toLocaleDateString() : date.toLocaleString()) + source.substr(8) :
 							source);
 					}
 				}
