@@ -7,7 +7,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 		<link rel="shortcut icon" type="image/png" href="images/tetris.png">
 		<title>Tetris</title>
-		<link rel="stylesheet" type="text/css" href="css/style.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.min.css?v=20251223"/>
 	</head>
 	<body>
 		<div id="messageBackdrop" class="backdrop fade hidden"></div>
@@ -17,15 +17,32 @@
 			<div>Linee:</div>
 			<div id="initial-lines"></div>
 			<hr/>
+            <div id="pieces" class="pieces"></div>
+            <hr/>
 			<button class="newGame">Nuova</button>
 			<button class="cancel">Annulla</button>
 		</div>
+        <div id="stat-message" class="message fade hidden">
+            <table class="stat-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Totale</th>
+                        <th>Correnti</th>
+                        <th>Massimo</th>
+                        <th>Mancanti da</th>
+                        <th>Massimo mancante</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
 		<div class="status">
 			<div>Livello: <span class="level"></span></div>
 			<div>Tempo: <span class="time"></span></div>
 			<div>Linee: <span class="lines"></span></div>
 			<div class="line-details"></div>
-			<div>Pezzi: <span class="pieces"></span></div>
+			<div>Pezzi: <span class="pieces"></span>&nbsp;<a class="stats" href="#">&nearr;</a></div>
 			<div class="base-lines-row">Base: <span class="base-lines"></span></div>
 			<button class="newGame">Nuova</button>
 			<button class="pauseGame">Pausa</button>
@@ -53,6 +70,6 @@
 			<input type="hidden" id="lostMessage" value="Hai perso..."/>
 			<input type="hidden" id="askNewMessage" value="Iniziare una nuova partita?"/>
 		</form>
-		<script type="text/javascript" src="js/tetris.min.js" -storage="no" safe="0" -boss="1" -boss-color="white"></script>
+		<script type="text/javascript" src="js/tetris.min.js?v=20251223" -storage="no" -boss="1" -boss-color="white"></script>
 	</body>
 </html>
