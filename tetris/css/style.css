@@ -158,6 +158,10 @@ input:focus,
 	width: 100%;
 }
 
+.status a {
+    color: black;
+}
+
 .status .base-lines.base-cleared {
 	color: lightGreen;
 }
@@ -175,13 +179,18 @@ input:focus,
 }
 
 .status .next-piece>*,
-.status .piece-stats .preview {
+.status .piece-stats .preview,
+.message .preview {
 	display: grid;
 	width: fit-content;
 }
 
 .status .next-piece>* {
 	zoom: 0.75;
+}
+
+.status .piece-stats .stat-row.longest-negative-streak {
+    color: orange;
 }
 
 .status .piece-stats .stat-row td.stat-value {
@@ -206,6 +215,37 @@ input:focus,
 
 .message ul li {
 	margin: 0.5em 0;
+}
+
+.message .pieces table {
+    width: 100%;
+}
+
+.message .pieces td {
+    vertical-align: top;
+}
+
+.message .pieces .preview {
+    margin: 0 auto;
+}
+
+.message .pieces .tile {
+    zoom: 0.5;
+}
+
+.message .stat-table {
+    border: 1px solid black;
+    background-color: whitesmoke;
+    border-collapse: collapse;
+    text-shadow: none;
+}
+
+.message .stat-table td {
+    padding: 0.25em;
+}
+
+.message .stat-table .preview {
+    zoom: 0.5;
 }
 
 .level-container {
