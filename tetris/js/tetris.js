@@ -203,46 +203,16 @@
 
 	(function() {
 		var constants = {
-			get baseMoveTime() { return 600; },
 			get boardHeight() { return 20; },
 			get boardWidth() { return 10; },
-			levelMoveTime: function(level) {
-				var time;
+			levelMoveTime: function(level, slow) {
+				var time = 500,
+                    move = slow ? 25 : 35;
 
-				switch (level) {
-					case 1:
-						time = 500;
-						break;
-					case 2:
-						time = 400;
-						break;
-					case 3:
-						time = 340;
-						break;
-					case 4:
-						time = 280;
-						break;
-					case 5:
-						time = 220;
-						break;
-					case 6:
-						time = 160;
-						break;
-					case 7:
-						time = 110;
-						break;
-					case 8:
-						time = 90;
-						break;
-					default:
-						time = 70;
-						break;
-				}
-				return time;
+                return Math.max(move, time - ((level - 1) * move));
 			},
 			get levels() { return 25; },
 			get linesPerLevel() { return 10; },
-			get moveTimeStep() { return 50; },
 			get padding() { return 8; },
 			get randomTiles() { return 4; },
 			get tileHeight() { return 30; },
@@ -661,7 +631,8 @@
 		})();
 
 		Game = function(board, options, ready, state) {
-			var start,
+			var activePieces,
+                start,
 				elapsed = 0,
 				end,
 				lastMove,
@@ -680,13 +651,20 @@
 				baseCleared,
 				baseRemoved,
 				remainingBaseTiles = 0,
+                remainingTiles = 0,
 				piece,
 				timer;
 
 			Object.keys(tetrominoes).forEach(function(key) {
 				var tetromino = tetrominoes[key];
 
-				pieceStats[tetromino.name] = 0;
+				pieceStats[tetromino.name] = {
+                    currentStreak: 0,
+                    currentNegativeStreak: 0,
+                    maximumStreak: 0,
+                    maximumNegativeStreak: 0,
+                    total: 0
+                };
 			});
 
 			var k = function(row, column) {
@@ -766,7 +744,7 @@
 					});
 
 					var tilesPerRow = Object.keys(allTiles)
-						.map(key => allTiles[key])
+						.map(function(key) { return allTiles[key]; })
 						.reduce(function(array, value) {
 							(array[value.row] || (array[value.row] = (function() {
 								var r = [ ];
@@ -817,13 +795,12 @@
 							Math.floor((lines + filledLines.length) / constants.linesPerLevel)) {
 
 							level++;
-							levelMoveTime = (options.slow) ?
-								Math.max(constants.moveTimeStep, levelMoveTime - constants.moveTimeStep) :
-								constants.levelMoveTime(level);
+							levelMoveTime = constants.levelMoveTime(level, options.slow);
 						}
 						lines += filledLines.length;
 						updateBoard();
 					}
+                    remainingTiles = Object.keys(allTiles).map(function(key) { return allTiles[key].className; }).filter(function(n) { return n; }).length;
 
 					getNextPiece();
 					board.dispatchEvent(new Event("game.changed"));
@@ -858,6 +835,7 @@
 					, pieceStats: pieceStats
 					, pieces: pieces
 					, remainingBaseTiles: remainingBaseTiles
+                    , remainingTiles: remainingTiles
 					, start: start
 				});
 			};
@@ -892,7 +870,11 @@
 
 			var getNextPiece = function() {
 				var createPiece = function() {
-					var newPiece = new Tetromino();
+					var newPiece;
+
+                    do {
+                        newPiece = new Tetromino();
+                    } while (activePieces.length && !activePieces.includes(newPiece.className));
 
 					newPiece.findEmptyTiles = findEmptyTiles;
 					newPiece.isTileEmpty = isTileEmpty;
@@ -902,8 +884,30 @@
 				if (!nextPiece) {
 					nextPiece = createPiece();
 				}
+
+                var same = piece && piece.className === nextPiece.className;
+
 				piece = nextPiece;
-				pieceStats[piece.className]++;
+
+                Object.keys(pieceStats).forEach(function(key) {
+                    var stat = pieceStats[key];
+
+                    if (key == piece.className) {
+                        stat.total++;
+                        if (same) {
+                            stat.currentStreak++;
+                        } else {
+                            stat.currentStreak = 1;
+                        }
+                        stat.currentNegativeStreak = 0;
+                    } else {
+                        stat.currentStreak = 0;
+                        stat.currentNegativeStreak++;
+                    }
+                    stat.maximumStreak = Math.max(stat.maximumStreak, stat.currentStreak);
+                    stat.maximumNegativeStreak = Math.max(stat.maximumNegativeStreak, stat.currentNegativeStreak);
+                });
+
 				pieces++;
 				nextPiece = createPiece();
 				updateBoard();
@@ -1065,6 +1069,7 @@
 				board.appendChild(levelContainer);
 
 				if (state && state.start) {
+                    activePieces = state.activePieces || [ ];
 					baseCleared = state.baseCleared;
 					baseRemoved = state.baseRemoved;
 					baseTiles = state.baseTiles;
@@ -1075,19 +1080,14 @@
 					pieceStats = state.pieceStats;
 					pieces = state.pieces;
 					remainingBaseTiles = state.remainingBaseTiles;
+					remainingTiles = state.remainingTiles;
 					start = state.start;
 				} else {
+                    activePieces = options.activePieces || [ ];
 					pieces = lines = 0;
 					level = 1;
 				}
-				if (options.slow) {
-					levelMoveTime = constants.baseMoveTime;
-					for (var i = 1; i < level; i++) {
-						levelMoveTime = Math.max(constants.moveTimeStep, levelMoveTime - constants.moveTimeStep);
-					}
-				} else {
-					levelMoveTime = constants.levelMoveTime(level);
-				}
+                levelMoveTime = constants.levelMoveTime(level, options.slow);
 				updateBoard();
 
 				if (!paused) {
@@ -1125,6 +1125,7 @@
 			})();
 
 			return {
+                get activePieces() { return activePieces; },
 				get baseCleared() { return baseCleared; },
 				get baseLines() { return baseTiles / constants.randomTiles; },
 				get baseRemoved() { return baseRemoved; },
@@ -1160,6 +1161,7 @@
 				get pieces() { return pieces; },
 				get pieceStats() { return pieceStats; },
 				get remainingBaseLines() { return remainingBaseTiles / constants.randomTiles; },
+                get remainingTiles() { return remainingTiles; },
 				resume: function() {
 					if (paused && !end) {
 						lastTime = Date.now();
@@ -1203,7 +1205,8 @@
 		var board = document.querySelector(".board"),
 			message = document.getElementById("message"),
 			scaler = document.querySelector(".scaler"),
-			status = document.querySelector(".status");
+			status = document.querySelector(".status"),
+            statMessage = document.getElementById("stat-message");
 
 		(function() {
 			if (typeof window.ShadowRoot === "undefined") {
@@ -1269,13 +1272,15 @@
 				refreshTime();
 			}
 
-			Array.from(document.getElementsByClassName("level")).forEach(function(item, i) {
+            var statusElement = document.querySelector(".status");
+
+			Array.from(statusElement.getElementsByClassName("level")).forEach(function(item, i) {
 				item.innerText = (game) ? game.level : undefined;
 			});
-			Array.from(document.getElementsByClassName("lines")).forEach(function(item, i) {
+			Array.from(statusElement.getElementsByClassName("lines")).forEach(function(item, i) {
 				item.innerText = ((game) ? game.lines : 0).toLocaleString();
 			});
-			Array.from(document.getElementsByClassName("line-details")).forEach(function(item, i) {
+			Array.from(statusElement.getElementsByClassName("line-details")).forEach(function(item, i) {
 				var details = "";
 
 				if (game && game.lines) {
@@ -1305,25 +1310,28 @@
 				}
 				item.innerText = details;
 			});
-			Array.from(document.getElementsByClassName("pieces")).forEach(function(item, i) {
+			Array.from(statusElement.getElementsByClassName("pieces")).forEach(function(item, i) {
 				item.innerText = (game) ? game.pieces : undefined;
 			});
-			Array.from(document.getElementsByClassName("base-lines-row")).forEach(function(item, i) {
+			Array.from(statusElement.getElementsByClassName("base-lines-row")).forEach(function(item, i) {
 				item.classList[(game && game.baseLines) ? "remove" : "add"]("removed");
 			});
 			if (game && game.baseLines) {
 				Array.from(document.getElementsByClassName("base-lines")).forEach(function(item, i) {
 					item.innerText = (game) ? (game.remainingBaseLines.toLocaleString() +
 					"/" +
-					game.baseLines.toLocaleString()) : undefined;
+					game.baseLines.toLocaleString() +
+                    " (" +
+                    game.remainingTiles.toLocaleString() +
+                    ")") : undefined;
 					(item.classList)[(game && game.baseCleared) ? "add" : "remove"]("base-cleared");
 					(item.classList)[(game && game.baseRemoved) ? "add" : "remove"]("base-removed");
 				});
 			}
-			Array.from(document.getElementsByClassName("next-piece-row")).forEach(function(item, i) {
+			Array.from(statusElement.getElementsByClassName("next-piece-row")).forEach(function(item, i) {
 				item.classList[(game && game.start) ? "remove" : "add"]("removed");
 			});
-			Array.from(document.getElementsByClassName("next-piece")).forEach(function(item, i) {
+			Array.from(statusElement.getElementsByClassName("next-piece")).forEach(function(item, i) {
 				var preview = (game) ? game.getNextPiecePreview(true) : undefined;
 
 				if (typeof preview === "string") {
@@ -1339,27 +1347,45 @@
 
 			var stats;
 
-			Array.from(document.getElementsByClassName("piece-stats-row")).forEach(function(item, i) {
+			Array.from(statusElement.getElementsByClassName("piece-stats-row")).forEach(function(item, i) {
 				item.classList[(game && game.start) ? "remove" : "add"]("removed");
 			});
 			if (game) {
 				stats = game.pieceStats;
 
-				Array.from(document.getElementsByClassName("piece-stats")).forEach(function(item) {
+				Array.from(statusElement.getElementsByClassName("piece-stats")).forEach(function(item) {
 					Array.from(item.getElementsByClassName("stat-table")).forEach(function(table) {
-						var rows = Array.from(table.getElementsByClassName("stat-row"));
+						var rows = Array.from(table.getElementsByClassName("stat-row")),
+                            maximumNegativeStreak = { types: [ ], value: 0 };
 
 						rows.forEach(function(row, j) {
+                            row.classList.remove("longest-negative-streak");
 							Array.from(row.getElementsByClassName("stat-value")).forEach(function(cell, k) {
-								cell.innerText = stats[row.dataset.type];
+                                var stat = stats[row.dataset.type];
+
+								cell.innerText = stat.total.toLocaleString();
+                                if (maximumNegativeStreak.value <= stat.maximumNegativeStreak) {
+                                    if (maximumNegativeStreak.value === stat.maximumNegativeStreak) {
+                                        maximumNegativeStreak.types.push(row.dataset.type);
+                                    } else {
+                                        maximumNegativeStreak.types = [row.dataset.type];
+                                        maximumNegativeStreak.value = stat.maximumNegativeStreak;
+                                    }
+                                }
 							});
 						});
 
+                        maximumNegativeStreak.types.forEach(function(type) {
+                            table.querySelector(".stat-row[data-type=" + type + "]")
+                                .classList.add("longest-negative-streak");
+                        });
+
 						rows.sort(function(a, b) {
-							return stats[b.dataset.type] - stats[a.dataset.type];
+							return stats[b.dataset.type].total - stats[a.dataset.type].total;
 						});
 						rows.forEach(function(row) {
 							table.appendChild(row);
+                            row.classList[(game.activePieces.length && game.activePieces.includes(row.dataset.type)) ? "remove" : "add"]("removed");
 						});
 					});
 				});
@@ -1380,6 +1406,7 @@
 
 		var hideMessage = function() {
 			_hide(message);
+            _hide(statMessage);
 			_hide(document.getElementById("messageBackdrop"));
 			board.focus();
 		};
@@ -1391,17 +1418,23 @@
 				board.removeEventListener("game.changed", checkGame);
 			}
 
-			var lines = 0;
+			var activePieces = [ ],
+                lines = 0;
 
 			if (!state) {
-				lines = parseInt(Array.from(document.querySelectorAll("[name=initial-lines]")).filter(function(item) {
-					return item.checked;
-				}).pop().value);
+				lines = parseInt(Array.from(document.querySelectorAll("[name=initial-lines]"))
+                    .filter(function(item) { return item.checked; })
+                    .pop()
+                    .value);
+                activePieces = Array.from(document.querySelectorAll(".message .pieces input"))
+                    .filter(function(item) { return item.checked; })
+                    .map(function(item) { return item.dataset.piece; });
 			}
 
 			game = new Game(board, {
 					fade: _fade,
 					lines: lines || 0,
+                    activePieces: activePieces,
 					paused: paused,
 					shadow: !_param("no-shadow"),
 					slow: !!_param("slow")
@@ -1473,6 +1506,58 @@
 				});
 			}
 		};
+
+        var showStats = function(e) {
+            if (game) {
+                game.pause();
+
+                var stats = game.pieceStats,
+                    previews = Game.createPreviews(),
+                    tableBody = statMessage.querySelector("table tbody");
+
+                tableBody.textContent = "";
+
+                var keys = Object.keys(stats);
+
+                if (game.activePieces.length) {
+                    keys = keys.filter(function(key) { return game.activePieces.includes(key); });
+                }
+                keys.forEach(function(key) {
+                    var row = document.createElement("tr"),
+                        cell = function(value) {
+                            var cellElement = document.createElement("td");
+
+                            if (value instanceof HTMLElement) {
+                                cellElement.appendChild(value);
+                            } else {
+                                cellElement.textContent = value.toLocaleString();
+                            }
+                            row.appendChild(cellElement);
+                        },
+                        preview =  previews.filter(function(item) {
+                            return item.name == key;
+                        }).pop(),
+                        stat = stats[key];
+
+                    addTileClass(preview.preview);
+                    preview.preview.classList.add("preview");
+                    cell(preview.preview);
+                    [
+                        stat.total,
+                        stat.currentStreak,
+                        stat.maximumStreak,
+                        stat.currentNegativeStreak,
+                        stat.maximumNegativeStreak
+                    ].forEach(cell);
+                    tableBody.appendChild(row);
+                });
+                _show(document.getElementById("messageBackdrop"));
+                _show(statMessage);
+            }
+            if (e && e.preventDefault) {
+                e.preventDefault();
+            }
+        };
 
 		var keyHandler = function(e) {
 			switch (e.which) {
@@ -1550,6 +1635,9 @@
 				case 113:				/* F2 */
 					askNewGame();
 					break;
+				case 118:				/* F7 */
+					showStats();
+					break;
 				default:
 					/* console.info(e.which); */
 					break;
@@ -1563,6 +1651,7 @@
 			board.addEventListener("game.paused", gamePaused);
 			board.addEventListener("game.resumed", gameResumed);
 
+            _bindClickByClassName(status, "stats", showStats);
 			_bindClickByClassName(status, "newGame", askNewGame);
 			_bindClickByClassName(status, "pauseGame", pauseGame);
 
@@ -1658,11 +1747,11 @@
 		})();
 		window.addEventListener("resize", resizer);
 		window.addEventListener("blur", function() {
-			if (_bossActive) {
-				bossScreen(true);
-			} else if (game) {
-				game.pause();
-			}
+            if (_bossActive) {
+                bossScreen(true);
+            } else if (game) {
+                game.pause();
+            }
 		});
 		document.addEventListener("visibilitychange", function() {
 			if (document.hidden) {
@@ -1731,6 +1820,45 @@
 				});
 				item.appendChild(table);
 			});
+
+			previews = Game.createPreviews();
+
+            var activePieces = previews.map(function(item) { return item.name; }),
+                pieces = document.getElementById("pieces"),
+                piecesTable = document.createElement("table"),
+                piecesRow = document.createElement("tr");
+
+            if (state && state.activePieces) {
+                activePieces = state.activePieces;
+            } else {
+                var filter = _params()["pieces"];
+
+                if (filter && filter.length) {
+                    activePieces = filter.toUpperCase().split(/[^a-zA-Z0-9]+/);
+                }
+            }
+
+            previews.forEach(function(preview) {
+                var pieceCell = document.createElement("td"),
+                    pieceLabel = document.createElement("label"),
+                    pieceCheckBox = document.createElement("input");
+
+                addTileClass(preview.preview);
+                preview.preview.classList.add("preview");
+
+                pieceCheckBox.setAttribute("type", "checkbox");
+                pieceCheckBox.dataset.piece = preview.name;
+                if (activePieces.includes(preview.name)) {
+                    pieceCheckBox.checked = true;
+                }
+                pieceLabel.appendChild(pieceCheckBox);
+                pieceLabel.appendChild(preview.preview);
+                pieceCell.appendChild(pieceLabel);
+                piecesRow.appendChild(pieceCell);
+            });
+            piecesTable.appendChild(piecesRow);
+            pieces.appendChild(piecesTable);
+
 			newGame(state, true);
 		});
 	})();
