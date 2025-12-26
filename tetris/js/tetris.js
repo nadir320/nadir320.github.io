@@ -1582,7 +1582,7 @@
 					}
 					break;
 				case 27:				/* Escape */
-					if (_isVisible(message)) {
+					if (_isVisible(message) || _isVisible(statMessage)) {
 						hideMessage();
 					} else if (_bossActive) {
 						bossScreen(true);
