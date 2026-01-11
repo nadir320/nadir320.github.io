@@ -2986,6 +2986,84 @@ $().ready(function() {
 			element.webkitRequestFullscreen;
 	};
 
+	var goToLastViewedPage = function(info) {
+		var lastUpdatedDate = getLastUpdatedDate(info.url, true),
+			newPages = parseInt(info.newPages),
+			postType = window.sessionStorage.getItem("blogPostType");
+
+		if (isNaN(newPages) || newPages < 0) {
+			newPages = parseInt(window.sessionStorage.getItem("blogPage"));
+		} else if (newPages) {
+			newPages--;
+		}
+		if (!(postType && postType.length)) {
+			postType = _options.postType;
+		}
+		return window.loading(function() {
+			return $.Deferred(function(deferred) {
+				var forward = true,
+					pageFound = function(pageIndex) {
+						$.when(loadBlogPage(info, pageIndex, true)).then(function() {
+							deferred.resolve();
+						});
+					},
+					scanPage = function(pageIndex) {
+						return $.Deferred(function(pageDeferred) {
+							window.loader.message(localizedFormat("searchingInPage", pageIndex + 1));
+							$.when(info.blog.getPosts(pageIndex, undefined, postType, _options.postsPerPage,
+								window.sessionStorage.getItem("blogTag"))).then(function(posts) {
+
+								var hasANewPost = false,
+									hasAnOldPost = false;
+
+								$(posts).each(function(i, post) {
+									if (!post.sticky) {
+										if (post.timestamp.getTime() > lastUpdatedDate.getTime()) {
+											hasANewPost = true;
+										} else {
+											hasAnOldPost = true;
+										}
+										if (hasANewPost && hasAnOldPost) {
+											return false;
+										}
+									}
+								});
+								pageDeferred.resolve({
+									hasANewPost: hasANewPost,
+									hasAnOldPost: hasAnOldPost,
+									length: posts.length,
+									pageIndex: pageIndex
+								});
+							});
+						}).promise();
+					},
+					scanPages = function(index) {
+						$.when(scanPage(index)).then(function(scanResult) {
+							if (scanResult.length < _options.postsPerPage ||
+								(scanResult.hasANewPost && scanResult.hasAnOldPost)) {
+								pageFound(scanResult.pageIndex);
+							} else if (scanResult.hasANewPost) {
+								if (forward) {
+									scanPages(index + 1);
+								} else {
+									pageFound(scanResult.pageIndex);
+								}
+							} else if (scanResult.pageIndex > newPages) {
+								pageFound(scanResult.pageIndex - 1);
+							} else {
+								forward = false;
+								scanPages(index - 1);
+							}
+						});
+					};
+
+				window.setTimeout(function() {
+					scanPages(newPages);
+				}, DEFAULT_TIMEOUT);
+			}).promise();
+		}, localizedFormat("searching"));
+	};
+
 	var hideStatus = function() {
 		return $.toast({
 			"close": true,
@@ -3250,7 +3328,11 @@ $().ready(function() {
 					})
 					.on({
 						"click": function(e) {
-							loadBlogPage(info, Math.max(Math.ceil(getPostCount(info) / _options.postsPerPage), 1) - 1);
+							if ($(this).hasClass("go-to-last-viewed")) {
+								goToLastViewedPage(info);
+							} else {
+								loadBlogPage(info, Math.max(Math.ceil(getPostCount(info) / _options.postsPerPage), 1) - 1);
+							}
 						}
 					}));
 		});
@@ -3423,24 +3505,30 @@ $().ready(function() {
 							///
 
 							$.when(applyBlogPageOptions()).then(function() {
-								var buttons = $(".nextPage"),
-									restoreButtons = function(icon) {
+								var buttons = $(".nextPage").add($(".lastPage")),
+									restoreButtons = function(nextIcon, lastIcon, notLastViewedPage) {
 										buttons
 											.removeClass("ui-state-highlight")
 											.each(function(i, item) {
-												$(item)
+												var isLast = (item = $(item)).hasClass("lastPage"),
+													icon = (isLast) ? lastIcon : nextIcon;
+
+												item
 													.find(".ui-button-icon-primary")
 													.removeClass("ui-icon-loader-16")
-													.removeClass($(item).data("current-icon"))
+													.removeClass(item.data("current-icon"))
 													.addClass((icon && icon.length) ?
 														icon :
 														$(item).data("original-icon"));
 												if (icon && icon.length) {
-													$(item).data({
+													item.data({
 														"current-icon": icon
 													});
 												} else {
-													$(item).removeData("current-icon");
+													item.removeData("current-icon");
+												}
+												if (isLast) {
+													item[((notLastViewedPage) ? "add" : "remove") + "Class"]("go-to-last-viewed");
 												}
 											});
 									};
@@ -3450,13 +3538,16 @@ $().ready(function() {
 									restoreButtons();
 								} else if (info.postsDifference) {
 									_nextPageCheckTimeout = window.setTimeout(function() {
-										buttons.addClass("ui-state-highlight").each(function(i, item) {
-											$(item)
-												.find(".ui-button-icon-primary")
-												.removeClass($(item).data("original-icon"))
-												.removeClass($(item).data("current-icon"))
-												.addClass("ui-icon-loader-16");
-										});
+										buttons
+											.addClass("ui-state-highlight").each(function(i, item) {
+												$(item)
+													.find(".ui-button-icon-primary")
+													.removeClass($(item).data("original-icon"))
+													.removeClass($(item).data("current-icon"))
+													.addClass("ui-icon-loader-16");
+											})
+											.removeClass("go-to-last-viewed");
+
 										$.when(blog.getPosts((pageIndex + 1) * _options.postsPerPage, undefined,
 											postType, 1, window.sessionStorage.getItem("blogTag")))
 											.then(function(nextPost) {
@@ -3477,7 +3568,11 @@ $().ready(function() {
 																			!downloaded) ?
 																			"-blue" :
 																			String.empty) :
-																	undefined);
+																	undefined,
+																	(hasANewPost) ?
+																		"ui-icon-arrowthickstop-2-e" :
+																		undefined,
+																	hasANewPost);
 															});
 														if (!hasANewPost) {
 															$(".newPostsSuffix").text(localizedFormat("newPostsSuffix",
@@ -5028,83 +5123,9 @@ $().ready(function() {
 					.find(".goToLastViewedPage")
 						.on({
 							"click": function(e) {
-								var info = $(".pageOptionsDialog").data("info"),
-									lastUpdatedDate = getLastUpdatedDate(info.url, true),
-									newPages = parseInt(info.newPages),
-									postType = window.sessionStorage.getItem("blogPostType");
-
-								if (isNaN(newPages) || newPages < 0) {
-									newPages = parseInt(window.sessionStorage.getItem("blogPage"));
-								} else if (newPages) {
-									newPages--;
-								}
-								if (!(postType && postType.length)) {
-									postType = _options.postType;
-								}
-								window.loading(function() {
-									return $.Deferred(function(deferred) {
-										var forward = true,
-											pageFound = function(pageIndex) {
-												$.when(loadBlogPage(info, pageIndex, true)).then(function() {
-													$(".pageOptionsDialog").dialog("close");
-													deferred.resolve();
-												});
-											},
-											scanPage = function(pageIndex) {
-												return $.Deferred(function(pageDeferred) {
-													window.loader.message(localizedFormat("searchingInPage", pageIndex + 1));
-													$.when(info.blog.getPosts(pageIndex, undefined, postType, _options.postsPerPage,
-														window.sessionStorage.getItem("blogTag"))).then(function(posts) {
-
-														var hasANewPost = false,
-															hasAnOldPost = false;
-
-														$(posts).each(function(i, post) {
-															if (!post.sticky) {
-																if (post.timestamp.getTime() > lastUpdatedDate.getTime()) {
-																	hasANewPost = true;
-																} else {
-																	hasAnOldPost = true;
-																}
-																if (hasANewPost && hasAnOldPost) {
-																	return false;
-																}
-															}
-														});
-														pageDeferred.resolve({
-															hasANewPost: hasANewPost,
-															hasAnOldPost: hasAnOldPost,
-															length: posts.length,
-															pageIndex: pageIndex
-														});
-													});
-												}).promise();
-											},
-											scanPages = function(index) {
-												$.when(scanPage(index)).then(function(scanResult) {
-													if (scanResult.length < _options.postsPerPage ||
-														(scanResult.hasANewPost && scanResult.hasAnOldPost)) {
-														pageFound(scanResult.pageIndex);
-													} else if (scanResult.hasANewPost) {
-														if (forward) {
-															scanPages(index + 1);
-														} else {
-															pageFound(scanResult.pageIndex);
-														}
-													} else if (scanResult.pageIndex > newPages) {
-														pageFound(scanResult.pageIndex - 1);
-													} else {
-														forward = false;
-														scanPages(index - 1);
-													}
-												});
-											};
-
-										window.setTimeout(function() {
-											scanPages(newPages);
-										}, DEFAULT_TIMEOUT);
-									}).promise();
-								}, localizedFormat("searching"));
+								$.when(goToLastViewedPage($(".pageOptionsDialog").data("info"))).then(function() {
+									$(".pageOptionsDialog").dialog("close");
+								});
 							}
 						})
 						.button({
@@ -7290,7 +7311,8 @@ $().ready(function() {
 					}
 				})
 				.html(replaceHTMLNewLines(blogTitle)));
-		if (tag && tag.length) {
+
+		if ((tag && tag.length) || (blogPostType && blogPostType.length)) {
 			$(".blogPageTitle")
 				.append($(document.createElement("button"))
 					.attr({
@@ -7303,6 +7325,7 @@ $().ready(function() {
 						"text": false
 					}).on({
 						"click": function(e) {
+							window.sessionStorage.removeItem("blogPostType");
 							searchTag();
 							return e.preventAll();
 						}

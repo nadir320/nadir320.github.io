@@ -46,6 +46,11 @@ video {
 	background-position: 0 0 !important;
 }
 
+.ui-icon-arrowthickstop-2-e {
+	background-image: url("../images/ui-icon-arrowthickstop-2-e.png") !important;
+	background-position: 0 0 !important;
+}
+
 .ui-icon-text {
 	background-image: url("../images/ui-icon-text.png") !important;
 	background-position: 0 0 !important;
