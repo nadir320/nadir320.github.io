@@ -8929,18 +8929,15 @@ $().ready(function() {
 		}, {
 			"class": "setDownloadsDownloadedButton",
 			"click": function(e) {
-				var downloads = $(downloadsElement)
-					.find("li")
+				var downloads = $(downloadsListElement)
+					.find("a.downloadLink")
 					.filter(function(i, item) {
-						return !$(item).find("a.downloadLink").hasClass("downloaded");
+						return !$(item).hasClass("downloaded");
 					})
 					.map(function(i, item) {
-						var a = $(item).find("a.downloadLink");
-
 						return {
-							downloaded: a.hasClass("downloaded"),
-							href: a.attr("href"),
-							post: a.data("post")
+							href: (item = $(item)).attr("href"),
+							post: item.data("post")
 						};
 					});
 
@@ -8957,7 +8954,7 @@ $().ready(function() {
 								0,
 								downloads.length.toLocaleString()));
 							window.loading(function() {
-								return $.when($.pool(POOL_SIZE, function(globalIndex, callerID) {
+								return $.pool(POOL_SIZE, function(globalIndex, callerID) {
 									if (!window.loader.isCanceled()) {
 										return downloads[globalIndex];
 									}
@@ -8966,8 +8963,10 @@ $().ready(function() {
 									window.loader.message(localizedFormat("settingAsDownloaded",
 										(globalIndex + 1).toLocaleString(),
 										downloads.length.toLocaleString()));
-									return setFileDownloaded(item.href, item.post);
-								}));
+									return $.Deferred(function(deferred) {
+										$.when(setFileDownloaded(item.href, item.post)).always(deferred.resolve);
+									});
+								});
 							});
 						});
 				}
