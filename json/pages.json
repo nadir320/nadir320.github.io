@@ -8,6 +8,9 @@
 	, { "text": "CORS", "url": "cors/index.html", "icon": "./cors/images/cors.png" }
 	, { "text": "Foto del giorno", "url": "natGeo/tv.html", "icon": "./natGeo/images/natGeo.png" }
 	, { "text": "Foto del giorno (NASA)", "url": "nasa/apod.html", "icon": "./nasa/images/apod.png" }
+	, { "text": "Mah Jong", "url": "../mahJong/", "icon": "./mahJong/images/greenDragon.png" }
+	, { "text": "SameGame", "url": "../sameGame/", "icon": "./mahJong/images/sameGame.png" }
+        , { "text": "Tetris", "url": "../tetris/?base=4&slow=1", "icon": "./tetris/images/tetris.png" }
 	, { "text": "Mediaset", "url": "./mediaset", "pages": [
 		  { "text": "L'isola dei famosi", "url": "?isolaDeiFamosi=1&title=L%27isola%20dei%20famosi", "icon": "./mediaset/images/isolaDeiFamosi.png" }
 		, { "text": "Temptation Island", "url": "?temptationIsland=1&title=Temptation%20Island", "icon": "./mediaset/images/temptationIsland.png" }
@@ -17,11 +20,12 @@
 		  { "text": "Caccia al tesoro", "url": "treasure-hunt.html", "icon": "./images/treasure.png" }
 		, { "text": "Download", "url": "download.html", "icon": "./images/download.png" }
 		, { "text": "CryptoJS", "url": "cryptoJS.html", "icon": "./images/padlock.png" }
-		, { "text": "Mah Jong", "url": "../mahJong", "icon": "./mahJong/images/greenDragon.png" }
+		, { "text": "Mah Jong", "url": "../mahJong/?boss=1", "icon": "./mahJong/images/greenDragon.png" }
 		, { "text": "Mobile", "url": "mobile.html", "icon": "./images/mobile.png" }
-		, { "text": "Un, due, BUE!", "url": "unDueBue.html", "icon": "./images/ox.png" }
+        	, { "text": "SameGame", "url": "../sameGame/?palette=2&boss=1", "icon": "./mahJong/images/sameGame.png" }
 		, { "text": "Temi jQuery UI", "url": "uiThemes.html", "icon": "./images/themeRoller.png" }
 		, { "text": "Testo Binario", "url": "binary.html", "icon": "./images/binary.png" }
-		, { "text": "Tetris", "url": "../tetris/?base=4&slow=1&touch=1", "icon": "./tetris/images/tetris.png" }
+                , { "text": "Tetris", "url": "../tetris/?base=4&slow=1&boss=1", "icon": "./tetris/images/tetris.png" }
+		, { "text": "Un, due, BUE!", "url": "unDueBue.html", "icon": "./images/ox.png" }
 	] }
 ]
