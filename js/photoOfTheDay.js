@@ -257,10 +257,10 @@ if (window.photoOfTheDay) {
 			"	<body class=\"ui-widget large-on-large-screens\">" +
 			"		<div class=\"container\">" +
 			"			<div class=\"date\"></div>" +
-			"			<a class=\"photoLink\">" +
-			"				<img class=\"photoOfTheDay\" src=\"//:0\"/></a>" +
-			"				<iframe class=\"videoOfTheDay\" src=\"about:blank\" scrolling=\"no\" " +
-			"					frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>" +
+			"			<a class=\"photoLink\"><img class=\"photoOfTheDay\" src=\"//:0\"/></a>" +
+			"			<iframe class=\"iframeOfTheDay\" src=\"about:blank\" scrolling=\"no\" " +
+			"			    frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\"></iframe>" +
+            "           <video class=\"videoOfTheDay\" controls src=\"//:0\"></video>" +
 			"			<br/>" +
 			"			<div class=\"caption\"></div>" +
 			"			<div class=\"copyright\"></div>" +
