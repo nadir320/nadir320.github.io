@@ -83,6 +83,7 @@ window.photoOfTheDay = {
 			$(".photoLink").show();
 		}
 		$(".caption").html(description.html());
+        window.photoOfTheDay.pageURL = data.url;
 		return true;
 	}
 };
