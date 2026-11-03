@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Options</title>
+        <script type="text/javascript" src="options.js"></script>
+        <link rel="stylesheet" type="text/css" href="buttons.css">
+        <style type="text/css">
+            body {
+                background-color: whitesmoke;
+            }
+
+            .dark body {
+                background-color: #333;
+                color: white;
+            }
+
+            .options {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin: 0 auto;
+                max-width: 60rem;
+            }
+
+            label {
+                align-items: center;
+                display: inline-flex;
+                gap: 0.25rem;
+                width: fit-content;
+            }
+
+            textarea {
+                background-color: inherit;
+                color: inherit;
+                resize: none;
+            }
+
+            hr { width: 100%; }
+
+            .buttons {
+                text-align: right;
+            }
+
+            input[type=number] {
+                width: 2.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="options">
+            <h3>Options:</h3>
+            <label><input type="checkbox" id="newTabButtons">Show new tab buttons</label>
+            <label><input type="checkbox" id="chatLinksToChatbots">Chat links go to chatbot page</label>
+            <label><input type="checkbox" id="swipeRight">Swipe right to open drawer</label>
+            <label><input type="checkbox" id="backgroundAvatar">Use character avatar as chat background</label>
+            <label><input type="checkbox" id="backgroundAvatarStatic">Make character avatar a static chat background</label>
+            <label><input type="checkbox" id="applyFilter">Dim character cards</label>
+            <h4>Filter (one per row):</h4>
+            <textarea id="filter" rows="20"></textarea>
+            <hr>
+            <label><input type="checkbox" id="hideBanners">Hide banners from home page (upon load)</label>
+            <h4>Banners to hide (one per row):</h4>
+            <textarea id="banners" rows="8"></textarea>
+            <hr>
+            <label><input type="checkbox" id="enableMemories">Enable persistent memories</label>
+            <h4>Default memories (one per row):</h4>
+            <label>Enforce each <input type="number" id="memoriesInterval" min="1" max="50"> messages</label>
+            <textarea id="memories" rows="8"></textarea>
+            <h4>Experimental:</h4>
+            <label><input type="checkbox" id="showSentCommands">Show sent commands (debugging purposes only)</label>
+            <label><input type="checkbox" id="useOffscreenImageDecoder">Use off-screen image decoder (better performance)</label>
+            <div class="buttons">
+                <button id="save">Save</button>
+                <button id="saveAndClose">Save and close</button>
+            </div>
+        </div>
+    </body>
+</html>

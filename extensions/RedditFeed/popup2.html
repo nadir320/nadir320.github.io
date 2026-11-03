@@ -1,0 +1,54 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Feed</title>
+		<script type="text/javascript" src="popup2.js"></script>
+		<style type="text/css">
+			body {
+				background-color: whitesmoke;
+				min-width: 30rem;
+			}
+
+			.feed-item.loading, .feed-item.to-read, .error {
+				font-weight: bold;
+			}
+
+			.feed-item.to-read > a {
+				color: blue;
+			}
+
+			.feed-item a {
+				text-decoration: none;
+			}
+			
+			.feed-item > a {
+				color: darkGray;
+			}
+
+			.feed-item .post-link {
+				color: black;
+			}
+
+			.loading {
+				color: dodgerblue;
+			}
+
+			.loader.loading {
+				font-weight: initial;
+			}
+
+			.error {
+				color: red;
+				text-decoration: underline;
+			}
+
+			.visited {
+				opacity: 0.5;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="loader"></div>
+	</body>
+</html>

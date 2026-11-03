@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Summary</title>
+        <link rel="shortcut icon" href="icon.png" />
+        <link rel="stylesheet" type="text/css" href="buttons.css">
+        <script type="text/javascript" src="shared.js"></script>
+        <script type="text/javascript" src="summary.js"></script>
+        <style type="text/css">
+            body {
+                background-color: whitesmoke;
+                margin: 0;
+                padding: 1rem;
+                min-width: fit-content;
+            }
+
+            button { padding: 0.5rem; }
+
+            #downloadCSV { margin-top: 1rem; }
+
+            table {
+                border-collapse: collapse;
+            }
+
+            table th, table td {
+                padding: 0.25rem;
+            }
+
+            table th {
+                border: 2px solid silver;
+                background: #e5e5e5;
+                white-space: nowrap;
+            }
+
+            table td {
+                border: 1px solid silver;
+            }
+
+            tbody tr:nth-child(even) {
+                background: #e5e5e5;
+            }
+
+            td:nth-child(1) {
+                font-weight: bold;
+            }
+
+            td.long-text {
+                font-size: 80%;
+                min-width: 30rem;
+            }
+
+            td.title {
+                min-width: 16rem;
+            }
+
+            td.url {
+                text-decoration: underline;
+                /*white-space: nowrap;*/
+            }
+
+            td.date {
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            td.short-text {
+                text-align: center;
+            }
+
+            td.number {
+                text-align: right;
+            }
+
+            td.falsy,
+            td.guid,
+            td.public,
+            td.bot,
+            td.STANDARD {
+                filter: opacity(0.35);
+            }
+
+            td.falsy,
+            td.public,
+            td.bot,
+            td.STANDARD {
+                text-decoration: line-through;
+            }
+
+            td.truthy, td.META {
+                background-color: rgba(64, 240, 64, 0.15);
+                font-weight: bold;
+            }
+
+            td.mismatch {
+                background-color: rgba(240, 64, 64, 0.35);
+                color: red;
+                font-weight: bold;
+                font-size: 150%;
+            }
+
+            td.private, td.highlight {
+                background-color: rgba(240, 240, 64, 0.25);
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <button type="button" id="downloadCSV">Download CSV</button>
+    </body>
+</html>

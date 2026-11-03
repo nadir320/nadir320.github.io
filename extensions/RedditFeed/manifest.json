@@ -1,0 +1,18 @@
+﻿{
+	"manifest_version": 3,
+
+	"name": "R",
+	"description": "Reddit Feed checker",
+	"version": "1.0",
+	"action": {
+		"default_icon": "icon.png",
+		"default_title": "Check Feed",
+		"default_popup": "popup2.html"
+	},
+	"background": {
+		"service_worker": "background.js"
+	},
+
+	"permissions": ["history", "tabs", "notifications", "storage"],
+	"host_permissions": ["https://www.reddit.com/*"]
+}

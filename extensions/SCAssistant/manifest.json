@@ -1,0 +1,50 @@
+﻿{
+    "manifest_version": 3,
+
+    "name": "SpicyChat.ai Assistant",
+    "description": "SpicyChat.ai Assistant",
+    "version": "1.0.18",
+    "icons": {
+        "128": "s.png"
+    },
+    "action": {
+        "default_icon": "icon.png",
+        "default_title": "SpicyChat.ai Assistant",
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://spicychat.ai/*","https://localhost/*"],
+            "js": ["content.js"],
+            "run_at": "document_start"
+        },
+        {
+            "matches": ["https://spicychat.ai/*","https://localhost/*"],
+            "js": ["shared.js", "message-scanner.js", "page.js"],
+            "run_at": "document_start",
+            "world": "MAIN"
+        }
+    ],
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "options_ui": {
+        "page": "options.html",
+        "open_in_tab": true
+    },
+    "permissions": [
+        "tabs",
+        "notifications",
+        "storage",
+        "clipboardWrite",
+        "webNavigation",
+        "scripting",
+        "offscreen"
+    ],
+    "host_permissions": [
+        "https://spicychat.ai/*",
+        "https://localhost/*"
+    ],
+    "incognito": "split"
+}

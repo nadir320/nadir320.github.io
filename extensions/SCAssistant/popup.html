@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Menu</title>
+        <script type="text/javascript" src="shared.js"></script>
+        <script type="text/javascript" src="popup.js"></script>
+        <link rel="stylesheet" type="text/css" href="buttons.css">
+        <style type="text/css">
+            body {
+                background-color: whitesmoke;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                min-width: 16rem;
+            }
+
+            hr { width: 100%; }
+        </style>
+    </head>
+    <body>
+        <!-- <button type="button" id="test">Test</button> -->
+        <!-- <hr> -->
+        <button type="button" class="" id="home"></button>
+        <button type="button" class="" id="options">Options</button>
+        <hr>
+        <button type="button" class="" id="setFilter">Set filter</button>
+        <button type="button" class="" id="highlightVisibleDescriptions">Highlight visible descriptions</button>
+        <hr>
+        <button type="button" class="chats" id="loadAllChats">Load all recent chats</button>
+        <button type="button" class="chats" id="copyChatTitles">Copy chat titles</button>
+        <button type="button" class="chats" id="getChatDetails">View chat summary</button>
+        <button type="button" class="chats" id="showDetailedDates">Show detailed dates</button>
+        <button type="button" class="chats" id="highlightPrivateChats">Highlight private chats</button>
+        <hr>
+        <button type="button" class="chat" id="loadAllMessages">Load all messages</button>
+        <button type="button" class="chat" id="exportChat">Export chat</button>
+        <hr>
+    </body>
+</html>

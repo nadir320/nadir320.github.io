@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chat</title>
+        <link rel="shortcut icon" href="icon.png" />
+        <link rel="stylesheet" type="text/css" href="buttons.css">
+        <script type="text/javascript" src="shared.js"></script>
+        <script type="text/javascript" src="chat.js"></script>
+        <style type="text/css">
+            body {
+                background-color: whitesmoke;
+                font-size: 1rem;
+                margin: 0;
+                padding: 1rem;
+                min-width: fit-content;
+            }
+
+            .dark body {
+                background-color: #0F0F0F;
+                color: white;
+            }
+
+            #container {
+                display: flex;
+                flex-direction: column;
+                margin: 0 auto;
+                max-width: 60rem;
+            }
+
+            .messages {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .message {
+                border: 1px solid silver;
+                max-width: 90%;
+                padding: 0.5rem;
+            }
+
+            .message.bot {
+                align-self: start;
+                border-radius: 0.25rem 1rem 1rem;
+                background-color: #EDEDED;
+            }
+
+            .dark .message.bot {
+                background-color: #1F1F1F;
+            }
+
+            .message.user {
+                align-self: end;
+                color: white;
+                border-radius: 1rem 0.25rem 1rem 1rem;
+                background-color: #335566;
+            }
+
+            .dark .message.user {
+                background-color: #122A36;
+            }
+
+            .message .header {
+                display: flex;
+                font-size: 80%;
+                gap: 0.25rem;
+                opacity: 0.5;
+            }
+
+            .message .number { }
+
+            .message .timestamp { }
+
+            .message.bot .markup-blue {
+                color: #316185;
+            }
+
+            .message.user .markup-blue,
+            .dark .message .markup-blue {
+                color: #80D5FF;
+            }
+
+            .message .markup-command {
+                font-family: monospace;
+                opacity: 0.5;
+            }
+
+            .message .highlighted {
+                background-color: yellow;
+                border: 1px solid goldenrod;
+                border-radius: 0.25rem;
+                color: #1F1F1F;
+                padding: 0.25rem;
+            }
+
+            .message :nth-child(1 of .markup-command) {
+                border-top: 1px solid #737373;
+                margin-top: 0.25rem;
+                padding-top: 0.25rem;
+            }
+
+            .buttons {
+                align-items: center;
+                border-top: 1px solid silver;
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin: 0.5rem auto 0;
+                max-width: 60rem;
+                padding-top: 0.5rem;
+            }
+
+            .buttons button {
+                padding: 0.5rem;
+                width: 8rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div class="messages">
+            </div>
+        </div>
+        <div class="buttons">
+            <button type="button" id="downloadChat">Download</button>
+            <button type="button" id="downloadRaw">Download (raw)</button>
+        </div>
+    </body>
+</html>
