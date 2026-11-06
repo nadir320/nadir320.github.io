@@ -30,6 +30,13 @@
             repo.value = p.get("repo");
             path.value = p.get("path");
 
+            if (!user.value && !repo.value && /\.github\.io$/i.test(window.location.hostname)) {
+                const v = window.location.hostname.split(".");
+
+                user.value = v[0];
+                repo.value = window.location.hostname;
+            }
+
             const list = async () => {
                 if (user.value && repo.value) {
                     const response = await fetch(`https://api.github.com/repos/${user.value}/${repo.value}/contents/${path.value}`);
@@ -42,10 +49,10 @@
                         htmlString += `<li><a href="?user=${user.value}&repo=${repo.value}&path=${path.value.split("/").slice(0, -1).join("/")}">..</a></li>`;
                     }
                     for (let file of data) {
-                        let url = file.type === "file" ? 
+                        let url = file.type === "file" ?
                             file.download_url :
                             `?user=${user.value}&repo=${repo.value}&path=${file.path}`;
-                            
+
                         htmlString += `<li><a href="${url}" ${file.type === "file" ? 'target="_blank"' : ""}>${file.name}</a></li>`;
                     }
 
