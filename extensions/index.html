@@ -1,0 +1,61 @@
+﻿<!doctype html>
+<html>
+    <head>
+		<meta charset="utf-8"/>
+		<meta name="mobile-web-app-capable" content="yes"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link id="favicon" rel="icon" href="../images/n.png" type="image/png"/>
+		<link id="shortcutIcon" rel="shortcut icon" href="../images/n.png" type="image/png"/>
+		<title>nadir</title>
+    </head>
+    <body>
+        <label>User: <input id="user"></label>
+        <br>
+        <label>Repo: <input id="repo"></label>
+        <br>
+        <label>Path: <input id="path"></label>
+        <br>
+        <button type="button" id="list">List</button>
+        <br>
+        <div id="files"></div>
+        <script type="text/javascript">
+            const user = document.getElementById("user"),
+                repo = document.getElementById("repo"),
+                path = document.getElementById("path");
+
+            const p = new URLSearchParams(window.location.search);
+
+            user.value = p.get("user");
+            repo.value = p.get("repo");
+            path.value = p.get("path");
+
+            const list = async () => {
+                if (user.value && repo.value) {
+                    const response = await fetch(`https://api.github.com/repos/${user.value}/${repo.value}/contents/${path.value}`);
+
+                    const data = await response.json();
+
+                    let htmlString = '<ul>';
+
+                    if (path.value) {
+                        htmlString += `<li><a href="?user=${user.value}&repo=${repo.value}&path=${path.value.split("/").slice(0, -1).join("/")}">..</a></li>`;
+                    }
+                    for (let file of data) {
+                        let url = file.type === "file" ? 
+                            file.download_url :
+                            `?user=${user.value}&repo=${repo.value}&path=${file.path}`;
+                            
+                        htmlString += `<li><a href="${url}" ${file.type === "file" ? 'target="_blank"' : ""}>${file.name}</a></li>`;
+                    }
+
+                    htmlString += '</ul>';
+                    document.getElementById("files").innerHTML = htmlString;
+                }
+            };
+
+            document.getElementById("list").addEventListener("click", list);
+            list();
+        </script>
+    <body>
+</html>
