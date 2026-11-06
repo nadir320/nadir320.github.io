@@ -137,10 +137,18 @@ export const BANNERS = [
     "Home|Top|16K Models (Mobile)",
     "Home|Top|Conversation Images (Desktop)",
     "Home|Top|Conversation Images (Mobile)",
+    "Home|Top|Halloween Contest 2026 (Desktop)",
+    "Home|Top|Halloween Contest 2026 (Mobile)",
     "Home|Top|Public Lorebooks (Desktop)",
     "Home|Top|Public Lorebooks (Mobile)",
-    "Home|Top|Halloween Contest 2026 (Desktop)",
-    "Home|Top|Halloween Contest 2026 (Mobile)"
+    "Home|Top|More Memory (Desktop)",
+    "Home|Top|More Memory (Mobile)",
+    "Home|Top|New Convo Images (Desktop)",
+    "Home|Top|New Convo Images (Mobile)",
+    "MyChats|Top|More Memory (Desktop)",
+    "MyChats|Top|More Memory (Mobile)",
+    "MyChats|Top|New Convo Images (Desktop)",
+    "MyChats|Top|New Convo Images (Mobile)"
 ];
 
 export const MEMORIES = [

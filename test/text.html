@@ -1,0 +1,214 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<link rel="shortcut icon" type="image/png" href="data:image/png;base64,
+		iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+		YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmV
+		AAAADUlEQVQYV2P4//8/AwAI/AL+iF8G4AAAAABJRU5ErkJggg==">
+		<title>Test&lrm;</title>
+        <script type="text/javascript" src="../extensions/SCAssistant/message-scanner.js"></script>
+		<link rel="stylesheet" type="text/css" href="../extensions/SCAssistant/buttons.css">
+		<style type="text/css">
+            body {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .loader {
+                display: none;
+                text-align: center;
+            }
+
+            .loading .loader { display: initial; }
+
+            hr {
+                width: 100%;
+            }
+
+            .container {
+                flex-direction: column;
+                display: flex;
+                margin: 0 auto;
+                max-width: 30rem;
+                gap: 1rem;
+                width: 100%;
+            }
+
+            .container textarea {
+                height: 8rem;
+                resize: none;
+                width: 100%;
+            }
+
+            .container .bottom {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .container .bottom label {
+                flex: 2;
+            }
+
+            .result {
+                border: 1px solid silver;
+                padding: 0 1rem 0 0;
+            }
+
+            #output * {
+                word-break: break-word;
+            }
+
+            .time { color: gray; }
+
+            .title { color: green; }
+
+            .text { color: darkGray; }
+
+            svg { width: 2rem; }
+		</style>
+	</head>
+	<body>
+        <div class="container">
+            <h4>Content:</h4>
+            <textarea id="messages" tabIndex="0"></textarea>
+            <div class="bottom">
+                <label>Minimum score:<input type="number" id="score" min="0" max="10" value="0"></label>
+                <button id="scan">Test</ins>
+            </div>
+            <!-- <hr> -->
+            <div class="loader">
+                <svg xmlns="http://w3.org" viewBox="0 0 100 100">
+                    <defs>
+                        <clipPath id="left-half">
+                            <rect x="0" y="0" width="50" height="100" />
+                        </clipPath>
+                        <clipPath id="right-half">
+                            <rect x="50" y="0" width="50" height="100" />
+                        </clipPath>
+                    </defs>
+
+                    <style>
+                    .page {
+                        animation: infinite-flip 1.5s infinite linear;
+                        transform-origin: 50px 50px;
+                        transform-style: preserve-3d;
+                    }
+
+                    @keyframes infinite-flip {
+                        0% { transform: rotateY(0deg); fill: #c0c0c0; }
+                        50% { fill: #8a8a8a; }
+                        100% { transform: rotateY(-180deg); fill: #b0b0b0; }
+                    }
+                    </style>
+
+                    <circle cx="50" cy="50" r="40" fill="#b0b0b0" clip-path="url(#left-half)" />
+                    <circle cx="50" cy="50" r="40" fill="#c0c0c0" clip-path="url(#right-half)" />
+                    <circle class="page" cx="50" cy="50" r="40" clip-path="url(#right-half)" />
+                </svg>
+            </div>
+            <div>
+                <label id="time" class="time"></label>
+                <br>
+                <br>
+                <div class="result">
+                    <ol id="output"></ol>
+                </div>
+            </div>
+        </div>
+		<script type="text/javascript">
+			"use strict";
+
+            document.getElementById("messages").value = 
+`The rain tapped a steady rhythm against the coffee shop window, blurring the neon signs of the city street outside. Inside, the air smelled of roasted beans and damp coats. Arthur sat at the corner table, tracing the rim of his ceramic mug with a hesitant finger. He looked up as Clara slid into the booth across from him, shaking out her umbrella before leaning forward.
+"You are late," Arthur said, checking his watch. "I was starting to think you changed your mind about meeting me."
+"The subway was delayed by twenty minutes," Clara replied, brushing a stray lock of hair from her eyes. "There was some kind of electrical issue on the main line. Did you bring the documents?"
+Arthur reached into his leather briefcase, pulled out a thick manila envelope, and placed it flat on the wooden table between them. He did not let go of it immediately, keeping his palm pressed firmly against the paper.
+"Everything is in here," Arthur whispered, glancing toward the barista to ensure they were not being overheard. "But once you take this, there is no going back. You understand the risk we are taking?"
+Clara looked at the envelope, her expression tightening into a serious frown. She placed her hands in her lap, taking a slow, deliberate breath to calm her nerves before she answered.
+"I know exactly what is at stake," Clara said, her voice steady and resolute. "We have spent three years gathering this evidence. If we do not publish it now, nobody else ever will. Hand it over, Arthur."
+He slid the envelope across the table, watching as she quickly tucked it away into her heavy winter coat. A sense of relief mingled with anxiety washed over him as the weight left his hands.
+"What is your next move?" Arthur asked, leaning back into the leather cushions of the booth.
+"I am heading straight to the newsroom," Clara said, standing up and buttoning her coat. "Watch the evening broadcast tonight. You will see our hard work pay off."
+She gave him a brief, reassuring nod before turning around and disappearing into the crowded street outside, leaving Arthur alone with his cooling coffee.`;
+
+            const runWorker = (worker, data) =>
+                new Promise(function(resolve, reject) {
+                    worker.onmessage = function(e) {
+                        resolve(e.data);
+                    };
+
+                    worker.onerror = reject;
+
+                    worker.postMessage(data);
+                });
+
+            const update = () => [...document.getElementsByClassName("result")]
+                .forEach(e => e.style.display = document.getElementById("output").querySelector("li") ? "" : "none");
+
+            document.getElementById("scan").addEventListener("click", async () => {
+                const textarea = document.getElementById("messages"),
+                    score = document.getElementById("score"),
+                    output = document.getElementById("output"),
+                    time = document.getElementById("time");
+
+                output.replaceChildren();
+                time.replaceChildren();
+                update();
+
+                const worker = new Worker(URL.createObjectURL(new Blob([`
+                    ${MessageScanner.toString()}
+
+                    function delay(ms) {
+                        const start = Date.now();
+                        while (Date.now() - start < ms) {}
+                    }
+
+                    self.onmessage = function(e) {
+                        //delay(2e3);
+                        self.postMessage(MessageScanner.scanMessages.call(MessageScanner, ...e.data));
+                    };
+                `], { type: "text/javascript" })));
+
+                let start, end, results;
+
+                document.body.classList.add("loading");
+                try {
+                    start = performance.now();
+
+                    results = (await runWorker(worker, [[{ content: textarea.value }],
+                        undefined, parseInt(score.value)])).reverse();
+                    /* results = MessageScanner.scanMessages[{ content: textarea.value }],
+                        undefined, parseInt(score.value)).reverse(); */
+
+                    end  = performance.now();
+                } finally {
+                    worker.terminate();
+                    document.body.classList.remove("loading");
+                }
+
+                time.appendChild(document.createTextNode(`Results: ${results.length}.
+                    Elapsed: ${Math.floor(end - start)}ms`));
+                results.forEach(result => {
+                    const item = document.createElement("li"),
+                        itemTitle = document.createElement("p"),
+                        itemText = document.createElement("p");
+
+                    itemTitle.classList.add("title");
+                    itemTitle.appendChild(document.createTextNode(`Length: ${result.text.length},
+                        Category: ${result.category}, Score: ${result.score}`));
+                    item.appendChild(itemTitle);
+
+                    itemText.classList.add("text");
+                    itemText.appendChild(document.createTextNode(result.text));
+                    item.appendChild(itemText);
+                    output.appendChild(item);
+                });
+                update();
+            });
+            update();
+		</script>
+	</body>
+</html>

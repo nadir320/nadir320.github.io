@@ -290,6 +290,10 @@ window.__S_SHARED = {
             button[aria-label^=page-] {
                 min-width: fit-content;
             }
+            
+            [data-testid='ExploreLorebookCTA'] {
+                display: none !important;
+            }
 
             .dark .__S-highlight {
                 background-color: rgba(255, 255, 255, 0.15);
