@@ -1,6 +1,8 @@
 ﻿"use strict";
 
 /*
+    - /lorebooks
+    - /rulebooks
     - manage stored chats (__S_chats)
     - auto recover memories from _state.messages
     - move memories popup style to shared.js
@@ -122,6 +124,7 @@
         conversation: {},
         conversations: [],
         enableMemories: false,
+        handlers: new Map(),
         memories: [],
         messages: [],
         searchResults: {}
@@ -608,9 +611,13 @@
                 bot = _state.searchResults[botId];
 
             if (bot && bot.createdAt) {
-                const date = new Date(bot.createdAt * 1000);
+                let date = new Date(bot.createdAt);
 
                 if (!isNaN(date)) {
+                    if (date.getYear() === new Date(0).getYear()) {
+                        date = new Date(bot.createdAt * 1000);
+                    }
+
                     const dateElement = document.createElement("div");
 
                     dateElement.classList.add("flex");
@@ -675,8 +682,26 @@
                     a.dataset.chatHref = a.getAttribute("href");
                     a.setAttribute("href", `/chatbot/${botId}`);
                     a.classList.add("__S-bot-link");
+
+                    const card = a.closest("[data-testid=CharacterCard]"),
+                        profileButton = card && card.querySelector("[data-testid=CharacterCardOverlayActions-Info]"),
+                        profileLink = profileButton && profileButton.querySelector("a");
+
+                    if (profileLink) {
+                        const handler = e => {
+                            profileLink.click();
+                            e.preventDefault();
+                            e.cancelBubble();
+                        };
+
+                        _state.handlers.set(a, handler);
+                        a.addEventListener("click", handler);
+                    }
                 });
         } else {
+            for (const [a, handler] of _state.handlers) {
+                a.removeEventListener("click", handler);
+            }
             [...document.getElementsByClassName("__S-bot-link")]
                 .forEach(a => {
                     a.setAttribute("href", a.dataset.chatHref);
@@ -1182,7 +1207,7 @@
         return avatar && avatar.closest("div");
     };
 
-    const getChatContainer = () => document.querySelector(".flex-shrink-0.py-0.w-full");
+    const getChatContainer = () => document.querySelector("[data-chat-scroll-area=chat]");
 
     const getChatId = () => {
         if (__S_SHARED.isChatPage()) {
@@ -1200,10 +1225,10 @@
         }
     };
 
-    const getChatLinks = () => [...document.querySelectorAll("a[href]")]
+    const getChatLinks = all => [...document.querySelectorAll("a[href]")]
         .filter(a => a.getAttribute("href").startsWith("/chat/") || a.dataset.chatHref)
         .map(a => a.parentElement)
-        .filter((e, i) => i % 2 === 0);
+        .filter((e, i) => all || i % 2 === 0);
 
     const getChatMap = () => getChats().map(c => {
         return {
@@ -2062,7 +2087,7 @@
                                             }
                                         }
                                     } else if (isChatPage) {
-                                        const buttonContainer = container.parentElement.closest(".w-full").querySelector("div:not(.justify-end)");
+                                        const buttonContainer = container.querySelector("div:not([role=separator])");
 
                                         if (buttonContainer) {
                                             const toolbarContainer = buttonContainer.querySelector("div");
@@ -2111,7 +2136,7 @@
 
                                             const buttonSet = original.closest(".gap-sm");
 
-                                            buttonSet.insertBefore(relative, buttonSet.firstElementChild);
+                                            buttonSet.firstElementChild.after(relative);
                                         }
                                     }
                                 /* } */
