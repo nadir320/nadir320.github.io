@@ -5,7 +5,11 @@ window.__S_SHARED = {
     baseUrl: "https://spicychat.ai/",
     chatUrl: "https://prod.nd-api.com/chat",
     formatDate: (date, culture) => {
-        const dateFormatter = new Intl.DateTimeFormat(culture, { dateStyle: "short" });
+        const dateFormatter = new Intl.DateTimeFormat(culture, {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        });
 
         const timeFormatter = new Intl.DateTimeFormat(culture, { timeStyle: "medium" });
 
@@ -110,6 +114,11 @@ window.__S_SHARED = {
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"/>
+            </svg>
+        `,
+        more: `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
         `,
         options: `
@@ -290,7 +299,7 @@ window.__S_SHARED = {
             button[aria-label^=page-] {
                 min-width: fit-content;
             }
-            
+
             [data-testid='ExploreLorebookCTA'] {
                 display: none !important;
             }
@@ -382,16 +391,19 @@ window.__S_SHARED = {
                 left: 2.75rem;
             }
 
-            .__S-dim-hits-button {
+            .__S-more-button {
+                left: 8.75rem;
+            }
+
+            .__S-dim-hits-button,
+            .__S-more-button {
                 top: 8.75rem;
             }
 
+            .__S-bot-button svg,
+            .__S-char-button svg,
             .__S-filter svg,
-            .__S-options svg,
-            .__S-dim-hits svg,
-            .__S-bot-details svg,
-            .__S-export-bot svg,
-            .__S-read-later svg {
+            .__S-options svg {
                 display: block;
                 height: 1rem;
                 width: 1rem;

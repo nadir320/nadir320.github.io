@@ -15,6 +15,7 @@
         swipeRight = document.getElementById("swipeRight"),
         backgroundAvatar = document.getElementById("backgroundAvatar"),
         backgroundAvatarStatic = document.getElementById("backgroundAvatarStatic"),
+        showMoreOptions = document.getElementById("showMoreOptions"),
         applyFilter = document.getElementById("applyFilter"),
         filter = document.getElementById("filter"),
         hideBanners = document.getElementById("hideBanners"),
@@ -30,6 +31,7 @@
     swipeRight.checked = options.swipeRight;
     backgroundAvatar.checked = options.backgroundAvatar;
     backgroundAvatarStatic.checked = options.backgroundAvatarStatic;
+    showMoreOptions.checked = options.showMoreOptions;
     applyFilter.checked = options.applyFilter;
     filter.value = options.filter.join("\n");
     hideBanners.checked = options.hideBanners;
@@ -61,6 +63,7 @@
             swipeRight: swipeRight.checked,
             backgroundAvatar: backgroundAvatar.checked,
             backgroundAvatarStatic: backgroundAvatarStatic.checked,
+            showMoreOptions: showMoreOptions.checked,
             applyFilter: applyFilter.checked,
             filter: filterValues,
             hideBanners: hideBanners.checked,

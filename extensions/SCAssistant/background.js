@@ -22,6 +22,9 @@ chrome.runtime.onInstalled.addListener(async details => {
     if (options.backgroundAvatarStatic === undefined) {
         values.backgroundAvatar = defaults.BACKGROUND_AVATAR_STATIC;
     }
+    if (options.showMoreOptions === undefined) {
+        values.showMoreOptions = defaults.SHOW_MORE_OPTIONS;
+    }
     if (options.filter === undefined) {
         values.filter = defaults.FILTER;
     }
@@ -76,6 +79,7 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
             break;
         case "CREATE_PNG":
             await createCharacterPNG(sender, message);
+            break;
         case "MAKE_STATIC":
             await makeStaticPNG(sender, message);
             break;
@@ -147,7 +151,7 @@ const createCharacterPNG = async (sender, message) => {
 
         chrome.tabs.sendMessage(sender.tab.id, {
             ...message,
-            mimeType: blob.mimeType,
+            mimeType: blob.type,
             blob: btoa(binString)
         });
     } catch (e) {
@@ -193,7 +197,7 @@ const makeStaticPNG = async (sender, message) => {
             const binString = Array.from(new Uint8Array(bytes), b => String.fromCodePoint(b)).join("");
 
             response = {
-                mimeType: blob.mimeType,
+                mimeType: blob.type,
                 blob: btoa(binString)
             };
         }

@@ -1,11 +1,8 @@
 ﻿"use strict";
 
 /*
-    - /lorebooks
-    - /rulebooks
-    - manage stored chats (__S_chats)
-    - auto recover memories from _state.messages
-    - move memories popup style to shared.js
+    - more about characters
+    - manage stored chats (__S_chats) / move memories popup style to shared.js
 */
 
 (() => {
@@ -26,10 +23,12 @@
             .map((part, i) => i % 2 ? "\\s+" : __escapeRegex(part))
             .join("");
 
-    const __regExp_CMD = new RegExp(`${__escapeRegex(CMD_START)} .*? ${__escapeRegex(CMD_END)}`, "i"),
-        __regExp_OOC = new RegExp(`\\[${__escapeRegex(OOC_START)} - .*?\\. ${__escapeRegex(OOC_END)}\\.\\]`, "i"),
+    const __regExp_CMD = new RegExp(`${__escapeRegex(CMD_START)} (.*?) ${__escapeRegex(CMD_END)}`, "i"),
+        __regExp_OOC = new RegExp(`\\[${__escapeRegex(OOC_START)} - (.*?)\\. ${__escapeRegex(OOC_END)}\\.\\]`, "i"),
         __regExp_Char = /{{char}}/gi,
         __regExp_User = /{{user}}/gi;
+
+    const _message_min_score = 3;
 
     const _options = {},
         _state = {},
@@ -422,7 +421,7 @@
                         const data = await clone.json();
 
                         data.recomms.forEach(r => ensureResult({
-                            ...r.values,
+                            ...ensureCharacterDate(r.values),
                             character_id: r.id
                         }));
 
@@ -614,10 +613,6 @@
                 let date = new Date(bot.createdAt);
 
                 if (!isNaN(date)) {
-                    if (date.getYear() === new Date(0).getYear()) {
-                        date = new Date(bot.createdAt * 1000);
-                    }
-
                     const dateElement = document.createElement("div");
 
                     dateElement.classList.add("flex");
@@ -648,12 +643,11 @@
 
         if (_options.newTabButtons) {
             links
-                .filter(e => !e.querySelector(".__S-new-tab"))
+                .filter(e => !e.querySelector(".__S-new-tab-button"))
                 .forEach(e => {
                     const botId = e.querySelector("a").getAttribute("href").split("/").pop();
 
                     const button = createCharacterButton(botId, [
-                        "__S-new-tab",
                         "__S-new-tab-button",
                         "left-2"
                     ], __S_SHARED.icons.details,
@@ -667,7 +661,7 @@
                     e.appendChild(a);
                 });
         } else {
-            [...document.getElementsByClassName("__S-new-tab")]
+            [...document.getElementsByClassName("__S-new-tab-button")]
                 .map(e => e.closest("a"))
                 .forEach(e => e.remove());
         }
@@ -708,6 +702,30 @@
                     delete a.dataset.chatHref;
                     a.classList.remove("__S-bot-link");
                 });
+        }
+
+        if (_options.showMoreOptions) {
+            links
+                .filter(e => !e.querySelector(".__S-more-button"))
+                .forEach(e => {
+                    e.appendChild(createCharacterButton(e.querySelector("a")
+                        .getAttribute("href")
+                        .split("/")
+                        .pop(), [
+                            "__S-more-button"
+                        ],
+                        __S_SHARED.icons.more,
+                        "More",
+                        b => {
+                            const bot = _state.searchResults[b.dataset.botId];
+
+                            showToast(`More about \"${bot.name}\" (TODO)`);
+                        }));
+                });
+        } else {
+            [...document.getElementsByClassName("__S-more-button")]
+                .map(e => e.closest("a"))
+                .forEach(e => e.remove());
         }
     };
 
@@ -998,6 +1016,8 @@
             }
         };
 
+        let added = false;
+
         const addMessage = (message, editable, before) => {
             const e = document.createElement("li"),
                 label = document.createElement("label"),
@@ -1081,14 +1101,54 @@
             } else {
                 list.appendChild(e);
             }
+            added = true;
         }
 
-        _state.memories.forEach(m => addMessage(m, true));
+        const allMemories = [];
+
+        _state.memories.forEach(m => {
+            allMemories.push(m.content);
+            addMessage(m, true);
+        });
+
+        const messages = getCurrentChatMessages();
+
+        let addSeparator = added,
+            globalOOC = new RegExp(__regExp_OOC.source, "gi"),
+            globalCMD = new RegExp(__regExp_CMD.source, "gi");
+
+        messages.forEach(message => {
+            (message.originalContent || message.content)
+                .split("\n")
+                .forEach(line => {
+                    if (line.length) {
+                        [...line.matchAll(globalOOC)].map(m => m[1])
+                            .concat([...line.matchAll(globalCMD)].map(m => m[1]))
+                            .forEach(match => {
+                                if (allMemories.findIndex(m => m.localeCompare(match,
+                                    undefined, { sensitivity: "base" }) === 0) < 0) {
+
+                                    if (addSeparator) {
+                                        list.appendChild(document.createElement("hr"));
+                                        addSeparator = false;
+                                    }
+                                    allMemories.push(match);
+                                    addMessage({
+                                        active: false,
+                                        content: match,
+                                        messageId: message.messageId,
+                                        role: message.role
+                                    });
+                                }
+                            });
+                    }
+                });
+        });
 
         addMessage(undefined, true);
 
-        const automaticMemories = MessageScanner.scanMessages(getCurrentChatMessages(),
-            _state.memories.map(m => m.content));
+        const automaticMemories = MessageScanner.scanMessages(messages,
+            allMemories, _message_min_score);
 
         if (_options.showSentCommands) {
             showToast(`${_state.messages.length.toLocaleString()} messages,
@@ -1147,13 +1207,29 @@
             };
 
             setMemories(chatId, state);
+            showToast("Saved");
             host.remove();
             initMemories();
         });
         host.focus();
     };
 
-    const ensureResult = e => _state.searchResults[e.character_id] = e;
+    const ensureCharacterDate = character => {
+        if (character.createdAt) {
+            character.createdAt *= 1e3;
+        }
+        return character;
+    };
+
+    const ensureResult = character => {
+        const date = new Date(character.createdAt);
+
+        if (!isNaN(date) && date.getYear() === new Date(0).getYear()) {
+            debugger;
+        }
+        _state.searchResults[character.character_id] = character;
+        return character;
+    };
 
     const exportChat = () => {
         const parts = window.location.href.split("/");
@@ -1397,12 +1473,11 @@
         let count = 0;
 
         getChatLinks()
-            .filter(e => !e.querySelector(".__S-read-later"))
+            .filter(e => !e.querySelector(".__S-read-later-button"))
             .forEach(e => {
                 const botId = e.querySelector("a").getAttribute("href").split("/").pop();
 
                 const button = createCharacterButton(botId, [
-                    "__S-read-later",
                     "__S-read-later-button"
                 ], __S_SHARED.icons.clock,
                     "Later",
@@ -1538,7 +1613,6 @@
 
             if (!button) {
                 button = createCharacterButton(undefined, [
-                    "__S-dim-hits",
                     "__S-dim-hits-button",
                     "left-2"
                 ], __S_SHARED.icons.question,
@@ -1552,7 +1626,7 @@
                 button.setAttribute("title", message);
             }
         } else {
-            [...p.getElementsByClassName("__S-dim-hits")]
+            [...p.getElementsByClassName("__S-dim-hits-button")]
                 .forEach(e => e.remove());
         }
     });
@@ -1561,7 +1635,7 @@
         const entries = getReadLaterEntries(),
             keys = entries && entries.map(e => e.character_id);
 
-        [...document.querySelectorAll(".__S-read-later")].forEach(e => {
+        [...document.querySelectorAll(".__S-read-later-button")].forEach(e => {
             e.classList[keys && keys.includes(e.dataset["botId"]) ?
                 "add" :
                 "remove"]("__S-read-later-current");
@@ -2005,6 +2079,7 @@
                                                     const newButton = lastButton.cloneNode(true);
 
                                                     newButton.dataset["botId"] = botId;
+                                                    newButton.classList.add("__S-bot-button");
                                                     if (className && className.length) {
                                                         newButton.classList.add(className);
                                                     }
@@ -2046,7 +2121,7 @@
                                                                     });
                                                                 } else {
                                                                     downloadBlob(new Blob([ "\uFEFF" + JSON.stringify(formatted) ],
-                                                                        { type: "text/csv;charset=utf-8;" }), `${name}.json`);
+                                                                        { type: "application/json;charset=utf-8" }), `${name}.json`);
                                                                 }
                                                             } else {
                                                                 showToast("Not found");
@@ -2087,7 +2162,7 @@
                                             }
                                         }
                                     } else if (isChatPage) {
-                                        const buttonContainer = container.querySelector("div:not([role=separator])");
+                                        const buttonContainer = container.querySelector("div:not([role=separator]):not(.justify-end)");
 
                                         if (buttonContainer) {
                                             const toolbarContainer = buttonContainer.querySelector("div");

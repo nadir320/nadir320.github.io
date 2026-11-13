@@ -5,6 +5,7 @@ export const CHAT_LINKS_TO_CHATBOTS = true;
 export const ENABLE_MEMORIES = false;
 export const HIDE_BANNERS = false;
 export const NEW_TAB_BUTTONS = true;
+export const SHOW_MORE_OPTIONS = false;
 export const SWIPE_RIGHT = true;
 
 export const FILTER = [
@@ -21,8 +22,10 @@ export const FILTER = [
     "bullies",
     "bully",
     "bully's",
+    "bunny",
     "breed",
     "breeding",
+    "cat",
     "cheating",
     "childhood",
     "chubby",
@@ -40,6 +43,7 @@ export const FILTER = [
     "diaper",
     "diapered",
     "diapers",
+    "dog",
     "dragon",
     "dragon's",
     "dragons",
