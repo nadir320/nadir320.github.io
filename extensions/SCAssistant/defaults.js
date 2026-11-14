@@ -25,6 +25,9 @@ export const FILTER = [
     "bunny",
     "breed",
     "breeding",
+    "brother",
+    "brother's",
+    "brothers",
     "cat",
     "cheating",
     "childhood",
@@ -66,6 +69,7 @@ export const FILTER = [
     "giant",
     "giantess",
     "gilf",
+    "gl",
     "grandma",
     "grandmom",
     "grandmum",
@@ -110,6 +114,7 @@ export const FILTER = [
     "potter",
     "pregnancy",
     "pregnant",
+    "rimjob",
     "rival",
     "rival's",
     "roomate",
@@ -124,6 +129,7 @@ export const FILTER = [
     "sissy",
     "sister",
     "sister's",
+    "sisters",
     "smell",
     "son",
     "son's",
@@ -179,3 +185,4 @@ export const MEMORIES = [
 ];
 
 export const MEMORIES_INTERVAL = 10;
+export const MEMORIES_MIN_SCORE = 3;

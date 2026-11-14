@@ -2,7 +2,7 @@
 
 /*
     - more about characters
-    - manage stored chats (__S_chats) / move memories popup style to shared.js
+    - manage stored chats (__S_chats)
 */
 
 (() => {
@@ -27,8 +27,6 @@
         __regExp_OOC = new RegExp(`\\[${__escapeRegex(OOC_START)} - (.*?)\\. ${__escapeRegex(OOC_END)}\\.\\]`, "i"),
         __regExp_Char = /{{char}}/gi,
         __regExp_User = /{{user}}/gi;
-
-    const _message_min_score = 3;
 
     const _options = {},
         _state = {},
@@ -650,7 +648,7 @@
                     const button = createCharacterButton(botId, [
                         "__S-new-tab-button",
                         "left-2"
-                    ], __S_SHARED.icons.details,
+                    ], __S_SHARED.icons.external,
                         "Details");
 
                     const a = document.createElement("a");
@@ -719,12 +717,16 @@
                         b => {
                             const bot = _state.searchResults[b.dataset.botId];
 
-                            showToast(`More about \"${bot.name}\" (TODO)`);
+                            showActions(b, [{
+                                action: a => { showToast(`${a.bot.name} (TODO)`); },
+                                bot,
+                                icon: __S_SHARED.icons.clock,
+                                text: "Mark as seen"
+                            }]);
                         }));
                 });
         } else {
             [...document.getElementsByClassName("__S-more-button")]
-                .map(e => e.closest("a"))
                 .forEach(e => e.remove());
         }
     };
@@ -745,6 +747,7 @@
 
         outer.classList.add("absolute");
         outer.classList.add("top-[6px]");
+        outer.classList.add("__S-button");
         outer.classList.add("__S-char-button");
         if (classes && classes.length) {
             if (classes.join) {
@@ -798,6 +801,110 @@
 
     const createChatId = () => "-" + crypto.randomUUID();
 
+    const createPopup = (style, content, opacity = 0.5) => {
+        const host = document.createElement("div");
+
+        document.body.appendChild(host);
+
+        const shadow = host.attachShadow({ mode: "open" }),
+            theme = getTheme();
+
+        shadow.innerHTML = `
+            <style>
+                :host {
+                    all: initial;
+                }
+
+                :host, :host input, :host button, :host textarea {
+                    color: inherit;
+                    font-family: inherit;
+                }
+
+                :host>* {
+                    z-index: 2147483647;
+                }
+
+                .dark > * {
+                    background-color: #333;
+                    color: white;
+                }
+
+                .light > * {
+                    background-color: white;
+                    color: #222;
+                }
+
+                .full {
+                    bottom: 0;
+                    left: 0;
+                    position: fixed;
+                    right: 0;
+                    top: 0;
+                }
+
+                .popup-container {
+                    background-color: rgba(0, 0, 0, ${opacity});
+                }
+
+                .themed-container > * {
+                    position: sticky;
+                }
+
+                button { cursor: pointer; }
+
+                button:hover { filter: brightness(0.95); }
+
+                .dark button:hover { filter: brightness(0.75); }
+
+                button:active { filter: brightness(0.90); }
+
+                .dark button:active { filter: brightness(0.50); }
+
+                button:disabled, button[disabled], button.disabled {
+                    filter: grayscale(1) opacity(0.35);
+                    pointer-events: none;
+                }
+
+                button svg {
+                    display: block;
+                    height: 1rem;
+                    width: 1rem;
+                }
+
+                ${style}
+            </style>
+
+            <div class="full">
+                <div class="full popup-container">
+                    <div class="${theme} themed-container">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        shadow.querySelector(".popup-container").addEventListener("click", e => {
+            if (e.target === e.currentTarget ||
+                e.target === e.currentTarget.firstElementChild) {
+
+                host.remove();
+            }
+        });
+
+        const popupElement = shadow.querySelector(".themed-container");
+
+        popupElement.setAttribute("tabIndex", 0);
+        popupElement.addEventListener("keydown", e => {
+            if (e.which === 27) {
+                host.remove();
+            }
+        });
+        requestAnimationFrame(() => popupElement.focus());
+
+        shadow.closePopup = () => host.remove();
+        return shadow;
+    };
+
     const downloadBlob = (blob, name) => {
         const url = URL.createObjectURL(blob);
 
@@ -818,187 +925,123 @@
             _state.conversation.conversation_id = chatId;
         }
 
-        const host = document.createElement("div");
+        const popup = createPopup(`
+            .panel {
+                border: 1px solid #ccc;
+                border-radius: 0.5rem;
+                bottom: initial;
+                box-shadow: 0 0.25rem 1rem #0003;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                height: auto;
+                margin: 2rem auto 0;
+                max-height: calc(100vh - 8rem);
+                max-width: 30rem;
+                padding: 1rem;
+                width: calc(100vw - 3rem);
+            }
 
-        host.setAttribute("tabIndex", 0);
-        document.body.appendChild(host);
+            .title {
+                display: flex;
+            }
 
-        const shadow = host.attachShadow({ mode: "open" }),
-            theme = getTheme();
+            .title>:first-child {
+                flex-grow: 2;
+            }
 
-        shadow.innerHTML = `
-            <style>
-                :host {
-                    all: initial;
-                    font-family: Arial, sans-serif;
-                }
+            #close {
+                background-color: transparent;
+                border-radius: 100%;
+                height: 2rem;
+                width: 2rem;
+            }
 
-                :host>* {
-                    z-index: 2147483647;
-                }
+            #list {
+                list-style-type: none;
+                overflow-y: auto;
+                padding-inline-start: 0;
+            }
 
-                .dark {
-                    background-color: #333;
-                    color: white;
-                }
+            #list hr {
+                width: auto;
+            }
 
-                .light {
-                    background-color: white;
-                    color: #222;
-                }
+            #list li {
+                display: flex;
+                gap: 0.25rem;
+                margin: 0 0 0.25rem;
+            }
 
-                .full {
-                    bottom: 0;
-                    left: 0;
-                    position: fixed;
-                    right: 0;
-                    top: 0;
-                }
+            #list *[data-role] {
+                font-style: italic;
+            }
 
-                .backdrop {
-                    opacity: 0.5;
-                }
+            #list li>*:first-child {
+                flex-grow: 100;
+            }
 
-                .panel {
-                    border: 1px solid #ccc;
-                    border-radius: 0.5rem;
-                    bottom: initial;
-                    box-shadow: 0 0.25rem 1rem #0003;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
-                    height: auto;
-                    margin: 2rem auto 0;
-                    max-height: calc(100vh - 8rem);
-                    max-width: 30rem;
-                    padding: 1rem;
-                    width: calc(100vw - 3rem);
-                }
+            #list li label input[type=text],
+            #list li label textarea {
+                width: 100%;
+            }
 
-                .title {
-                    display: flex;
-                }
+            #list li button {
+                min-height: 1.5rem;
+                margin: auto;
+                padding: 0;
+                min-width: 1.5rem;
+            }
 
-                .title>:first-child {
-                    flex-grow: 2;
-                }
+            .buttons {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: center;
+            }
 
-                #close {
-                    background-color: transparent;
-                    border-radius: 100%;
-                    height: 2rem;
-                    width: 2rem;
-                }
+            button {
+                align-items: center;
+                background: #1769aa;
+                border: 1px solid silver;
+                border-radius: 0.25rem;
+                color: white;
+                cursor: pointer;
+                display: inline-flex;
+                justify-content: center;
+                padding: 0.5rem;
+                transition: filter 0.1s;
+            }
 
-                #list {
-                    list-style-type: none;
-                    overflow-y: auto;
-                    padding-inline-start: 0;
-                }
+            button.delete {
+                background-color: red;
+            }
 
-                #list hr {
-                    width: auto;
-                }
+            h2 {
+                margin-top: 0;
+            }
 
-                #list li {
-                    display: flex;
-                    gap: 0.25rem;
-                    margin: 0 0 0.25rem;
-                }
-
-                #list *[data-role] {
-                    font-style: italic;
-                }
-
-                #list li>*:first-child {
-                    flex-grow: 100;
-                }
-
-                #list li label input[type=text],
-                #list li label textarea {
-                    width: 100%;
-                }
-
-                #list li button {
-                    min-height: 1.5rem;
-                    margin: auto;
-                    padding: 0;
-                    min-width: 1.5rem;
-                }
-
-                .buttons {
-                    display: flex;
-                    gap: 0.5rem;
-                    justify-content: center;
-                }
-
-                button {
-                    align-items: center;
-                    background: #1769aa;
-                    border: 1px solid silver;
-                    border-radius: 0.25rem;
-                    cursor: pointer;
-                    display: inline-flex;
-                    justify-content: center;
-                    padding: 0.5rem;
-                    transition: filter 0.1s;
-                }
-
-                button.delete {
-                    background-color: red;
-                }
-
-                h2 {
-                    margin-top: 0;
-                }
-
-                hr {
-                    width: 100%;
-                }
-
-                button:hover { filter: brightness(0.95); }
-
-                .dark button:hover { filter: brightness(0.75); }
-
-                button:active { filter: brightness(0.90); }
-
-                .dark button:active { filter: brightness(0.50); }
-
-                button:disabled, button[disabled], button.disabled {
-                    filter: grayscale(1) opacity(0.35);
-                    pointer-events: none;
-                }
-
-                button svg {
-                    width: 1rem;
-                    height: 1rem;
-                    display: block;
-                }
-            </style>
-
-            <div class="full">
-                <div class="full backdrop ${theme}"></div>
-                <div class="full panel ${theme}">
-                    <div class="title">
-                        <h2>Memories</h2>
-                        <button id="close"></button>
-                    </div>
-                    <label><input type="checkbox" id="active" disabled>Enable persistent memories (globally)</label>
-                    <label><input type="checkbox" id="active2">Enable persistent memories (for this chat)</label>
-                    <hr>
-                    <ul id="list"></ul>
-                    <div class="buttons">
-                        <button id="reset">Reset</button>
-                        <button id="saveAndClose">Save and close</button>
-                    </div>
+            hr {
+                width: 100%;
+            }`, `
+            <div class="panel">
+                <div class="title">
+                    <h2>Memories</h2>
+                    <button id="close"></button>
                 </div>
-            </div>
-        `;
+                <label><input type="checkbox" id="active" disabled>Enable persistent memories (globally)</label>
+                <label><input type="checkbox" id="active2">Enable persistent memories (for this chat)</label>
+                <hr>
+                <ul id="list"></ul>
+                <div class="buttons">
+                    <button id="reset">Reset</button>
+                    <button id="saveAndClose">Save and close</button>
+                </div>
+            </div>`);
 
-        shadow.getElementById("active").checked = _options.enableMemories;
-        shadow.getElementById("active2").checked = _state.enableMemories;
+        popup.getElementById("active").checked = _options.enableMemories;
+        popup.getElementById("active2").checked = _state.enableMemories;
 
-        const list = shadow.getElementById("list");
+        const list = popup.getElementById("list");
 
         const fillSpan = (span, message) => {
             span.innerHTML = "";
@@ -1125,9 +1168,7 @@
                         [...line.matchAll(globalOOC)].map(m => m[1])
                             .concat([...line.matchAll(globalCMD)].map(m => m[1]))
                             .forEach(match => {
-                                if (allMemories.findIndex(m => m.localeCompare(match,
-                                    undefined, { sensitivity: "base" }) === 0) < 0) {
-
+                                if (allMemories.findIndex(m => MessageScanner.isSimilarText(m, match)) < 0) {
                                     if (addSeparator) {
                                         list.appendChild(document.createElement("hr"));
                                         addSeparator = false;
@@ -1148,7 +1189,7 @@
         addMessage(undefined, true);
 
         const automaticMemories = MessageScanner.scanMessages(messages,
-            allMemories, _message_min_score);
+            allMemories, _options.memoriesMinScore);
 
         if (_options.showSentCommands) {
             showToast(`${_state.messages.length.toLocaleString()} messages,
@@ -1167,23 +1208,16 @@
             }).forEach(m => addMessage(m));
         }
 
-        shadow.querySelector(".backdrop").addEventListener("click", () => host.remove());
-
-        host.addEventListener("keydown", e => {
-            if (e.which === 27) {
-                shadow.getElementById("close").click();
-            }
+        popup.getElementById("close").innerHTML = __S_SHARED.icons.close;
+        popup.getElementById("close").addEventListener("click", () => {
+            popup.closePopup();
         });
-        shadow.getElementById("close").innerHTML = __S_SHARED.icons.close;
-        shadow.getElementById("close").addEventListener("click", () => {
-            host.remove();
-        });
-        shadow.getElementById("reset").addEventListener("click", () => {
+        popup.getElementById("reset").addEventListener("click", () => {
             setMemories(chatId);
-            host.remove();
+            popup.closePopup();
             initMemories();
         });
-        shadow.getElementById("saveAndClose").addEventListener("click", () => {
+        popup.getElementById("saveAndClose").addEventListener("click", () => {
             const memories = [];
 
             list.querySelectorAll("li").forEach(e => {
@@ -1202,16 +1236,15 @@
             });
 
             const state = {
-                enableMemories: shadow.getElementById("active2").checked,
+                enableMemories: popup.getElementById("active2").checked,
                 memories
             };
 
             setMemories(chatId, state);
             showToast("Saved");
-            host.remove();
+            popup.closePopup();
             initMemories();
         });
-        host.focus();
     };
 
     const ensureCharacterDate = character => {
@@ -1712,6 +1745,8 @@
             type: type,
         });
 
+    const setCustomFilter = () => setFilterText({ filter: _options.filter });
+
     const setFilterText = message => {
         const inputs = getFilterInputs();
 
@@ -1763,6 +1798,51 @@
         } else {
             window.localStorage.removeItem("__S_chats");
         }
+    };
+
+    const showActions = (button, actions) => {
+        const area = button.getBoundingClientRect(),
+            popup = createPopup(`
+                .panel {
+                    border-radius: 0.25rem;
+                    box-shadow: 0 0.25rem 1rem #0003;
+                    display: flex;
+                    flex-direction: column;
+                    padding: 0.25rem;
+                    position: fixed;
+                    right: ${document.documentElement.clientWidth - area.right}px;
+                    top: ${area.bottom}px;
+                    width: fit-content;
+                }
+
+                button {
+                    align-items: center;
+                    border: 0;
+                    background-color: transparent;
+                    display: flex;
+                    gap: 0.25rem;
+                    padding: 0.5rem;
+                }
+            `, `<div id="panel" class="panel"></div>`, 0),
+            panel = popup.getElementById("panel");
+
+        actions.forEach(action => {
+            const button = document.createElement("button");
+
+            if (action.icon) {
+                button.innerHTML = action.icon;
+            }
+            if (action.text) {
+                button.appendChild(document.createTextNode(action.text));
+            }
+            button.addEventListener("click", () => {
+                if (action.action) {
+                    action.action.call(action, action);
+                }
+                popup.closePopup();
+            });
+            panel.appendChild(button);
+        });
     };
 
     const showDetailedDates = () => getChatMap().forEach(m => {
@@ -1973,6 +2053,7 @@
 
                 button.setAttribute("type", "button");
                 button.classList.add("__S-button");
+                button.classList.add("__S-page-button");
                 if (className) {
                     button.classList.add(className);
                 }
@@ -1980,7 +2061,7 @@
                     button.innerHTML = innerHTML;
                 }
                 if (clickHandler) {
-                    button.addEventListener("click", clickHandler);
+                    button.addEventListener("click", e => clickHandler(e, button));
                 }
                 if (title) {
                     button.setAttribute("title", title);
@@ -2022,10 +2103,16 @@
 
                                                 const parent = input.closest(".grow");
 
-                                                parent.appendChild(createButton("__S-filter", __S_SHARED.icons.filter,
-                                                    () => setFilterText({ filter: _options.filter }), "Set custom filter"));
-                                                parent.appendChild(createButton("__S-options", __S_SHARED.icons.options,
-                                                    showOptions, "Show options"));
+                                                parent.appendChild(createButton("__S-actions", __S_SHARED.icons.more,
+                                                    (e, button) => showActions(button, [{
+                                                        action: setCustomFilter,
+                                                        icon: __S_SHARED.icons.filter,
+                                                        text: "Set custom filter"
+                                                    }, {
+                                                        action: showOptions,
+                                                        icon: __S_SHARED.icons.options,
+                                                        text: "Show all options"
+                                                    }]), "Actions"));
                                             }
                                         });
                                     } else if (isChatList) {
@@ -2050,7 +2137,7 @@
                                                         () => sortChats({ sort: sort.sort }), sort.title));
                                                 });
 
-                                                toolbar.appendChild(createButton("__S-details", __S_SHARED.icons.details,
+                                                toolbar.appendChild(createButton("__S-details", __S_SHARED.icons.external,
                                                     getChatsDetails, "Show details"));
                                                 toolbar.appendChild(createButton("__S-options", __S_SHARED.icons.options,
                                                     showOptions, "Show options"));
@@ -2079,6 +2166,7 @@
                                                     const newButton = lastButton.cloneNode(true);
 
                                                     newButton.dataset["botId"] = botId;
+                                                    newButton.classList.add("__S-button");
                                                     newButton.classList.add("__S-bot-button");
                                                     if (className && className.length) {
                                                         newButton.classList.add(className);
@@ -2176,7 +2264,7 @@
 
                                                 toolbar.appendChild(createButton("__S-load-messages", __S_SHARED.icons.load,
                                                     loadAllMessages, "Load all messages"));
-                                                toolbar.appendChild(createButton("__S-export-chat", __S_SHARED.icons.details,
+                                                toolbar.appendChild(createButton("__S-export-chat", __S_SHARED.icons.external,
                                                     exportChat, "Export chat"));
                                                 toolbar.appendChild(createButton("__S-options", __S_SHARED.icons.options,
                                                     showOptions, "Show options"));
@@ -2196,8 +2284,8 @@
                                             const original = [...mainToolbarContainer.getElementsByTagName("button")].pop(),
                                                 button = original.cloneNode(true);
 
-                                            button.classList.add("__S-toolbar-button");
-                                            button.innerHTML = __S_SHARED.icons.details;
+                                            button.classList.add("__S-header-button");
+                                            button.innerHTML = __S_SHARED.icons.memories;
                                             button.addEventListener("click", editMemories);
 
                                             const relative = document.createElement("div");

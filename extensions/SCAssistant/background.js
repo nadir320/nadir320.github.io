@@ -49,6 +49,9 @@ chrome.runtime.onInstalled.addListener(async details => {
     if (options.memoriesInterval === undefined) {
         values.memoriesInterval = defaults.MEMORIES_INTERVAL;
     }
+    if (options.memoriesMinScore === undefined) {
+        values.memoriesMinScore = defaults.MEMORIES_MIN_SCORE;
+    }
     await chrome.storage.local.set(values);
 });
 

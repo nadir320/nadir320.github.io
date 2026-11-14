@@ -51,7 +51,7 @@ window.__S_SHARED = {
               <path d="M9 7V4H15V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         `,
-        details: `
+        external: `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M10 5H5v14h14v-5"
                       fill="none"
@@ -116,9 +116,15 @@ window.__S_SHARED = {
                       stroke-linejoin="round"/>
             </svg>
         `,
+        memories: `
+            <svg aria-hidden="true" class="X4VkKCza" focusable="false" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.498 1.625c.807-.008 1.648.244 2.3.801a3.08 3.08 0 0 1 1.03 1.812c2.33.794 3.25 3.696 1.939 5.707 1.187 1.822.584 4.412-1.39 5.463-.515 1.697-1.93 2.813-3.446 2.953a3.27 3.27 0 0 1-2.347-.685A3.5 3.5 0 0 1 10 17.09q-.263.334-.584.586c-.7.55-1.536.76-2.347.685-1.515-.14-2.932-1.256-3.447-2.953-1.973-1.051-2.576-3.641-1.389-5.463-1.31-2.01-.392-4.913 1.938-5.707A3.08 3.08 0 0 1 5.2 2.426c.653-.557 1.494-.81 2.3-.8.808.008 1.645.278 2.293.847q.107.095.206.2.099-.105.206-.2c.648-.569 1.485-.84 2.292-.848m-3.373 3.35c0-.572-.211-.946-.486-1.188-.293-.256-.71-.407-1.156-.412s-.86.137-1.146.382c-.269.23-.477.588-.477 1.151a.91.91 0 0 1-.771.9c-1.56.24-2.25 2.226-1.225 3.4a1.12 1.12 0 0 1 0 1.472c-.89 1.022-.518 2.723.737 3.26.282.122.503.356.607.645l.037.127.058.212c.322 1.032 1.16 1.624 1.927 1.694.4.037.784-.065 1.104-.317.31-.244.616-.676.791-1.4zm1.75 9.927c.175.723.481 1.155.791 1.399.32.252.703.354 1.104.317.818-.075 1.717-.743 1.985-1.906l.037-.127c.104-.289.325-.523.607-.644l.116-.054c1.161-.59 1.484-2.217.62-3.207a1.12 1.12 0 0 1 0-1.472l.092-.112c.89-1.184.195-3.056-1.316-3.288a.91.91 0 0 1-.771-.9c0-.563-.209-.922-.477-1.151-.287-.245-.7-.387-1.146-.382-.447.005-.863.156-1.156.412-.24.212-.432.524-.476.983l-.01.206z"
+                    fill="currentColor"/>
+            </svg>
+        `,
         more: `
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M11 6H13M11 12H13M11 18H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
         `,
         options: `
@@ -330,11 +336,11 @@ window.__S_SHARED = {
                 border-color: red !important;
             }
 
-            .__S-button:hover { filter: brightness(0.95); }
+            .__S-page-button:hover { filter: brightness(0.95); }
 
-            .__S-button:active { filter: brightness(0.90); }
+            .__S-page-button:active { filter: brightness(0.90); }
 
-            .__S-button {
+            .__S-page-button {
                 border: 1px solid silver;
                 border-radius: 0.25rem;
                 cursor: pointer;
@@ -345,12 +351,12 @@ window.__S_SHARED = {
                 width: 2em;
             }
 
-            .dark .__S-button {
+            .dark .__S-page-button {
                 background-color: #333;
                 color: white;
             }
 
-            .light .__S-button {
+            .light .__S-page-button {
                 background-color: #ddd;
                 color: black;
             }
@@ -377,12 +383,6 @@ window.__S_SHARED = {
                 border-radius: 0 0.25rem 0.25rem 0;
             }
 
-            .__S-new-tab-button,
-            .__S-read-later-button {
-                height: 2rem;
-                width: 2rem;
-            }
-
             .__S-new-tab-button {
                 top: 2.75rem;
             }
@@ -400,16 +400,14 @@ window.__S_SHARED = {
                 top: 8.75rem;
             }
 
-            .__S-bot-button svg,
-            .__S-char-button svg,
-            .__S-filter svg,
-            .__S-options svg {
+            .__S-bot-details svg,
+            .__S-button svg {
                 display: block;
                 height: 1rem;
                 width: 1rem;
             }
 
-            .__S-toolbar-button svg {
+            .__S-header-button svg {
                 display: block;
                 height: 1.25rem;
                 width: 1.25rem;
@@ -484,5 +482,6 @@ window.__S_SHARED = {
                 pointer-events: none;
             }
         `
-    }
+    },
+    version: "1.0.22"
 };

@@ -23,6 +23,7 @@
         enableMemories = document.getElementById("enableMemories"),
         memoriesInterval = document.getElementById("memoriesInterval"),
         memories = document.getElementById("memories"),
+        memoriesMinScore = document.getElementById("memoriesMinScore"),
         showSentCommands = document.getElementById("showSentCommands"),
         useOffscreenImageDecoder = document.getElementById("useOffscreenImageDecoder");
 
@@ -38,6 +39,7 @@
     banners.value = options.banners.join("\n");
     enableMemories.checked = options.enableMemories;
     memoriesInterval.value = options.memoriesInterval;
+    memoriesMinScore.value = options.memoriesMinScore;
     memories.value = options.memories.join("\n");
     showSentCommands.checked = options.showSentCommands;
     useOffscreenImageDecoder.checked = options.useOffscreenImageDecoder;
@@ -70,11 +72,14 @@
             banners: bannerValues,
             enableMemories: enableMemories.checked,
             memoriesInterval: parseInt(memoriesInterval.value),
+            memoriesMinScore: parseInt(memoriesMinScore.value),
             memories: memoriesValues,
             showSentCommands: showSentCommands.checked,
             useOffscreenImageDecoder: useOffscreenImageDecoder.checked
         });
     };
+
+    document.getElementById("version").innerText = `Version: ${__S_SHARED.version}`;
 
     document.getElementById("save").addEventListener("click", async () => await save());
 

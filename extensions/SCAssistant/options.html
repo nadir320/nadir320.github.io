@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Options</title>
+        <script type="text/javascript" src="shared.js"></script>
         <script type="text/javascript" src="options.js"></script>
         <link rel="stylesheet" type="text/css" href="buttons.css">
         <style type="text/css">
@@ -40,39 +41,46 @@
             hr { width: 100%; }
 
             .buttons {
-                text-align: right;
+                align-items: center;
+                display: flex;
             }
 
             input[type=number] {
                 width: 2.5rem;
             }
+
+            .buttons :first-child {
+                flex-grow: 2;
+            }
         </style>
     </head>
     <body>
         <div class="options">
-            <h3>Options:</h3>
+            <h2>Options:</h2>
             <label><input type="checkbox" id="newTabButtons">Show new tab buttons</label>
             <label><input type="checkbox" id="chatLinksToChatbots">Chat links go to profile page</label>
             <label><input type="checkbox" id="swipeRight">Swipe right to open drawer</label>
             <label><input type="checkbox" id="backgroundAvatar">Use character avatar as chat background</label>
             <label><input type="checkbox" id="backgroundAvatarStatic">Make character avatar a static chat background</label>
-            <label><input type="checkbox" id="showMoreOptions">Show more character options</label>
+            <label><input type="checkbox" id="showMoreOptions">Show all character actions</label>
             <label><input type="checkbox" id="applyFilter">Dim character cards</label>
-            <h4>Filter (one per row):</h4>
+            <h3>Filter (one per row):</h3>
             <textarea id="filter" rows="20"></textarea>
             <hr>
             <label><input type="checkbox" id="hideBanners">Hide banners from home page (upon load)</label>
-            <h4>Banners to hide (one per row):</h4>
+            <h3>Banners to hide (one per row):</h3>
             <textarea id="banners" rows="8"></textarea>
             <hr>
             <label><input type="checkbox" id="enableMemories">Enable persistent memories</label>
-            <h4>Default memories (one per row):</h4>
+            <h3>Default memories (one per row):</h3>
             <label>Enforce each <input type="number" id="memoriesInterval" min="1" max="50"> messages</label>
+            <label>Automatic detection threshold: <input type="number" id="memoriesMinScore" min="0" max="12"></label>
             <textarea id="memories" rows="8"></textarea>
-            <h4>Experimental:</h4>
+            <h3>Experimental:</h3>
             <label><input type="checkbox" id="showSentCommands">Show sent commands (debugging purposes only)</label>
             <label><input type="checkbox" id="useOffscreenImageDecoder">Use off-screen image decoder (better performance)</label>
             <div class="buttons">
+                <span id="version"></span>
                 <button id="save">Save</button>
                 <button id="saveAndClose">Save and close</button>
             </div>

@@ -8,6 +8,24 @@
             "her", "their", "you", "your", "i", "me", "my", "we", "our", "so", "very", "just", "still", "now", "then"
         ]);
 
+        static isSimilarText(a, b) {
+            const left = this.#clean(a).toLowerCase();
+            const right = this.#clean(b).toLowerCase();
+            if (!left || !right) return false;
+            if (left === right) return true;
+            if (left.length > 35 && right.length > 35 && (left.includes(right) || right.includes(left))) return true;
+
+            const aTokens = this.#tokens(left);
+            const bTokens = this.#tokens(right);
+            if (!aTokens.size || !bTokens.size) return false;
+            let common = 0;
+            for (const token of aTokens) if (bTokens.has(token)) common++;
+            const union = aTokens.size + bTokens.size - common;
+            const jaccard = union ? common / union : 0;
+            const smallerCoverage = common / Math.min(aTokens.size, bTokens.size);
+            return jaccard >= 0.64 || (common >= 5 && smallerCoverage >= 0.78);
+        }
+
         static scanMessages(messages, filter, minScore = 5) {
             const highlights = [];
 
@@ -18,9 +36,9 @@
                     const score = this.#scoreSentence(sentence);
 
                     if (score >= minScore) {
-                        if (!highlights.some(item => this.#isSimilarText(item.text, sentence))) {
-                            if (!messageHighlights.some(item => this.#isSimilarText(item.text, sentence))) {
-                                if (!(filter && filter.some(item => this.#isSimilarText(item, sentence)))) {
+                        if (!highlights.some(item => this.isSimilarText(item.text, sentence))) {
+                            if (!messageHighlights.some(item => this.isSimilarText(item.text, sentence))) {
+                                if (!(filter && filter.some(item => this.isSimilarText(item, sentence)))) {
                                     messageHighlights.push({
                                         text: sentence,
                                         category: this.#categoryFor(sentence),
@@ -73,24 +91,6 @@
 
         static #hasPersistentCue(value) {
             return /\b(became|forgave|reconciled|overcame|developed feelings|betrayed|confessed|died|reunited|prefers?|favorite|favourite|enjoys?|likes?|dislikes?|hates?|always|never|usually|normally|habit|routine|for \d+ years?|\d+ years?|since childhood|since (?:he|she|they|i) (?:was|were)|grew up|learned from|promised?|agreed?|committed|commitment|relationship|partner|married|dating|trusts?|secret|identity|skill|skilled|experienced|trained|trigger|boundary|doesn'?t enjoy|does not enjoy|needs? (?:space|quiet|predictability|control|routine)|safe|unsafe|protective|long[- ]term|grow old|first date)\b/i.test(value);
-        }
-
-        static #isSimilarText(a, b) {
-            const left = this.#clean(a).toLowerCase();
-            const right = this.#clean(b).toLowerCase();
-            if (!left || !right) return false;
-            if (left === right) return true;
-            if (left.length > 35 && right.length > 35 && (left.includes(right) || right.includes(left))) return true;
-
-            const aTokens = this.#tokens(left);
-            const bTokens = this.#tokens(right);
-            if (!aTokens.size || !bTokens.size) return false;
-            let common = 0;
-            for (const token of aTokens) if (bTokens.has(token)) common++;
-            const union = aTokens.size + bTokens.size - common;
-            const jaccard = union ? common / union : 0;
-            const smallerCoverage = common / Math.min(aTokens.size, bTokens.size);
-            return jaccard >= 0.64 || (common >= 5 && smallerCoverage >= 0.78);
         }
 
         static #scoreSentence(text) {
