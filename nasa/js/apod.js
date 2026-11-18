@@ -19,8 +19,8 @@ window.photoOfTheDay = {
 	}, "loadJSON": function(data, date, isToday) {
 		var cleanupURL = function(url) {
 				if (url && url.length) {
-					if (url.split(":").length > 2) {
-						url = url.substr(url.lastIndexOf(":") + 1);
+					if (url.split("://").length > 2) {
+						url = url.substr(url.lastIndexOf("://") + 3);
 					}
 				}
 				return url;
